@@ -1,0 +1,14 @@
+openapi: 3.0.3
+info:
+  title: CBO API
+  version: 1.0.0
+  description: Public/Partner API documentation.
+servers:
+  - url: https://api.example.com/v1
+paths:
+  /health:
+    get:
+      summary: Health check
+      responses:
+        '200':
+          description: OK
