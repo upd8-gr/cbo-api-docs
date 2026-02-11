@@ -1,0 +1,7 @@
+description: Too Many Requests - Rate limit exceeded (1000 calls/day or 60 requests/minute)
+content:
+  application/json:
+    schema:
+      $ref: ../schemas/errors/ErrorResponse.yaml
+    example:
+      message: "Too many requests. Rate limit exceeded."

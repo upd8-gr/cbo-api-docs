@@ -1,0 +1,4 @@
+type: apiKey
+in: header
+name: X-Asseblo-Company
+description: "Company ID. Example value: 1234567890"
