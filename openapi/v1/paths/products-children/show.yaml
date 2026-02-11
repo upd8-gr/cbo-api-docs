@@ -1,0 +1,15 @@
+get:
+  tags: [Products Children]
+  summary: Show product child
+  security: [{ BearerAuth: [] }]
+  parameters:
+    - $ref: ../../components/parameters/IdPath.yaml
+  responses:
+    "200":
+      description: Resource
+      content:
+        application/json:
+          schema: { $ref: ../../components/schemas/resources/ProductChild.yaml }
+    "401": { $ref: ../../components/responses/Unauthorized.yaml }
+    "403": { $ref: ../../components/responses/Forbidden.yaml }
+    "404": { $ref: ../../components/responses/NotFound.yaml }

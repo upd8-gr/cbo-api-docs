@@ -1,0 +1,7 @@
+description: Forbidden
+content:
+  application/json:
+    schema:
+      $ref: ../schemas/errors/ErrorResponse.yaml
+    example:
+      message: "Forbidden."

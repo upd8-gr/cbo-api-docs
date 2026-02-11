@@ -1,0 +1,8 @@
+type: object
+additionalProperties: false
+properties:
+  first: { type: string, nullable: true, example: "/api/v1/clients?page=1" }
+  last:  { type: string, nullable: true, example: "/api/v1/clients?page=10" }
+  prev:  { type: string, nullable: true, example: null }
+  next:  { type: string, nullable: true, example: "/api/v1/clients?page=2" }
+required: [first, last, prev, next]

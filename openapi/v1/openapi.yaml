@@ -1,14 +1,26 @@
 openapi: 3.0.3
 info:
-  title: CBO API
-  version: 1.0.0
-  description: Public/Partner API documentation.
+  title: API v1
+  version: "1.0.0"
 servers:
-  - url: https://api.example.com/v1
+  - url: /api/v1
+
+security:
+  - BearerAuth: []
+
+tags:
+  - name: Products Children
+  - name: Groups
+  - name: Characteristics
+  - name: Stocks
+  - name: Orders
+  - name: Invoices
+  - name: Clients
+  - name: Taxes
+  - name: Document Types
+
 paths:
-  /health:
-    get:
-      summary: Health check
-      responses:
-        '200':
-          description: OK
+  /products-children:
+    $ref: ./paths/products-children/index.yaml
+  /products-children/{id}:
+    $ref: ./paths/products-children/show.yaml
