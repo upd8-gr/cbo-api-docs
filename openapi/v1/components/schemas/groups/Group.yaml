@@ -1,0 +1,77 @@
+type: object
+additionalProperties: false
+properties:
+  id: { type: integer, format: int64, example: 1 }
+  title: { type: string, example: "Group A" }
+  slug: { type: string, nullable: true, example: "group-a" }
+  description: { type: string, nullable: true, example: "Some text" }
+  deep: { type: integer, example: 0 }
+  images:
+    description: Either "" or object with thumb/normal urls.
+    oneOf:
+      - type: string
+        example: ""
+      - type: object
+        additionalProperties: false
+        properties:
+          thumb: { type: string, example: "https://cdn.test/thumb.jpg" }
+          normal: { type: string, example: "https://cdn.test/normal.jpg" }
+        required: [thumb, normal]
+
+  parent_id: { type: integer, format: int64, nullable: true, example: 10 }
+  temp_id: { type: integer, nullable: true, example: 101 }
+  company: { type: integer, format: int64, example: 1 }
+
+  created:
+    description: Raw created_at (resource uses getRawOriginal).
+    type: string
+    example: "2026-02-11 10:00:00"
+  updated:
+    type: string
+    example: "2026-02-11 10:00:00"
+
+  # Optional computed fields (appear based on query params)
+  retail_price: { type: number, nullable: true, example: 100 }
+  discounted_price: { type: number, nullable: true, example: 90 }
+  website_price: { type: number, nullable: true, example: 95 }
+  has_stocks: { type: integer, nullable: true, example: 1 }
+
+  hasProducts: { type: boolean, nullable: true, example: true }
+  hasChildren: { type: boolean, nullable: true, example: false }
+
+  parent:
+    description: Present when withParent/withAncestors enabled.
+    oneOf:
+      - $ref: ./Group.yaml
+      - type: integer
+        format: int64
+        nullable: true
+    nullable: true
+
+  child:
+    description: Children groups (field always exists but may be empty / missing if not loaded)
+    type: array
+    items: { $ref: ./Group.yaml }
+
+  products:
+    description: Present when withProducts or withAllProducts.
+    type: array
+    items:
+      $ref: ../resources/ProductChild.yaml
+
+  characteristics:
+    description: Present when showCharacteristics=true. (CharCategoryResource output)
+    type: array
+    items:
+      $ref: ../resources/CharCategory.yaml
+required:
+  - id
+  - title
+  - deep
+  - images
+  - parent_id
+  - temp_id
+  - company
+  - created
+  - updated
+  - child

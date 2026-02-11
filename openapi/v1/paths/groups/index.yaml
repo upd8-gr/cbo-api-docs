@@ -1,0 +1,249 @@
+get:
+  tags: [Groups]
+  summary: List groups (categories)
+  description: >
+    Returns groups with optional filtering, tree relations, products, prices, stock flags and characteristics.
+    If `page_size` is provided, response is Laravel paginated. Otherwise returns a plain resource collection.
+  security:
+    - BearerAuth: []
+  parameters:
+    # SEARCH
+    - name: ids
+      in: query
+      required: false
+      description: Filter by specific group IDs.
+      style: form
+      explode: true
+      schema:
+        type: array
+        items: { type: integer, format: int64 }
+      example: [1, 2, 3]
+
+    - name: temp_id
+      in: query
+      required: false
+      description: Filter by temporary_id list.
+      style: form
+      explode: true
+      schema:
+        type: array
+        items: { type: integer }
+      example: [101, 102]
+
+    - name: parent
+      in: query
+      required: false
+      description: Filter by parent group id (group_id).
+      schema: { type: integer, format: int64 }
+      example: 10
+
+    - name: search
+      in: query
+      required: false
+      description: Search by group name (LIKE %...%).
+      schema: { type: string }
+      example: "laptops"
+
+    - name: platform
+      in: query
+      required: false
+      description: Filter groups that have products visible in the selected platform.
+      schema:
+        type: string
+        enum: [web, b2b]
+      example: web
+
+    # WITH PRODUCTS / PRICES / STOCK / EXISTS FLAGS
+    - name: withProducts
+      in: query
+      required: false
+      description: Load `products` relation filtered by platform.
+      schema: { type: boolean }
+      example: true
+
+    - name: withAllProducts
+      in: query
+      required: false
+      description: Load products of group + descendants (recursiveProducts).
+      schema: { type: boolean }
+      example: false
+
+    - name: withProductEagers
+      in: query
+      required: false
+      description: If false, products eager loads are cleared (setEagerLoads([])).
+      schema: { type: boolean, default: true }
+      example: true
+
+    - name: withProductColumns
+      in: query
+      required: false
+      description: Comma-separated columns to select on product children (id, group_id, company_id are always added).
+      schema: { type: string }
+      example: "id,product_name,barcode,retail_price"
+
+    - name: withMinPrice
+      in: query
+      required: false
+      description: Adds `retail_price` (min retail_price in products for this group).
+      schema: { type: boolean }
+      example: true
+
+    - name: withMinDiscounted
+      in: query
+      required: false
+      description: Adds `discounted_price` (min discounted_price in products where discounted_price != 0).
+      schema: { type: boolean }
+      example: false
+
+    - name: withMinWebPrice
+      in: query
+      required: false
+      description: Adds `website_price` (min website_price in products where website_price != 0).
+      schema: { type: boolean }
+      example: false
+
+    - name: withTotalStock
+      in: query
+      required: false
+      description: Adds `has_stocks` flag for group (and for children in show endpoint).
+      schema: { type: boolean }
+      example: false
+
+    - name: withHasProducts
+      in: query
+      required: false
+      description: Adds `hasProducts` boolean (exists products for platform).
+      schema: { type: boolean }
+      example: true
+
+    - name: withHasChildren
+      in: query
+      required: false
+      description: Adds `hasChildren` boolean (exists group children, optionally platform-aware).
+      schema: { type: boolean }
+      example: true
+
+    # TREE / ORDER / DEPTH / PAGINATION
+    - name: withOrder
+      in: query
+      required: false
+      description: Order by column (default deep then sort).
+      schema:
+        type: string
+        enum: [id, name, deep, sort, created_at, updated_at]
+      example: sort
+
+    - name: onlyRoots
+      in: query
+      required: false
+      description: Return only root groups.
+      schema: { type: boolean }
+      example: false
+
+    - name: onlyLeaves
+      in: query
+      required: false
+      description: Return only leaf groups.
+      schema: { type: boolean }
+      example: false
+
+    - name: withParent
+      in: query
+      required: false
+      description: Include immediate parent object.
+      schema: { type: boolean }
+      example: true
+
+    - name: withChildren
+      in: query
+      required: false
+      description: Include immediate children (`children`).
+      schema: { type: boolean }
+      example: true
+
+    - name: withAncestors
+      in: query
+      required: false
+      description: Include parent chain up to root (uses group_parent + group_ancestors).
+      schema: { type: boolean }
+      example: false
+
+    - name: withDescendants
+      in: query
+      required: false
+      description: Include descendants (custom descendants() scope/loader).
+      schema: { type: boolean }
+      example: false
+
+    - name: deep
+      in: query
+      required: false
+      description: Filter by depth.
+      schema: { type: integer }
+      example: 2
+
+    - name: page_size
+      in: query
+      required: false
+      description: If provided, response becomes Laravel paginated with that per-page size.
+      schema: { type: integer, minimum: 1, maximum: 500 }
+      example: 50
+
+  responses:
+    "200":
+      description: OK (collection or paginated collection)
+      content:
+        application/json:
+          schema:
+            oneOf:
+              - $ref: ../../components/schemas/groups/GroupCollection.yaml
+              - $ref: ../../components/schemas/groups/GroupPaginatedCollection.yaml
+          examples:
+            collection:
+              summary: Non-paginated
+              value:
+                data:
+                  - id: 1
+                    title: "Group A"
+                    slug: "group-a"
+                    description: null
+                    deep: 0
+                    images: ""
+                    parent_id: null
+                    temp_id: null
+                    company: 1
+                    created: "2026-02-11 10:00:00"
+                    updated: "2026-02-11 10:00:00"
+                    child: []
+            paginated:
+              summary: Paginated (page_size)
+              value:
+                data:
+                  - id: 1
+                    title: "Group A"
+                    slug: "group-a"
+                    description: null
+                    deep: 0
+                    images: ""
+                    parent_id: null
+                    temp_id: null
+                    company: 1
+                    created: "2026-02-11 10:00:00"
+                    updated: "2026-02-11 10:00:00"
+                    child: []
+                links:
+                  first: "/api/v1/groups?page=1"
+                  last: "/api/v1/groups?page=10"
+                  prev: null
+                  next: "/api/v1/groups?page=2"
+                meta:
+                  current_page: 1
+                  from: 1
+                  last_page: 10
+                  path: "/api/v1/groups"
+                  per_page: 50
+                  to: 50
+                  total: 500
+    "401": { $ref: ../../components/responses/Unauthorized.yaml }
+    "403": { $ref: ../../components/responses/Forbidden.yaml }

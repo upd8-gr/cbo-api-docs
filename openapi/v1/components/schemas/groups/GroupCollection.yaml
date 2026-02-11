@@ -1,0 +1,7 @@
+type: object
+additionalProperties: false
+properties:
+  data:
+    type: array
+    items: { $ref: ./Group.yaml }
+required: [data]

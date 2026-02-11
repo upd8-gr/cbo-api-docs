@@ -24,3 +24,7 @@ paths:
     $ref: ./paths/products-children/index.yaml
   /products-children/{id}:
     $ref: ./paths/products-children/show.yaml
+  /groups:
+    $ref: ./paths/groups/index.yaml
+  /groups/{id}:
+    $ref: ./paths/groups/show.yaml

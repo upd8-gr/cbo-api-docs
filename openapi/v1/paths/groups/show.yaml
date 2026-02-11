@@ -1,0 +1,154 @@
+get:
+  tags: [Groups]
+  summary: Show group (category)
+  description: >
+    Returns a single group. Supports loading products, recursive products, min price fields,
+    stock flags, children existence flags and characteristics grouping.
+  security:
+    - BearerAuth: []
+  parameters:
+    - $ref: ../../components/parameters/IdPath.yaml
+
+    - name: platform
+      in: query
+      required: false
+      schema:
+        type: string
+        enum: [web, b2b]
+      example: web
+
+    - name: withProducts
+      in: query
+      required: false
+      schema: { type: boolean }
+      example: true
+
+    - name: withAllProducts
+      in: query
+      required: false
+      schema: { type: boolean }
+      example: false
+
+    - name: withProductEagers
+      in: query
+      required: false
+      schema: { type: boolean, default: true }
+      example: true
+
+    - name: withProductColumns
+      in: query
+      required: false
+      schema: { type: string }
+      example: "id,product_name,barcode,retail_price"
+
+    - name: withMinPrice
+      in: query
+      required: false
+      schema: { type: boolean }
+      example: true
+
+    - name: withMinDiscounted
+      in: query
+      required: false
+      schema: { type: boolean }
+      example: false
+
+    - name: withMinWebPrice
+      in: query
+      required: false
+      schema: { type: boolean }
+      example: false
+
+    - name: withTotalStock
+      in: query
+      required: false
+      schema: { type: boolean }
+      example: false
+
+    - name: withHasProducts
+      in: query
+      required: false
+      schema: { type: boolean }
+      example: true
+
+    - name: withHasChildren
+      in: query
+      required: false
+      schema: { type: boolean }
+      example: true
+
+    - name: showCharacteristics
+      in: query
+      required: false
+      description: If true, returns `characteristics` grouped by category.
+      schema: { type: boolean, default: true }
+      example: true
+
+    - name: characteristic_category
+      in: query
+      required: false
+      description: Filter shown characteristics by char_category_id.
+      schema: { type: integer, format: int64 }
+      example: 2
+
+    - name: withParent
+      in: query
+      required: false
+      schema: { type: boolean }
+      example: true
+
+    - name: withChildren
+      in: query
+      required: false
+      schema: { type: boolean }
+      example: true
+
+    - name: withAncestors
+      in: query
+      required: false
+      schema: { type: boolean }
+      example: false
+
+    - name: withDescendants
+      in: query
+      required: false
+      schema: { type: boolean }
+      example: false
+
+    - name: withOrder
+      in: query
+      required: false
+      schema:
+        type: string
+        enum: [id, name, deep, sort, created_at, updated_at]
+      example: sort
+
+  responses:
+    "200":
+      description: OK
+      content:
+        application/json:
+          schema: { $ref: ../../components/schemas/groups/GroupResponse.yaml }
+          examples:
+            default:
+              value:
+                id: 1
+                title: "Group A"
+                slug: "group-a"
+                description: null
+                deep: 0
+                images: ""
+                parent_id: null
+                temp_id: null
+                company: 1
+                created: "2026-02-11 10:00:00"
+                updated: "2026-02-11 10:00:00"
+                child: []
+                retail_price: 100
+                hasProducts: true
+                hasChildren: false
+                products: []
+                characteristics: []
+    "401": { $ref: ../../components/responses/Unauthorized.yaml }
+    "403": { $ref: ../../components/responses/Forbidden.yaml }
+    "404": { $ref: ../../components/responses/NotFound.yaml }
