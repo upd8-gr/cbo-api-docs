@@ -1,0 +1,6 @@
+type: object
+additionalProperties: true
+description: Minimal placeholder for CatalogueResource output.
+properties:
+  id: { type: integer, format: int64, example: 1 }
+  title: { type: string, example: "Catalogue A" }

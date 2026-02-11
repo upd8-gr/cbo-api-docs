@@ -1,24 +1,135 @@
 get:
   tags: [Products Children]
   summary: List product children
-  security: [{ BearerAuth: [] }]
+  description: >
+    Returns product children. Supports filters by ids, group, characteristics and ordering.
+    Returns Laravel paginated response using `page_size` (default 100).
+  security:
+    - BearerAuth: []
   parameters:
-    - $ref: ../../components/parameters/Page.yaml
-    - $ref: ../../components/parameters/PerPage.yaml
+    - name: fromWebsite
+      in: query
+      required: false
+      description: Filter by visibility on website (showOnWebsite).
+      schema:
+        type: boolean
+        default: true
+      example: true
+
+    - name: getGroupHierarchy
+      in: query
+      required: false
+      description: If true, includes group hierarchy info in the resource.
+      schema:
+        type: boolean
+        default: false
+      example: false
+
+    - name: ids
+      in: query
+      required: false
+      description: Filter by specific product child IDs.
+      style: form
+      explode: true
+      schema:
+        type: array
+        items: { type: integer, format: int64 }
+      example: [10, 20, 30]
+
+    - name: group_id
+      in: query
+      required: false
+      description: Filter by group id.
+      schema: { type: integer, format: int64 }
+      example: 5
+
+    - name: characteristics_id
+      in: query
+      required: false
+      description: Filter products that have ALL of the given characteristic ids.
+      style: form
+      explode: true
+      schema:
+        type: array
+        items: { type: integer, format: int64 }
+      example: [2, 7]
+
+    - name: ordering
+      in: query
+      required: false
+      description: Ordering string handled by backend `ordering()` helper.
+      schema: { type: string }
+      example: "retail_price:asc"
+
+    - name: page
+      in: query
+      required: false
+      schema: { type: integer, minimum: 1, default: 1 }
+      example: 1
+
+    - name: page_size
+      in: query
+      required: false
+      description: Page size for Laravel pagination (default 100). `all` is intentionally not documented.
+      schema: { type: integer, minimum: 1, maximum: 500, default: 100 }
+      example: 100
+
+    - name: stock
+      in: query
+      required: false
+      description: If provided, resource returns partial stock by the given value (backend-defined).
+      schema: { type: string }
+      example: "warehouse:1"
+
   responses:
     "200":
       description: Paginated list
       content:
         application/json:
           schema:
-            type: object
-            additionalProperties: false
-            properties:
-              data:
-                type: array
-                items: { $ref: ../../components/schemas/resources/ProductChild.yaml }
-              links: { $ref: ../../components/schemas/common/PaginationLinks.yaml }
-              meta: { $ref: ../../components/schemas/common/PaginationMeta.yaml }
-            required: [data, links, meta]
+            $ref: ../../components/schemas/products-children/ProductChildPaginatedCollection.yaml
+          examples:
+            paginated:
+              value:
+                data:
+                  - id: 10
+                    title: "Product Child A"
+                    description: null
+                    image: { thumb: null, normal: null }
+                    measurment: "Τεμάχιο"
+                    cost: 10
+                    sell_price: 15
+                    website_price: 15
+                    retail_price: 20
+                    discounted_price: 0
+                    builded_price: 0
+                    tax: 24
+                    stock: 5
+                    barcode: "5200000000000"
+                    catalog_code: "CAT-01"
+                    erp_code: "ERP-01"
+                    product_id: 100
+                    group_id: 5
+                    parent_name: "Parent Product"
+                    company: 1
+                    created: "2026-02-11 10:00:00"
+                    updated: "2026-02-11 10:00:00"
+                    characteristicsHtml: "<span>...</span>"
+                    characteristics: []
+                    tiers: []
+                    catalogues: []
+                links:
+                  first: "/api/v1/products-children?page=1"
+                  last: "/api/v1/products-children?page=10"
+                  prev: null
+                  next: "/api/v1/products-children?page=2"
+                meta:
+                  current_page: 1
+                  from: 1
+                  last_page: 10
+                  path: "/api/v1/products-children"
+                  per_page: 100
+                  to: 100
+                  total: 1000
     "401": { $ref: ../../components/responses/Unauthorized.yaml }
     "403": { $ref: ../../components/responses/Forbidden.yaml }

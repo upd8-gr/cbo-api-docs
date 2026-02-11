@@ -1,0 +1,11 @@
+type: object
+additionalProperties: false
+properties:
+  data:
+    type: array
+    items: { $ref: ./ProductChild.yaml }
+  links:
+    $ref: ../common/PaginationLinks.yaml
+  meta:
+    $ref: ../common/PaginationMeta.yaml
+required: [data, links, meta]

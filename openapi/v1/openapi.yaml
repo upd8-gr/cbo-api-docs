@@ -28,3 +28,51 @@ paths:
     $ref: ./paths/groups/index.yaml
   /groups/{id}:
     $ref: ./paths/groups/show.yaml
+
+components:
+  securitySchemes:
+    BearerAuth:
+      $ref: ./components/securitySchemes/BearerAuth.yaml
+
+  parameters:
+    IdPath:
+      $ref: ./components/parameters/IdPath.yaml
+    Page:
+      $ref: ./components/parameters/Page.yaml
+    PerPage:
+      $ref: ./components/parameters/PerPage.yaml
+
+  schemas:
+    # common
+    PaginationLinks:
+      $ref: ./components/schemas/common/PaginationLinks.yaml
+    PaginationMeta:
+      $ref: ./components/schemas/common/PaginationMeta.yaml
+    ValidationError:
+      $ref: ./components/schemas/errors/ValidationError.yaml
+    ErrorResponse:
+      $ref: ./components/schemas/errors/ErrorResponse.yaml
+
+    # resources
+    ProductChild:
+      $ref: ./components/schemas/products-children/ProductChild.yaml
+    ProductChildPaginatedCollection:
+      $ref: ./components/schemas/products-children/ProductChildPaginatedCollection.yaml
+    Group:
+      $ref: ./components/schemas/groups/Group.yaml
+    GroupResponse:
+      $ref: ./components/schemas/groups/GroupResponse.yaml
+    GroupCollection:
+      $ref: ./components/schemas/groups/GroupCollection.yaml
+    GroupPaginatedCollection:
+      $ref: ./components/schemas/groups/GroupPaginatedCollection.yaml
+
+  responses:
+    Unauthorized:
+      $ref: ./components/responses/Unauthorized.yaml
+    Forbidden:
+      $ref: ./components/responses/Forbidden.yaml
+    NotFound:
+      $ref: ./components/responses/NotFound.yaml
+    UnprocessableEntity:
+      $ref: ./components/responses/UnprocessableEntity.yaml

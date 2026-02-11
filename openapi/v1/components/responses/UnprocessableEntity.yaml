@@ -1,0 +1,5 @@
+description: Validation error (Laravel)
+content:
+  application/json:
+    schema:
+      $ref: ../schemas/errors/ValidationError.yaml

@@ -1,15 +1,31 @@
 get:
   tags: [Products Children]
   summary: Show product child
-  security: [{ BearerAuth: [] }]
+  security:
+    - BearerAuth: []
   parameters:
     - $ref: ../../components/parameters/IdPath.yaml
+
+    - name: stock
+      in: query
+      required: false
+      description: If provided, resource returns partial stock by the given value (backend-defined).
+      schema: { type: string }
+      example: "warehouse:1"
+
+    - name: getGroupHierarchy
+      in: query
+      required: false
+      description: If true, includes group hierarchy info in the resource.
+      schema: { type: boolean, default: false }
+      example: false
+
   responses:
     "200":
-      description: Resource
+      description: OK
       content:
         application/json:
-          schema: { $ref: ../../components/schemas/resources/ProductChild.yaml }
+          schema: { $ref: ../../components/schemas/products-children/ProductChild.yaml }
     "401": { $ref: ../../components/responses/Unauthorized.yaml }
     "403": { $ref: ../../components/responses/Forbidden.yaml }
     "404": { $ref: ../../components/responses/NotFound.yaml }

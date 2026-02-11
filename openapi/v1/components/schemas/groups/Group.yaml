@@ -57,7 +57,7 @@ properties:
     description: Present when withProducts or withAllProducts.
     type: array
     items:
-      $ref: ../resources/ProductChild.yaml
+      $ref: ../products-children/ProductChild.yaml
 
   characteristics:
     description: Present when showCharacteristics=true. (CharCategoryResource output)
