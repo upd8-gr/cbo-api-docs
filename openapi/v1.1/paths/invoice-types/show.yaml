@@ -1,0 +1,69 @@
+get:
+  tags: [Invoice Types]
+  summary: Show invoice type
+  security:
+    - BearerAuth: []
+  parameters:
+    - $ref: ../../../_shared/components/parameters/IdPath.yaml
+  responses:
+    "200":
+      description: OK
+      content:
+        application/json:
+          schema:
+            $ref: ../../components/schemas/invoice-types/InvoiceTypeSingleResponse.yaml
+          examples:
+            default:
+              value:
+                success: true
+                data:
+                  id: 1166
+                  title: "Invoice (no delivery)"
+                  type: 1
+                  aade_type: "1.1"
+                  document_type: null
+                  active: true
+                  is_deliverable: false
+                  default: true
+                  template_id: null
+                  company: 1
+    "401": { $ref: ../../../_shared/components/responses/Unauthorized.yaml }
+    "403": { $ref: ../../../_shared/components/responses/Forbidden.yaml }
+    "404": { $ref: ../../../_shared/components/responses/NotFound.yaml }
+
+post:
+  tags: [Invoice Types]
+  summary: Create invoice type
+  description: >
+    Creates an invoice type. If `default=true`, other invoice types with same (type, document_type)
+    are set to default=false. If `default=false` and no other default exists, backend forces default=true.
+  security:
+    - BearerAuth: []
+  requestBody:
+    required: true
+    content:
+      application/json:
+        schema:
+          $ref: ../../components/schemas/invoice-types/InvoiceTypeStore.yaml
+        examples:
+          default:
+            value:
+              title: "Invoice (no delivery)"
+              type: 1
+              aade_type: "1.1"
+              document_type: null
+              fhm_code: null
+              active: true
+              is_deliverable: false
+              default: true
+              template_id: null
+  responses:
+    "201":
+      description: Created
+      content:
+        application/json:
+          schema:
+            $ref: ../../components/schemas/invoice-types/InvoiceTypeSingleResponse.yaml
+    "401": { $ref: ../../../_shared/components/responses/Unauthorized.yaml }
+    "403": { $ref: ../../../_shared/components/responses/Forbidden.yaml }
+    "422": { $ref: ../../../_shared/components/responses/UnprocessableEntity.yaml }

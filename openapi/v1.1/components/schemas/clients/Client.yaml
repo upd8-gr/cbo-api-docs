@@ -1,0 +1,53 @@
+type: object
+additionalProperties: false
+properties:
+  id: { type: integer, format: int64, example: 1 }
+
+  code:
+    type: string
+    nullable: true
+    description: Client code (primary_id).
+    example: "C-0001"
+
+  first_name: { type: string, nullable: true, example: "Giorgos" }
+  last_name: { type: string, nullable: true, example: "Papadopoulos" }
+  email: { type: string, nullable: true, example: "g@example.com" }
+  telephone: { type: string, nullable: true, example: "2100000000" }
+  cellphone: { type: string, nullable: true, example: null }
+
+  vat: { type: string, nullable: true, example: "123456789" }
+
+  invoice_name: { type: string, nullable: true, example: "ACME SA" }
+  company_name: { type: string, nullable: true, example: "ACME SA" }
+  tax_office:
+    type: string
+    nullable: true
+    description: Tax office name (computed).
+    example: "Α Αθηνών"
+
+  profession: { type: string, nullable: true, example: "Engineer" }
+  client_type:
+    type: integer
+    nullable: true
+    enum: [1, 2]
+    example: 1
+
+  comments: { type: string, nullable: true, example: null }
+
+  addresses:
+    type: array
+    items: { $ref: ../resources/Address.yaml }
+
+  contacts:
+    type: array
+    items: { $ref: ../resources/ContactDetail.yaml }
+
+  tags:
+    type: array
+    items: { $ref: ../resources/Tag.yaml }
+
+  company: { type: integer, format: int64, example: 1 }
+  created: { type: string, example: "2026-02-11 10:00:00" }
+  modified: { type: string, example: "2026-02-12 10:00:00" }
+
+required: [id, company, created, modified]

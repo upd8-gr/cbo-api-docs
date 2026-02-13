@@ -1,0 +1,96 @@
+get:
+  tags: [Clients]
+  summary: Show client
+  security:
+    - BearerAuth: []
+  parameters:
+    - $ref: ../../../_shared/components/parameters/IdPath.yaml
+  responses:
+    "200":
+      description: OK
+      content:
+        application/json:
+          schema: { $ref: ../../components/schemas/clients/ClientSingleResponse.yaml }
+    "401": { $ref: ../../../_shared/components/responses/Unauthorized.yaml }
+    "403": { $ref: ../../../_shared/components/responses/Forbidden.yaml }
+    "404": { $ref: ../../../_shared/components/responses/NotFound.yaml }
+
+patch:
+  tags: [Clients]
+  summary: Update client (partial)
+  security:
+    - BearerAuth: []
+  parameters:
+    - $ref: ../../../_shared/components/parameters/IdPath.yaml
+  requestBody:
+    required: true
+    content:
+      application/json:
+        schema: { $ref: ../../components/schemas/clients/ClientUpdate.yaml }
+  responses:
+    "200":
+      description: Updated
+      content:
+        application/json:
+          schema: { $ref: ../../components/schemas/clients/ClientSingleResponse.yaml }
+    "401": { $ref: ../../../_shared/components/responses/Unauthorized.yaml }
+    "403": { $ref: ../../../_shared/components/responses/Forbidden.yaml }
+    "404": { $ref: ../../../_shared/components/responses/NotFound.yaml }
+    "422": { $ref: ../../../_shared/components/responses/UnprocessableEntity.yaml }
+
+put:
+  tags: [Clients]
+  summary: Update client (replace)
+  security:
+    - BearerAuth: []
+  parameters:
+    - $ref: ../../../_shared/components/parameters/IdPath.yaml
+  requestBody:
+    required: true
+    content:
+      application/json:
+        schema: { $ref: ../../components/schemas/clients/ClientStore.yaml }
+  responses:
+    "200":
+      description: Updated
+      content:
+        application/json:
+          schema: { $ref: ../../components/schemas/clients/ClientSingleResponse.yaml }
+    "401": { $ref: ../../../_shared/components/responses/Unauthorized.yaml }
+    "403": { $ref: ../../../_shared/components/responses/Forbidden.yaml }
+    "404": { $ref: ../../../_shared/components/responses/NotFound.yaml }
+    "422": { $ref: ../../../_shared/components/responses/UnprocessableEntity.yaml }
+
+delete:
+  tags: [Clients]
+  summary: Delete client
+  security:
+    - BearerAuth: []
+  parameters:
+    - $ref: ../../../_shared/components/parameters/IdPath.yaml
+  responses:
+    "200":
+      description: Deleted
+      content:
+        application/json:
+          schema:
+            $ref: ../../components/schemas/clients/ClientDeleteResponse.yaml
+          examples:
+            deleted:
+              value:
+                success: true
+                message: "Client deleted."
+    "401": { $ref: ../../../_shared/components/responses/Unauthorized.yaml }
+    "403": { $ref: ../../../_shared/components/responses/Forbidden.yaml }
+    "404": { $ref: ../../../_shared/components/responses/NotFound.yaml }
+    "422":
+      description: Cannot be deleted (has related records)
+      content:
+        application/json:
+          schema:
+            $ref: ../../components/schemas/clients/ClientDeleteFailResponse.yaml
+          examples:
+            fail:
+              value:
+                success: false
+                message: "Client cannot be deleted because it has related records (invoices, orders, checks, etc.)."

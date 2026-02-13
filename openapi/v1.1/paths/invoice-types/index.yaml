@@ -1,0 +1,112 @@
+get:
+  tags: [Invoice Types]
+  summary: List invoice types
+  description: >
+    List invoice types (document types) with filters: type, document_type, active, search and sorting.
+    Response is paginated and wrapped as {success,data,meta}.
+  security:
+    - BearerAuth: []
+
+  parameters:
+    - name: type
+      in: query
+      required: false
+      description: Filter by invoice type(s). Can be single integer or array.
+      style: form
+      explode: true
+      schema:
+        oneOf:
+          - type: integer
+            enum: [1,2,3,4,5,6,7]
+          - type: array
+            items:
+              type: integer
+              enum: [1,2,3,4,5,6,7]
+      examples:
+        single:
+          value: 3
+        multiple:
+          value: [1, 3, 7]
+
+    - name: document_type
+      in: query
+      required: false
+      description: Filter by document_type exact match.
+      schema:
+        type: string
+        maxLength: 50
+      example: "delivery-note"
+
+    - name: active
+      in: query
+      required: false
+      description: Filter by active flag.
+      schema: { type: boolean }
+      example: true
+
+    - name: search
+      in: query
+      required: false
+      description: Search by title (LIKE %...%).
+      schema: { type: string }
+      example: "invoice"
+
+    - name: sort_by
+      in: query
+      required: false
+      description: Sort column (backend orderBy).
+      schema:
+        type: string
+        enum: [id, title, type, aade_type, document_type, active, is_deliverable, default, template_id, company_id]
+      example: id
+
+    - name: sort_order
+      in: query
+      required: false
+      schema:
+        type: string
+        enum: [asc, desc]
+      example: asc
+
+    - name: page
+      in: query
+      required: false
+      schema: { type: integer, minimum: 1, default: 1 }
+      example: 1
+
+    - name: page_size
+      in: query
+      required: false
+      description: Page size (default 50, max 100).
+      schema: { type: integer, minimum: 1, maximum: 100, default: 50 }
+      example: 50
+
+  responses:
+    "200":
+      description: OK
+      content:
+        application/json:
+          schema:
+            $ref: ../../components/schemas/invoice-types/InvoiceTypeIndexResponse.yaml
+          examples:
+            default:
+              value:
+                success: true
+                data:
+                  - id: 1166
+                    title: "Invoice (no delivery)"
+                    type: 1
+                    aade_type: "1.1"
+                    document_type: null
+                    active: true
+                    is_deliverable: false
+                    default: true
+                    template_id: null
+                    company: 1
+                meta:
+                  current_page: 1
+                  last_page: 2
+                  per_page: 50
+                  total: 60
+    "401": { $ref: ../../../_shared/components/responses/Unauthorized.yaml }
+    "403": { $ref: ../../../_shared/components/responses/Forbidden.yaml }

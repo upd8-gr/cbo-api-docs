@@ -1,0 +1,9 @@
+type: object
+additionalProperties: false
+properties:
+  id: { type: integer, format: int64, example: 1 }
+  name: { type: string, example: "Retail Series" }
+  description: { type: string, nullable: true, example: "Main retail series" }
+  visible: { type: boolean, example: true }
+  company: { type: integer, format: int64, example: 1 }
+required: [id, name, visible, company]

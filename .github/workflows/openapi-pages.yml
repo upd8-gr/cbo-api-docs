@@ -24,7 +24,9 @@ jobs:
         run: npm ci
 
       - name: Bundle OpenAPI
-        run: npm run openapi:bundle:v1
+        run: 
+          npm run openapi:bundle:v1
+          npm run openapi:bundle:v1
 
       - name: Publish dist to gh-pages
         uses: peaceiris/actions-gh-pages@v4

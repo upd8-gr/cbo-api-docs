@@ -1,0 +1,11 @@
+type: object
+additionalProperties: false
+properties:
+  name: { type: string, nullable: true, example: "Retail Series Updated" }
+  description: { type: string, nullable: true, example: "Updated description" }
+  myf:
+    type: boolean
+    nullable: true
+    description: Stored in DB but not returned by resource.
+    example: false
+  visible: { type: boolean, nullable: true, example: true }

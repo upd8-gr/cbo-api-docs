@@ -1,0 +1,120 @@
+type: object
+additionalProperties: false
+properties:
+  id: { type: integer }
+
+  representation:
+    type: string
+    nullable: true
+
+  status:
+    type: string
+    example: "published"
+
+  document_title:
+    type: string
+    nullable: true
+
+  document_id:
+    type: integer
+    nullable: true
+
+  serial_number:
+    type: integer
+    nullable: true
+
+  series:
+    type: string
+    nullable: true
+
+  mydata_type:
+    type: string
+    nullable: true
+
+  date:
+    type: string
+    format: date
+
+  due_date:
+    type: string
+    format: date
+    nullable: true
+
+  client_id:
+    type: integer
+
+  client:
+    $ref: ../clients/Client.yaml
+
+  billing_address:
+    $ref: ../resources/Address.yaml
+
+  shipping_address:
+    nullable: true
+    $ref: ../resources/Address.yaml
+
+  loading_address:
+    nullable: true
+    $ref: ../resources/Address.yaml
+
+  payment_method:
+    type: string
+    nullable: true
+
+  pos_tid:
+    type: string
+    nullable: true
+
+  items:
+    type: array
+    items:
+      $ref: ./InvoiceLine.yaml
+
+  sub_total:
+    type: number
+
+  tax_total:
+    type: number
+
+  grand_total:
+    type: number
+
+  currency_code:
+    type: string
+    nullable: true
+
+  exchange_rate:
+    type: number
+    nullable: true
+
+  terms:
+    type: string
+    nullable: true
+
+  notes:
+    type: string
+    nullable: true
+
+  public_link:
+    type: string
+    nullable: true
+
+  mydata_qr_code:
+    type: string
+    nullable: true
+
+  mydata_latest_mark:
+    type: string
+    nullable: true
+
+  mydata_uid:
+    type: string
+    nullable: true
+
+required:
+  - id
+  - date
+  - client_id
+  - sub_total
+  - tax_total
+  - grand_total

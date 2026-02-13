@@ -1,0 +1,95 @@
+type: object
+additionalProperties: false
+properties:
+
+  document_id:
+    type: integer
+    description: invoice_type_id
+
+  series_id:
+    type: integer
+
+  date:
+    type: string
+    format: date
+
+  due_date:
+    type: string
+    format: date
+    nullable: true
+
+  client_id:
+    type: integer
+
+  document_type:
+    type: string
+    enum:
+      - invoice
+      - credit-invoice
+      - cash-receipt
+      - return
+      - cash-register
+      - delivery-note
+      - estimate-offer
+
+  grand_total:
+    type: number
+
+  billing_address:
+    $ref: ../clients/ClientAddressInput.yaml
+
+  shipping_address:
+    nullable: true
+    $ref: ../clients/ClientAddressInput.yaml
+
+  loading_address:
+    nullable: true
+    $ref: ../clients/ClientAddressInput.yaml
+
+  items:
+    type: array
+    items:
+      type: object
+      properties:
+        product_id: { type: integer, nullable: true }
+        description: { type: string, nullable: true }
+        quantity: { type: number }
+        unit_measure: { type: string }
+        unit_price: { type: number }
+        taxes:
+          type: array
+          items: { type: integer }
+
+  payment_methods:
+    type: array
+    nullable: true
+    items:
+      type: object
+      properties:
+        paymentMethod:
+          type: integer
+          enum: [1,2,3,4,6,7,8]
+        paymentAmount:
+          type: number
+
+  terms:
+    type: string
+    nullable: true
+
+  notes:
+    type: string
+    nullable: true
+
+  isDraft:
+    type: boolean
+    nullable: true
+
+  mydata_submit:
+    type: boolean
+    nullable: true
+
+required:
+  - date
+  - client_id
+  - document_type
+  - billing_address

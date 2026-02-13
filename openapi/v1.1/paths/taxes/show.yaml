@@ -1,0 +1,34 @@
+get:
+  tags: [Taxes]
+  summary: Show tax
+  security:
+    - BearerAuth: []
+  parameters:
+    - $ref: ../../../_shared/components/parameters/IdPath.yaml
+
+  responses:
+    "200":
+      description: OK
+      content:
+        application/json:
+          schema:
+            $ref: ../../components/schemas/taxes/TaxSingleResponse.yaml
+          examples:
+            default:
+              value:
+                success: true
+                data:
+                  id: 1265
+                  title: "ΦΠΑ 24%"
+                  value: 24
+                  type: "VAT"
+                  operand: "+"
+                  amount: null
+                  percentage: 24
+                  aade_group: "1"
+                  aade_code: "1"
+                  calculateVat: true
+                  active: true
+    "401": { $ref: ../../../_shared/components/responses/Unauthorized.yaml }
+    "403": { $ref: ../../../_shared/components/responses/Forbidden.yaml }
+    "404": { $ref: ../../../_shared/components/responses/NotFound.yaml }

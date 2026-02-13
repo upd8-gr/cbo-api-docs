@@ -1,0 +1,28 @@
+type: object
+additionalProperties: false
+properties:
+  address: { type: string, maxLength: 255, example: "Main street" }
+  number: { type: string, nullable: true, maxLength: 50, example: "10" }
+  town: { type: string, maxLength: 150, example: "Athens" }
+  region: { type: string, nullable: true, maxLength: 150, example: "Attica" }
+  zip:
+    type: string
+    description: Will be mapped to `tk` internally.
+    maxLength: 20
+    example: "10558"
+  country:
+    type: string
+    nullable: true
+    maxLength: 3
+    description: Country ISO code (exists:countries,code).
+    example: "GR"
+  country_id:
+    type: integer
+    format: int64
+    nullable: true
+    example: 1
+  branch_code:
+    type: integer
+    nullable: true
+    example: 0
+required: [address, town, zip]

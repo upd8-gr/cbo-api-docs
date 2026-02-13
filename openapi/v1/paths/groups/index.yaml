@@ -245,5 +245,5 @@ get:
                   per_page: 50
                   to: 50
                   total: 500
-    "401": { $ref: ../../components/responses/Unauthorized.yaml }
-    "403": { $ref: ../../components/responses/Forbidden.yaml }
+    "401": { $ref: ../../../_shared/components/responses/Unauthorized.yaml }
+    "403": { $ref: ../../../_shared/components/responses/Forbidden.yaml }

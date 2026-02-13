@@ -1,0 +1,8 @@
+type: object
+additionalProperties: false
+properties:
+  success: { type: boolean, example: false }
+  message:
+    type: string
+    example: "Client cannot be deleted because it has related records (invoices, orders, checks, etc.)."
+required: [success, message]

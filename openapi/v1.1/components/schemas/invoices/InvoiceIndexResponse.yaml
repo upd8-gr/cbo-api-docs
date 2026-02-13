@@ -1,0 +1,15 @@
+type: object
+properties:
+  success: { type: boolean }
+  data:
+    type: array
+    items:
+      $ref: ./Invoice.yaml
+  meta:
+    type: object
+    properties:
+      current_page: { type: integer }
+      last_page: { type: integer }
+      per_page: { type: integer }
+      total: { type: integer }
+required: [success, data, meta]

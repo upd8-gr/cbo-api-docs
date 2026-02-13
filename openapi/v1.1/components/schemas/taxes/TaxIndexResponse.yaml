@@ -1,0 +1,17 @@
+type: object
+additionalProperties: false
+properties:
+  success: { type: boolean, example: true }
+  data:
+    type: array
+    items: { $ref: ./Tax.yaml }
+  meta:
+    type: object
+    additionalProperties: false
+    properties:
+      current_page: { type: integer, example: 1 }
+      last_page: { type: integer, example: 3 }
+      per_page: { type: integer, example: 50 }
+      total: { type: integer, example: 120 }
+    required: [current_page, last_page, per_page, total]
+required: [success, data, meta]

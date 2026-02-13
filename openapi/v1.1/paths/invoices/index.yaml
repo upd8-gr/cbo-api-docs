@@ -1,0 +1,135 @@
+get:
+  tags: [Invoices]
+  summary: List client invoices
+  security:
+    - BearerAuth: []
+
+  parameters:
+
+    - name: search
+      in: query
+      required: false
+      schema: { type: string }
+      example: "INV-2026"
+
+    - name: search_fields
+      in: query
+      required: false
+      description: Comma-separated searchable fields.
+      schema: { type: string }
+      example: "serial_number,nickname"
+
+    - name: serial_number
+      in: query
+      required: false
+      schema: { type: integer }
+
+    - name: date_from
+      in: query
+      required: false
+      schema: { type: string, format: date }
+
+    - name: date_to
+      in: query
+      required: false
+      schema: { type: string, format: date }
+
+    - name: status
+      in: query
+      required: false
+      style: form
+      explode: true
+      schema:
+        oneOf:
+          - type: string
+          - type: array
+            items: { type: string }
+
+    - name: document_type
+      in: query
+      required: false
+      style: form
+      explode: true
+      schema:
+        oneOf:
+          - type: string
+          - type: array
+            items: { type: string }
+
+    - name: client_id
+      in: query
+      required: false
+      schema: { type: integer }
+
+    - name: document_id
+      in: query
+      required: false
+      description: invoice_type_id
+      schema: { type: integer }
+
+    - name: series_id
+      in: query
+      required: false
+      schema: { type: integer }
+
+    - name: sort_by
+      in: query
+      required: false
+      schema:
+        type: string
+        enum: [payment_date, serial_number, status, created_at]
+      example: payment_date
+
+    - name: sort_order
+      in: query
+      required: false
+      schema:
+        type: string
+        enum: [asc, desc]
+      example: desc
+
+    - name: page
+      in: query
+      schema: { type: integer }
+
+    - name: page_size
+      in: query
+      schema:
+        type: integer
+        minimum: 1
+        maximum: 100
+        default: 50
+
+  responses:
+    "200":
+      description: OK
+      content:
+        application/json:
+          schema:
+            $ref: ../../components/schemas/invoices/InvoiceIndexResponse.yaml
+    "401": { $ref: ../../../_shared/components/responses/Unauthorized.yaml }
+    "403": { $ref: ../../../_shared/components/responses/Forbidden.yaml }
+
+post:
+  tags: [Invoices]
+  summary: Create client invoice
+  security:
+    - BearerAuth: []
+
+  requestBody:
+    required: true
+    content:
+      application/json:
+        schema:
+          $ref: ../../components/schemas/invoices/InvoiceStore.yaml
+
+  responses:
+    "201":
+      description: Created
+      content:
+        application/json:
+          schema:
+            $ref: ../../components/schemas/invoices/InvoiceSingleResponse.yaml
+    "401": { $ref: ../../../_shared/components/responses/Unauthorized.yaml }
+    "403": { $ref: ../../../_shared/components/responses/Forbidden.yaml }
+    "422": { $ref: ../../../_shared/components/responses/UnprocessableEntity.yaml }

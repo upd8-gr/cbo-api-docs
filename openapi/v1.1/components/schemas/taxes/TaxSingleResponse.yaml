@@ -1,0 +1,6 @@
+type: object
+additionalProperties: false
+properties:
+  success: { type: boolean, example: true }
+  data: { $ref: ./Tax.yaml }
+required: [success, data]

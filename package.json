@@ -4,6 +4,7 @@
       "swagger-cli": "^4.0.4"
     },
     "scripts": {
-      "openapi:bundle:v1": "swagger-cli bundle openapi/v1/openapi.yaml --type yaml --outfile dist/openapi.v1.yaml"
+      "openapi:bundle:v1": "swagger-cli bundle openapi/v1/openapi.yaml --type yaml --outfile dist/openapi.v1.yaml",
+      "openapi:bundle:v1.1": "swagger-cli bundle openapi/v1.1/openapi.yaml --type yaml --outfile dist/openapi.v1.1.yaml"
     }
   }

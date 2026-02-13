@@ -5,7 +5,7 @@ properties:
     type: array
     items: { $ref: ./Group.yaml }
   links:
-    $ref: ../common/PaginationLinks.yaml
+    $ref: ./../../../../_shared/components/schemas/common/PaginationLinks.yaml
   meta:
-    $ref: ../common/PaginationMeta.yaml
+    $ref: ./../../../../_shared/components/schemas/common/PaginationMeta.yaml
 required: [data, links, meta]

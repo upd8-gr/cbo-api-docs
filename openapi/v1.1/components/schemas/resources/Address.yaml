@@ -1,0 +1,26 @@
+type: object
+additionalProperties: true
+description: Minimal placeholder for AddressResource output.
+properties:
+  id: { type: integer, format: int64, example: 1 }
+  address: { type: string, example: "Main street" }
+  number: { type: string, nullable: true, example: "10" }
+  town: { type: string, example: "Athens" }
+  region: { type: string, nullable: true, example: "Attica" }
+  tk:
+    type: string
+    description: Postal code.
+    example: "10558"
+  country:
+    type: string
+    nullable: true
+    example: "GR"
+  country_id:
+    type: integer
+    format: int64
+    nullable: true
+    example: 1
+  branch_code:
+    type: integer
+    nullable: true
+    example: 0

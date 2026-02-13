@@ -1,0 +1,7 @@
+type: object
+additionalProperties: true
+description: Minimal placeholder for ContactDetailResource.
+properties:
+  id: { type: integer, format: int64, example: 1 }
+  type: { type: string, example: "email" }
+  value: { type: string, example: "g@example.com" }

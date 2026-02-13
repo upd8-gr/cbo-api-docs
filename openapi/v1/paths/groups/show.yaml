@@ -7,7 +7,7 @@ get:
   security:
     - BearerAuth: []
   parameters:
-    - $ref: ../../components/parameters/IdPath.yaml
+    - $ref: ../../../_shared/components/parameters/IdPath.yaml
 
     - name: platform
       in: query
@@ -149,6 +149,6 @@ get:
                 hasChildren: false
                 products: []
                 characteristics: []
-    "401": { $ref: ../../components/responses/Unauthorized.yaml }
-    "403": { $ref: ../../components/responses/Forbidden.yaml }
-    "404": { $ref: ../../components/responses/NotFound.yaml }
+    "401": { $ref: ../../../_shared/components/responses/Unauthorized.yaml }
+    "403": { $ref: ../../../_shared/components/responses/Forbidden.yaml }
+    "404": { $ref: ../../../_shared/components/responses/NotFound.yaml }

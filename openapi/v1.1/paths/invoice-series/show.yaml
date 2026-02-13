@@ -1,0 +1,80 @@
+get:
+  tags: [Invoice Series]
+  summary: Show invoice series
+  security:
+    - BearerAuth: []
+  parameters:
+    - $ref: ../../../_shared/components/parameters/IdPath.yaml
+  responses:
+    "200":
+      description: OK
+      content:
+        application/json:
+          schema:
+            type: object
+            additionalProperties: false
+            properties:
+              success: { type: boolean, example: true }
+              data: { $ref: ../../components/schemas/invoice-series/InvoiceSeries.yaml }
+            required: [success, data]
+    "401": { $ref: ../../../_shared/components/responses/Unauthorized.yaml }
+    "403": { $ref: ../../../_shared/components/responses/Forbidden.yaml }
+    "404": { $ref: ../../../_shared/components/responses/NotFound.yaml }
+
+patch:
+  tags: [Invoice Series]
+  summary: Update invoice series
+  security:
+    - BearerAuth: []
+  parameters:
+    - $ref: ../../../_shared/components/parameters/IdPath.yaml
+  requestBody:
+    required: true
+    content:
+      application/json:
+        schema: { $ref: ../../components/schemas/invoice-series/InvoiceSeriesUpdate.yaml }
+  responses:
+    "200":
+      description: Updated
+      content:
+        application/json:
+          schema:
+            type: object
+            additionalProperties: false
+            properties:
+              success: { type: boolean, example: true }
+              data: { $ref: ../../components/schemas/invoice-series/InvoiceSeries.yaml }
+            required: [success, data]
+    "401": { $ref: ../../../_shared/components/responses/Unauthorized.yaml }
+    "403": { $ref: ../../../_shared/components/responses/Forbidden.yaml }
+    "404": { $ref: ../../../_shared/components/responses/NotFound.yaml }
+    "422": { $ref: ../../../_shared/components/responses/UnprocessableEntity.yaml }
+
+put:
+  tags: [Invoice Series]
+  summary: Replace invoice series
+  security:
+    - BearerAuth: []
+  parameters:
+    - $ref: ../../../_shared/components/parameters/IdPath.yaml
+  requestBody:
+    required: true
+    content:
+      application/json:
+        schema: { $ref: ../../components/schemas/invoice-series/InvoiceSeriesStore.yaml }
+  responses:
+    "200":
+      description: Updated
+      content:
+        application/json:
+          schema:
+            type: object
+            additionalProperties: false
+            properties:
+              success: { type: boolean, example: true }
+              data: { $ref: ../../components/schemas/invoice-series/InvoiceSeries.yaml }
+            required: [success, data]
+    "401": { $ref: ../../../_shared/components/responses/Unauthorized.yaml }
+    "403": { $ref: ../../../_shared/components/responses/Forbidden.yaml }
+    "404": { $ref: ../../../_shared/components/responses/NotFound.yaml }
+    "422": { $ref: ../../../_shared/components/responses/UnprocessableEntity.yaml }

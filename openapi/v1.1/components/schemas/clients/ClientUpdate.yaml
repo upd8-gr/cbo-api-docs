@@ -1,0 +1,86 @@
+type: object
+additionalProperties: false
+properties:
+  client_type:
+    type: integer
+    nullable: true
+    enum: [1, 2]
+    example: 2
+
+  invoice_name:
+    type: string
+    nullable: true
+    maxLength: 255
+  vat:
+    type: string
+    nullable: true
+    maxLength: 20
+
+  first_name:
+    type: string
+    nullable: true
+    maxLength: 255
+  last_name:
+    type: string
+    nullable: true
+    maxLength: 255
+
+  company_name:
+    type: string
+    nullable: true
+    maxLength: 255
+  profession:
+    type: string
+    nullable: true
+    maxLength: 255
+  email:
+    type: string
+    nullable: true
+    format: email
+  telephone:
+    type: string
+    nullable: true
+    maxLength: 50
+  cellphone:
+    type: string
+    nullable: true
+    maxLength: 50
+  fax:
+    type: string
+    nullable: true
+    maxLength: 50
+
+  tax_office:
+    type: string
+    nullable: true
+    maxLength: 255
+  tax_offices_id:
+    type: integer
+    format: int64
+    nullable: true
+
+  comments:
+    type: string
+    nullable: true
+    maxLength: 1000
+
+  dangerous:
+    type: boolean
+    nullable: true
+
+  billing_address:
+    oneOf:
+      - $ref: ./ClientAddressInput.yaml
+      - type: "null"
+    nullable: true
+
+  shipping_address:
+    oneOf:
+      - $ref: ./ClientAddressInput.yaml
+      - type: "null"
+    nullable: true
+
+  tag:
+    type: array
+    nullable: true
+    items: { type: string }

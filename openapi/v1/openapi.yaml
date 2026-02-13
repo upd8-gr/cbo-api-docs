@@ -52,10 +52,6 @@ tags:
   - name: Characteristics
   - name: Stocks
   - name: Orders
-  - name: Invoices
-  - name: Clients
-  - name: Taxes
-  - name: Document Types
 
 paths:
   /products-children:
@@ -70,28 +66,28 @@ paths:
 components:
   securitySchemes:
     BearerAuth:
-      $ref: ./components/securitySchemes/BearerAuth.yaml
+      $ref: ../_shared/components/securitySchemas/BearerAuth.yaml
     XAssebloCompany:
-      $ref: ./components/securitySchemes/XAssebloCompany.yaml
+      $ref: ../_shared/components/securitySchemas/XAssebloCompany.yaml
 
   parameters:
     IdPath:
-      $ref: ./components/parameters/IdPath.yaml
+      $ref: ../_shared/components/parameters/IdPath.yaml
     Page:
-      $ref: ./components/parameters/Page.yaml
+      $ref: ../_shared/components/parameters/Page.yaml
     PerPage:
-      $ref: ./components/parameters/PerPage.yaml
+      $ref: ../_shared/components/parameters/PerPage.yaml
 
   schemas:
     # common
-    PaginationLinks:
-      $ref: ./components/schemas/common/PaginationLinks.yaml
+    # PaginationLinks:
+    #   $ref: ../_shared/components/schemas/common/PaginationLinks.yaml
     PaginationMeta:
-      $ref: ./components/schemas/common/PaginationMeta.yaml
+      $ref: ../_shared/components/schemas/common/PaginationMeta.yaml
     ValidationError:
-      $ref: ./components/schemas/errors/ValidationError.yaml
+      $ref: ../_shared/components/schemas/errors/ValidationError.yaml
     ErrorResponse:
-      $ref: ./components/schemas/errors/ErrorResponse.yaml
+      $ref: ../_shared/components/schemas/errors/ErrorResponse.yaml
 
     # resources
     ProductChild:
@@ -109,12 +105,12 @@ components:
 
   responses:
     Unauthorized:
-      $ref: ./components/responses/Unauthorized.yaml
+      $ref: ../_shared/components/responses/Unauthorized.yaml
     TooManyRequests:
-      $ref: ./components/responses/TooManyRequests.yaml
+      $ref: ../_shared/components/responses/TooManyRequests.yaml
     Forbidden:
-      $ref: ./components/responses/Forbidden.yaml
+      $ref: ../_shared/components/responses/Forbidden.yaml
     NotFound:
-      $ref: ./components/responses/NotFound.yaml
+      $ref: ../_shared/components/responses/NotFound.yaml
     UnprocessableEntity:
-      $ref: ./components/responses/UnprocessableEntity.yaml
+      $ref: ../_shared/components/responses/UnprocessableEntity.yaml

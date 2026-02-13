@@ -1,0 +1,97 @@
+openapi: 3.0.3
+info:
+  title: API v1.1
+  version: "1.1.0"
+  description: |
+    ## Authentication
+
+    All API requests must include a **Bearer token** in the `Authorization` header.
+
+    **Example:**
+    ```
+    Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
+    ```
+
+    Obtain your token via the login endpoint or from [CBO](https://app.cbo.gr).
+
+    ---
+
+    ## Authorisation
+
+    Every request must include the company context via the **X-Asseblo-Company** header with the company ID.
+
+    **Example:**
+    ```
+    X-Asseblo-Company: 123123123123
+    ```
+
+    Use the company ID that corresponds to the tenant you are acting on behalf of.
+
+    ---
+
+    ## Rate limits
+
+    | Limit | Value |
+    |-------|--------|
+    | Per day | 1000 API calls |
+    | Per minute | 60 requests |
+
+    When a limit is exceeded, the API returns **HTTP 429 Too Many Requests**.
+
+servers:
+  - url: https://app.cbo.gr/api/v1.1
+    description: CBO production
+
+security:
+  - BearerAuth: []
+  - XAssebloCompany: []
+
+tags:
+  - name: Invoices
+  - name: Clients
+  - name: Taxes
+  - name: Invoice Types
+  - name: Invoice Series
+
+paths:
+  /invoices:
+    $ref: ./paths/invoices/index.yaml
+  /invoices/{id}:
+    $ref: ./paths/invoices/show.yaml
+  /clients:
+    $ref: ./paths/clients/index.yaml
+  /clients/{id}:
+    $ref: ./paths/clients/show.yaml
+  /invoice-series:
+    $ref: ./paths/invoice-series/index.yaml
+  /invoice-series/{id}:
+    $ref: ./paths/invoice-series/show.yaml
+  /invoice-types:
+    $ref: ./paths/invoice-types/index.yaml
+  /invoice-types/{id}:
+    $ref: ./paths/invoice-types/show.yaml
+  /taxes:
+    $ref: ./paths/taxes/index.yaml
+  /taxes/{id}:
+    $ref: ./paths/taxes/show.yaml
+
+components:
+  securitySchemes:
+    BearerAuth:
+      $ref: ../_shared/components/securitySchemas/BearerAuth.yaml
+    XAssebloCompany:
+      $ref: ../_shared/components/securitySchemas/XAssebloCompany.yaml
+
+  parameters:
+    IdPath:
+      $ref: ../_shared/components/parameters/IdPath.yaml
+
+  responses:
+    Unauthorized:
+      $ref: ../_shared/components/responses/Unauthorized.yaml
+    Forbidden:
+      $ref: ../_shared/components/responses/Forbidden.yaml
+    NotFound:
+      $ref: ../_shared/components/responses/NotFound.yaml
+    UnprocessableEntity:
+      $ref: ../_shared/components/responses/UnprocessableEntity.yaml

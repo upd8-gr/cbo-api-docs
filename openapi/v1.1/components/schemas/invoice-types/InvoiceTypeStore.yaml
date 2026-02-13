@@ -1,0 +1,45 @@
+type: object
+additionalProperties: false
+properties:
+  title:
+    type: string
+    maxLength: 255
+    example: "Invoice (no delivery)"
+  type:
+    type: integer
+    enum: [1,2,3,4,5,6,7]
+    example: 1
+  aade_type:
+    type: string
+    maxLength: 20
+    description: Must be one of the allowed values for the given `type` (backend validation).
+    example: "1.1"
+  document_type:
+    type: string
+    nullable: true
+    maxLength: 50
+    example: null
+  fhm_code:
+    type: string
+    nullable: true
+    maxLength: 50
+    example: null
+  active:
+    type: boolean
+    nullable: true
+    example: true
+  is_deliverable:
+    type: boolean
+    nullable: true
+    example: false
+  default:
+    type: boolean
+    nullable: true
+    example: true
+  template_id:
+    type: integer
+    format: int64
+    nullable: true
+    description: Must exist in templates table.
+    example: null
+required: [title, type, aade_type]

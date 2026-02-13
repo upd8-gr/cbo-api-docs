@@ -1,0 +1,24 @@
+type: object
+additionalProperties: false
+properties:
+  id: { type: integer }
+  product_id: { type: integer, nullable: true }
+  description: { type: string }
+  quantity: { type: number }
+  unit_measure: { type: string }
+  unit_price: { type: number }
+  discount_price: { type: number, nullable: true }
+  net_amount: { type: number }
+  taxes:
+    type: array
+    items:
+      $ref: ../taxes/Tax.yaml
+  classificationCategory:
+    type: string
+    nullable: true
+  classificationType:
+    type: string
+    nullable: true
+  vatExemptionCategory:
+    type: integer
+    nullable: true
