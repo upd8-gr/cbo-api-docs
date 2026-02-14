@@ -13,22 +13,30 @@
       background:#f6f7f9;
       border-bottom:1px solid #e5e7eb;
     }
-    .nav a { color:#4f46e5; text-decoration:none; font-weight:600; }
-    .nav a.active { border-bottom:2px solid #4f46e5; padding-bottom:4px; }
+    .header {
+      font-size: 18px;
+      font-weight: 600;
+      color: #192D35;
+    }
+    .nav a { color:#049494; text-decoration:none; font-weight:600; }
+    .nav a.active { border-bottom:2px solid #049494; padding-bottom:4px; }
   </style>
-
-  <script src="https://cdn.redoc.ly/redoc/latest/bundles/redoc.standalone.js"></script>
+  <script>
+    // ReDoc expects `process.env` in some builds
+    window.process = window.process || { env: {} };
+  </script>
+  <script src="https://cdn.redoc.ly/redoc/v2.1.5/bundles/redoc.standalone.js"></script>
 </head>
 
 <body>
   <div class="nav">
+    <div class="header">CBO API Docs</div>
     <a href="../v1/">API v1</a>
     <a href="../v1.1/">API v1.1</a>
   </div>
 
   <!-- IMPORTANT: load spec from current folder -->
-  <redoc spec-url="openapi.yaml"></redoc>
-
+  <div id="redoc"></div>
   <script>
     // highlight current version link automatically
     (function () {
@@ -39,6 +47,8 @@
         if (p.includes("/v1/") && a.textContent.trim().endsWith("v1")) a.classList.add("active");
       });
     })();
+
+    Redoc.init('openapi.yaml', {}, document.getElementById('redoc'));
   </script>
 </body>
 </html>
