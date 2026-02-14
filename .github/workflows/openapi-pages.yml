@@ -23,11 +23,12 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
-      - name: Bundle OpenAPI (v1.1)
+      - name: Bundle & Build OpenAPI Docs
         run: |
-          npm run openapi:bundle:v1
-          npm run openapi:bundle:v1.1
+          npm run openapi:build:all
+          npm run docs:index
           ls -la dist
+          find dist -maxdepth 2 -type f -name "index.html" -print
 
       - name: Publish dist to gh-pages
         uses: peaceiris/actions-gh-pages@v4

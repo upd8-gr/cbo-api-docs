@@ -4,7 +4,14 @@
       "swagger-cli": "^4.0.4"
     },
     "scripts": {
-      "openapi:bundle:v1": "swagger-cli bundle openapi/v1/openapi.yaml --type yaml --outfile dist/openapi.v1.yaml",
-      "openapi:bundle:v1.1": "swagger-cli bundle openapi/v1.1/openapi.yaml --type yaml --outfile dist/openapi.v1.1.yaml"
+      "openapi:bundle:v1": "redocly bundle openapi/v1/openapi.yaml -o dist/v1/openapi.yaml",
+      "openapi:build:v1": "redocly build-docs dist/v1/openapi.yaml -o dist/v1/index.html",
+
+      "openapi:bundle:v1.1": "redocly bundle openapi/v1.1/openapi.yaml -o dist/v1.1/openapi.yaml",
+      "openapi:build:v1.1": "redocly build-docs dist/v1.1/openapi.yaml -o dist/v1.1/index.html",
+
+      "openapi:build:all": "npm run openapi:bundle:v1 && npm run openapi:build:v1 && npm run openapi:bundle:v1.1 && npm run openapi:build:v1.1",
+
+      "docs:index": "node scripts/docs-index.js"
     }
   }
