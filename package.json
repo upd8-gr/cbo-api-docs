@@ -12,6 +12,6 @@
         "docs:html:v1.1": "mkdir -p dist/v1.1 && cp templates/redoc.html dist/v1.1/index.html",
         "docs:assets": "mkdir -p dist/assets && cp -r assets/* dist/assets/",
 
-        "docs:build": "npm run openapi:bundle:v1 && npm run docs:html:v1 && npm run openapi:bundle:v1.1 && npm run docs:html:v1.1 && npm run docs:assets",
+        "docs:build": "npm run openapi:bundle:v1 && npm run docs:html:v1 && npm run openapi:bundle:v1.1 && npm run docs:html:v1.1 && npm run docs:assets"
     }
 }
