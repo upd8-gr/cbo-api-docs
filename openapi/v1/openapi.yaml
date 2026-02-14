@@ -2,6 +2,9 @@ openapi: 3.0.3
 info:
   title: API v1
   version: "1.0.0"
+  x-logo:
+    url: ../_shared/assets/logo.png
+    altText: Upd8.gr
   description: |
     ## Authentication
 

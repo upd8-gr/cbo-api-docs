@@ -23,6 +23,23 @@ const html = `<!doctype html>
 </body>
 </html>`;
 
+// const css = `
+// <style>
+//   .nav{
+//     display:flex;
+//     align-items:center;
+//     justify-content:space-between;
+//     padding:14px 26px;
+//     background:#f6f7f9;
+//     border-bottom:1px solid #e5e7eb;
+
+//     position: sticky;
+//     top: 0;
+//     z-index: 9999;
+//   }
+// </style>
+// `;
+
 fs.mkdirSync(path.join("dist"), { recursive: true });
 fs.writeFileSync(path.join("dist", "index.html"), html);
 console.log("dist/index.html generated");
