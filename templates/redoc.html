@@ -7,10 +7,11 @@
 
   <style>
     html { margin:0; font-family: system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif; }
-
-
+    body { margin:0; }
     .nav {
-        position: fixed;
+        display: flex;
+        align-items: center;
+        gap: 24px;
         z-index: 9999;
         top: 0;
         padding:14px 26px;
@@ -19,8 +20,9 @@
         border-bottom:1px solid #e5e7eb;
         font-size: 1rem;
     }
-    .menu-content {
-      top: 60px;
+
+    #redoc-container {
+      margin-top: 60px; /* same as navbar height */
     }
     
     .header {
@@ -28,7 +30,14 @@
       font-weight: 600;
       color: #192D35;
     }
-    .nav a { color:#049494; text-decoration:none; font-weight:600; }
+    .nav a {
+      color:#049494;
+      display:inline-block;
+      margin-right: 24px;
+      padding: 0 10px;
+      text-decoration:none;
+      font-weight:600;
+    }
     .nav a.active { border-bottom:2px solid #049494; padding-bottom:4px; }
   </style>
   <script>
