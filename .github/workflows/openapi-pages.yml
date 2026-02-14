@@ -25,8 +25,7 @@ jobs:
 
       - name: Bundle & Build OpenAPI Docs
         run: |
-          npm run openapi:build:all
-          npm run docs:index
+          npm run docs:build
           ls -la dist
           find dist -maxdepth 2 -type f -name "index.html" -print
 

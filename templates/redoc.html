@@ -1,0 +1,44 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>CBO API Docs</title>
+
+  <style>
+    body { margin:0; font-family: system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif; }
+    .nav {
+      display:flex; align-items:center; gap:24px;
+      padding:14px 26px;
+      background:#f6f7f9;
+      border-bottom:1px solid #e5e7eb;
+    }
+    .nav a { color:#4f46e5; text-decoration:none; font-weight:600; }
+    .nav a.active { border-bottom:2px solid #4f46e5; padding-bottom:4px; }
+  </style>
+
+  <script src="https://cdn.redoc.ly/redoc/latest/bundles/redoc.standalone.js"></script>
+</head>
+
+<body>
+  <div class="nav">
+    <a href="../v1/">API v1</a>
+    <a href="../v1.1/">API v1.1</a>
+  </div>
+
+  <!-- IMPORTANT: load spec from current folder -->
+  <redoc spec-url="openapi.yaml"></redoc>
+
+  <script>
+    // highlight current version link automatically
+    (function () {
+      const p = location.pathname;
+      document.querySelectorAll(".nav a").forEach(a => {
+        const href = a.getAttribute("href").replace(/\.\.\//g, "/");
+        if (p.includes("/v1.1/") && a.textContent.includes("v1.1")) a.classList.add("active");
+        if (p.includes("/v1/") && a.textContent.trim().endsWith("v1")) a.classList.add("active");
+      });
+    })();
+  </script>
+</body>
+</html>
