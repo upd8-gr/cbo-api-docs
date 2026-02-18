@@ -80,12 +80,15 @@ properties:
         terminal_id:
           type: integer
           nullable: true
+          description: terminal_id from CBO (terminals table). Only available when paymentMethod is 7 (POS / e-POS).
         tip:
           type: number
           nullable: true
+          description: Tip amount. Only available when paymentMethod is 7 (POS / e-POS).
         instalments:
           type: integer
           nullable: true
+          description: Number of instalments. Only available when paymentMethod is 7 (POS / e-POS).
   terms:
     type: string
     nullable: true
