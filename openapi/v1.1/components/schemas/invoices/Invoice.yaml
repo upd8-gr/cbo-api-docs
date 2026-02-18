@@ -15,7 +15,7 @@ properties:
     type: string
     nullable: true
 
-  document_id:
+  invoice_type_id:
     type: integer
     nullable: true
 

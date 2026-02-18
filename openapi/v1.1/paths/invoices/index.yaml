@@ -61,13 +61,13 @@ get:
       required: false
       schema: { type: integer }
 
-    - name: document_id
+    - name: invoice_type_id
       in: query
       required: false
       description: invoice_type_id
       schema: { type: integer }
 
-    - name: series_id
+    - name: invoice_series_id
       in: query
       required: false
       schema: { type: integer }

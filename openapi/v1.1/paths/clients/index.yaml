@@ -24,7 +24,7 @@ get:
     - name: client_type
       in: query
       required: false
-      description: Filter by client type(s).
+      description: Filter by client type(s). Type 1 is company (B2B), type 2 is person (B2C).
       style: form
       explode: true
       schema:

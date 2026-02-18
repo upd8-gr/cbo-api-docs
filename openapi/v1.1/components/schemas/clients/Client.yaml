@@ -28,6 +28,7 @@ properties:
   profession: { type: string, nullable: true, example: "Engineer" }
   client_type:
     type: integer
+    description: Client type. Type 1 is company (B2B), type 2 is person (B2C).
     nullable: true
     enum: [1, 2]
     example: 1

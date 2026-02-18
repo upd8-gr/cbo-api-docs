@@ -2,11 +2,10 @@ type: object
 additionalProperties: false
 properties:
 
-  document_id:
+  invoice_type_id:
     type: integer
-    description: invoice_type_id
 
-  series_id:
+  invoice_series_id:
     type: integer
 
   date:
@@ -26,11 +25,7 @@ properties:
     enum:
       - invoice
       - credit-invoice
-      - cash-receipt
-      - return
-      - cash-register
       - delivery-note
-      - estimate-offer
 
   grand_total:
     type: number
