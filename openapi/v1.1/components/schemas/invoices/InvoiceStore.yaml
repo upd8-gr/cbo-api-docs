@@ -64,9 +64,28 @@ properties:
         paymentMethod:
           type: integer
           enum: [1,2,3,4,6,7,8]
+          description: |
+            Available only when myDATA integration is enabled.
+
+            Values:
+            - 1: Domestic Payments Account
+            - 2: Foreign Payments Account
+            - 3: Cash
+            - 4: Cheque
+            - 6: Web Banking
+            - 7: POS / e-POS
+            - 8: IRIS Direct Payment
         paymentAmount:
           type: number
-
+        terminal_id:
+          type: integer
+          nullable: true
+        tip:
+          type: number
+          nullable: true
+        instalments:
+          type: integer
+          nullable: true
   terms:
     type: string
     nullable: true
