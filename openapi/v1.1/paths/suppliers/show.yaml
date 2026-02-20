@@ -1,0 +1,94 @@
+get:
+  tags: [Suppliers]
+  summary: Show supplier
+  security:
+    - BearerAuth: []
+  parameters:
+    - $ref: ../../../_shared/components/parameters/IdPath.yaml
+  responses:
+    "200":
+      description: OK
+      content:
+        application/json:
+          schema: { $ref: ../../components/schemas/suppliers/SupplierSingleResponse.yaml }
+    "401": { $ref: ../../../_shared/components/responses/Unauthorized.yaml }
+    "403": { $ref: ../../../_shared/components/responses/Forbidden.yaml }
+    "404": { $ref: ../../../_shared/components/responses/NotFound.yaml }
+
+patch:
+  tags: [Suppliers]
+  summary: Update supplier (partial)
+  security:
+    - BearerAuth: []
+  parameters:
+    - $ref: ../../../_shared/components/parameters/IdPath.yaml
+  requestBody:
+    required: true
+    content:
+      application/json:
+        schema: { $ref: ../../components/schemas/suppliers/SupplierUpdate.yaml }
+  responses:
+    "200":
+      description: Updated
+      content:
+        application/json:
+          schema: { $ref: ../../components/schemas/suppliers/SupplierSingleResponse.yaml }
+    "401": { $ref: ../../../_shared/components/responses/Unauthorized.yaml }
+    "403": { $ref: ../../../_shared/components/responses/Forbidden.yaml }
+    "404": { $ref: ../../../_shared/components/responses/NotFound.yaml }
+    "422": { $ref: ../../../_shared/components/responses/UnprocessableEntity.yaml }
+
+put:
+  tags: [Suppliers]
+  summary: Update supplier (replace)
+  security:
+    - BearerAuth: []
+  parameters:
+    - $ref: ../../../_shared/components/parameters/IdPath.yaml
+  requestBody:
+    required: true
+    content:
+      application/json:
+        schema: { $ref: ../../components/schemas/suppliers/SupplierStore.yaml }
+  responses:
+    "200":
+      description: Updated
+      content:
+        application/json:
+          schema: { $ref: ../../components/schemas/suppliers/SupplierSingleResponse.yaml }
+    "401": { $ref: ../../../_shared/components/responses/Unauthorized.yaml }
+    "403": { $ref: ../../../_shared/components/responses/Forbidden.yaml }
+    "404": { $ref: ../../../_shared/components/responses/NotFound.yaml }
+    "422": { $ref: ../../../_shared/components/responses/UnprocessableEntity.yaml }
+
+delete:
+  tags: [Suppliers]
+  summary: Delete supplier
+  security:
+    - BearerAuth: []
+  parameters:
+    - $ref: ../../../_shared/components/parameters/IdPath.yaml
+  responses:
+    "200":
+      description: Deleted
+      content:
+        application/json:
+          schema: { $ref: ../../components/schemas/suppliers/SupplierDeleteResponse.yaml }
+          examples:
+            deleted:
+              value:
+                success: true
+                message: "Supplier deleted."
+    "401": { $ref: ../../../_shared/components/responses/Unauthorized.yaml }
+    "403": { $ref: ../../../_shared/components/responses/Forbidden.yaml }
+    "404": { $ref: ../../../_shared/components/responses/NotFound.yaml }
+    "422":
+      description: Cannot be deleted (has related records)
+      content:
+        application/json:
+          schema: { $ref: ../../components/schemas/suppliers/SupplierDeleteFailResponse.yaml }
+          examples:
+            fail:
+              value:
+                success: false
+                message: "Supplier cannot be deleted because it has related records (invoices, orders, checks, etc.)."

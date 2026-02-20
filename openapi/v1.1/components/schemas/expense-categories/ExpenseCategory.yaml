@@ -1,0 +1,22 @@
+type: object
+additionalProperties: false
+properties:
+  id: { type: integer, format: int64, example: 10 }
+  title: { type: string, example: "Fuel" }
+
+  color:
+    type: string
+    nullable: true
+    description: Derived from related expense_categories (first color).
+    example: "#FF9900"
+
+  parent:
+    type: string
+    nullable: true
+    description: Derived from related expense_categories (first name).
+    example: "Car expenses"
+
+  company: { type: integer, format: int64, example: 1 }
+  created: { type: string, example: "2026-02-11 10:00:00" }
+  modified: { type: string, example: "2026-02-12 10:00:00" }
+required: [id, title, company, created, modified]

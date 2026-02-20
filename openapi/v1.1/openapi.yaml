@@ -61,10 +61,16 @@ paths:
     $ref: ./paths/invoices/index.yaml
   /invoices/{id}:
     $ref: ./paths/invoices/show.yaml
+  /invoices/{id}/email:
+    $ref: ./paths/invoices/email.yaml
   /clients:
     $ref: ./paths/clients/index.yaml
   /clients/{id}:
     $ref: ./paths/clients/show.yaml
+  /suppliers:
+    $ref: ./paths/suppliers/index.yaml
+  /suppliers/{id}:
+    $ref: ./paths/suppliers/show.yaml
   /invoice-series:
     $ref: ./paths/invoice-series/index.yaml
   /invoice-series/{id}:
@@ -77,6 +83,10 @@ paths:
     $ref: ./paths/taxes/index.yaml
   /taxes/{id}:
     $ref: ./paths/taxes/show.yaml
+  /expense-categories:
+    $ref: ./paths/expense-categories/index.yaml
+  /expense-categories/{id}:
+    $ref: ./paths/expense-categories/show.yaml
 
 components:
   securitySchemes:

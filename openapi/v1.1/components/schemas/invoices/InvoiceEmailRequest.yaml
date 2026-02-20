@@ -1,0 +1,13 @@
+type: object
+additionalProperties: false
+properties:
+  to:
+    type: string
+    format: email
+    example: "client@example.com"
+  store_email:
+    type: boolean
+    nullable: true
+    default: false
+    example: true
+required: [to]

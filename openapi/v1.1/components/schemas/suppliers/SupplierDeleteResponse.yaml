@@ -1,0 +1,6 @@
+type: object
+additionalProperties: false
+properties:
+  success: { type: boolean, example: true }
+  message: { type: string, example: "Supplier deleted." }
+required: [success, message]

@@ -19,7 +19,7 @@ get:
       required: false
       description: Comma-separated fields used in OR LIKE search.
       schema: { type: string }
-      example: "fname,lname,afm,email"
+      example: "fname,lname,vat,email"
 
     - name: client_type
       in: query
@@ -44,7 +44,7 @@ get:
       required: false
       schema:
         type: string
-        enum: [id, primary_id, fname, lname, afm, email, client_type, created_at, updated_at]
+        enum: [id, primary_id, fname, lname, vat, email, client_type, created_at, updated_at]
       example: id
 
     - name: sort_order

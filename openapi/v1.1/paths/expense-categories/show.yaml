@@ -1,0 +1,31 @@
+get:
+  tags: [Expense Categories]
+  summary: Show expense category
+  security:
+    - BearerAuth: []
+
+  parameters:
+    - $ref: ../../../_shared/components/parameters/IdPath.yaml
+
+  responses:
+    "200":
+      description: OK
+      content:
+        application/json:
+          schema:
+            $ref: ../../components/schemas/expense-categories/ExpenseCategorySingleResponse.yaml
+          examples:
+            default:
+              value:
+                success: true
+                data:
+                  id: 10
+                  title: "Fuel"
+                  color: "#FF9900"
+                  parent: "Car expenses"
+                  company: 1
+                  created: "2026-02-11 10:00:00"
+                  modified: "2026-02-12 10:00:00"
+    "401": { $ref: ../../../_shared/components/responses/Unauthorized.yaml }
+    "403": { $ref: ../../../_shared/components/responses/Forbidden.yaml }
+    "404": { $ref: ../../../_shared/components/responses/NotFound.yaml }
