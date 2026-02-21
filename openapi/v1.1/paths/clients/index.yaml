@@ -17,7 +17,7 @@ get:
     - name: search_fields
       in: query
       required: false
-      description: Comma-separated fields used in OR LIKE search. The available fields are: first_name, last_name, vat, email, invoice_name, company_name, tax_office, profession, client_type.
+      description: Comma-separated fields used in OR LIKE search. The available fields are `first_name`, `last_name`, `vat`, `email`, `invoice_name`, `company_name`, `tax_office`, `profession`, `client_type`.
       schema: { type: string }
       example: "fname,lname,vat,email"
 
