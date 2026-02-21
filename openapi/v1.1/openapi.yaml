@@ -52,9 +52,11 @@ security:
 tags:
   - name: Invoices
   - name: Clients
+  - name: Suppliers
   - name: Taxes
   - name: Invoice Types
   - name: Invoice Series
+  - name: Expense Categories
 
 paths:
   /invoices:
