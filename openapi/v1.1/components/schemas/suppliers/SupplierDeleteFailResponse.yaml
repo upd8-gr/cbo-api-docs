@@ -5,4 +5,4 @@ properties:
   message:
     type: string
     example: "Supplier cannot be deleted because it has related records (invoices, orders, checks, etc.)."
-required: [success, message]asd
+required: [success, message]
