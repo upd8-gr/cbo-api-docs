@@ -1,0 +1,3081 @@
+openapi: 3.0.3
+info:
+  title: CBO API v1.1
+  version: '1.1'
+  x-logo:
+    url: ../assets/logo.png
+    altText: Upd8.gr
+  description: |
+    CBO (Cloud Business Organiser) is a business management platform designed for Greek-market commercial operations.
+
+    The CBO API provides secure, authenticated access to the core entities of the platform, allowing you to
+    programmatically manage organisational data, commercial documents, and operational workflows.
+
+    With the API you can:
+    - Integrate external applications to automate business processes and synchronize data.
+    - Connect your e-shop to CBO to manage products, orders, customers, and stock centrally.
+    - Use CBO as your billing system, fully supporting AADE/MyData requirements and digital document circulation flows where applicable.
+
+    All endpoints are company-scoped and require Bearer authentication.
+    Responses follow consistent validation and pagination standards across the platform.
+
+    ---
+
+    ## Authentication
+
+    All API requests must include a **Bearer token** in the `Authorization` header.
+
+    **Example:**
+    ```
+    Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
+    ```
+
+    Obtain your token from your Profile page through the app [CBO](https://app.cbo.gr). 
+
+    ---
+
+    ## Authorisation
+
+    Every request must include the company context via the **X-Asseblo-Company** header with the company ID.
+
+    **Example:**
+    ```
+    X-Asseblo-Company: 123123123123
+    ```
+
+    Use the company ID that corresponds to the tenant you are acting on behalf of.
+
+    ---
+
+    ## Rate limits
+
+    | Limit | Value |
+    |-------|--------|
+    | Per day | 1000 API calls |
+    | Per minute | 60 requests |
+
+    When a limit is exceeded, the API returns **HTTP 429 Too Many Requests**.
+servers:
+  - url: https://app.cbo.gr/api/v1.1
+    description: CBO production
+  - url: https://app.excelon.gr/api/v1.1
+    description: CBO staging environment
+security:
+  - BearerAuth: []
+  - XAssebloCompany: []
+tags:
+  - name: Invoices
+  - name: Clients
+  - name: Suppliers
+  - name: Taxes
+  - name: Invoice Types
+  - name: Invoice Series
+  - name: Expense Categories
+paths:
+  /invoices:
+    get:
+      tags:
+        - Invoices
+      summary: Invoices (list)
+      description: |
+        Lists invoices with optional search and filtering.
+        Response is paginated and wrapped as {success,data,meta}.
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: search
+          in: query
+          required: false
+          schema:
+            type: string
+          example: INV-2026
+        - name: search_fields
+          in: query
+          required: false
+          description: Comma-separated searchable fields.
+          schema:
+            type: string
+          example: serial_number,nickname
+        - name: serial_number
+          in: query
+          required: false
+          schema:
+            type: integer
+        - name: date_from
+          in: query
+          required: false
+          schema:
+            type: string
+            format: date
+        - name: date_to
+          in: query
+          required: false
+          schema:
+            type: string
+            format: date
+        - name: status
+          in: query
+          required: false
+          style: form
+          explode: true
+          schema:
+            oneOf:
+              - type: string
+              - type: array
+                items:
+                  type: string
+        - name: document_type
+          in: query
+          required: false
+          style: form
+          explode: true
+          schema:
+            oneOf:
+              - type: string
+              - type: array
+                items:
+                  type: string
+        - name: client_id
+          in: query
+          required: false
+          schema:
+            type: integer
+        - name: invoice_type_id
+          in: query
+          required: false
+          description: invoice_type_id
+          schema:
+            type: integer
+        - name: invoice_series_id
+          in: query
+          required: false
+          schema:
+            type: integer
+        - name: sort_by
+          in: query
+          required: false
+          schema:
+            type: string
+            enum:
+              - payment_date
+              - serial_number
+              - status
+              - created_at
+          example: payment_date
+        - name: sort_order
+          in: query
+          required: false
+          schema:
+            type: string
+            enum:
+              - asc
+              - desc
+          example: desc
+        - name: page
+          in: query
+          schema:
+            type: integer
+        - name: page_size
+          in: query
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 100
+            default: 50
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InvoiceIndexResponse'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+    post:
+      tags:
+        - Invoices
+      summary: Invoice (create)
+      description: |
+        Creates a new invoice.
+        Response is wrapped as {success,data}.
+      security:
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/InvoiceStore'
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InvoiceSingleResponse'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '422':
+          $ref: '#/components/responses/UnprocessableEntity'
+  /invoices/{id}:
+    get:
+      tags:
+        - Invoices
+      summary: Invoice (show)
+      description: |
+        Shows an invoice by its ID.
+        Response is wrapped as {success,data}.
+      security:
+        - BearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/IdPath'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InvoiceSingleResponse'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+  /invoices/{id}/email:
+    post:
+      tags:
+        - Invoices
+      summary: Invoice by email
+      description: |
+        Sends the invoice (or offer, if document_type=estimate-offer) to the given email. Optionally stores the email in client's contact details.
+      security:
+        - BearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/IdPath'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/InvoiceEmailRequest'
+            examples:
+              default:
+                value:
+                  to: client@example.com
+                  store_email: true
+      responses:
+        '200':
+          description: Email sent
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InvoiceEmailResponse'
+              examples:
+                success:
+                  value:
+                    success: true
+                    message: Email sent successfully
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '422':
+          $ref: '#/components/responses/UnprocessableEntity'
+  /clients:
+    get:
+      tags:
+        - Clients
+      summary: Clients (list)
+      description: |
+        Lists clients (isSeller=false) with optional search and client_type filtering. Response is paginated and wrapped as {success,data,meta}.
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: search
+          in: query
+          required: false
+          description: Search term (used only when search_fields is present).
+          schema:
+            type: string
+          example: Papad
+        - name: search_fields
+          in: query
+          required: false
+          description: Comma-separated fields used in OR LIKE search. The available fields are `first_name`, `last_name`, `vat`, `email`, `invoice_name`, `company_name`, `tax_office`, `profession`, `client_type`.
+          schema:
+            type: string
+          example: fname,lname,vat,email
+        - name: client_type
+          in: query
+          required: false
+          description: Filter by client type(s). Type 1 is company (B2B), type 2 is person (B2C).
+          style: form
+          explode: true
+          schema:
+            oneOf:
+              - type: integer
+                enum:
+                  - 1
+                  - 2
+              - type: array
+                items:
+                  type: integer
+                  enum:
+                    - 1
+                    - 2
+          examples:
+            single:
+              value: 1
+            multiple:
+              value:
+                - 1
+                - 2
+        - name: sort_by
+          in: query
+          required: false
+          schema:
+            type: string
+            enum:
+              - id
+              - primary_id
+              - fname
+              - lname
+              - vat
+              - email
+              - client_type
+              - created_at
+              - updated_at
+          example: id
+        - name: sort_order
+          in: query
+          required: false
+          schema:
+            type: string
+            enum:
+              - asc
+              - desc
+          example: asc
+        - name: page
+          in: query
+          required: false
+          schema:
+            type: integer
+            minimum: 1
+            default: 1
+          example: 1
+        - name: page_size
+          in: query
+          required: false
+          description: Page size (default 50, max 100).
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 100
+            default: 50
+          example: 50
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ClientIndexResponse'
+              examples:
+                default:
+                  value:
+                    success: true
+                    data:
+                      - id: 1
+                        code: C-0001
+                        first_name: Giorgos
+                        last_name: Papadopoulos
+                        email: g@example.com
+                        telephone: '2100000000'
+                        cellphone: null
+                        vat: '123456789'
+                        invoice_name: ACME SA
+                        company_name: ACME SA
+                        tax_office: Α Αθηνών
+                        profession: null
+                        client_type: 1
+                        comments: null
+                        addresses: []
+                        company: 1
+                        created: '2026-02-11 10:00:00'
+                        modified: '2026-02-12 10:00:00'
+                    meta:
+                      current_page: 1
+                      last_page: 1
+                      per_page: 50
+                      total: 1
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+    post:
+      tags:
+        - Clients
+      summary: Client (create)
+      security:
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ClientStore'
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ClientSingleResponse'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '422':
+          $ref: '#/components/responses/UnprocessableEntity'
+  /clients/{id}:
+    get:
+      tags:
+        - Clients
+      summary: Client (show)
+      security:
+        - BearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/IdPath'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ClientSingleResponse'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+    patch:
+      tags:
+        - Clients
+      summary: Client (update partial)
+      security:
+        - BearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/IdPath'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ClientUpdate'
+      responses:
+        '200':
+          description: Updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ClientSingleResponse'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '422':
+          $ref: '#/components/responses/UnprocessableEntity'
+    put:
+      tags:
+        - Clients
+      summary: Client (update replace)
+      security:
+        - BearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/IdPath'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ClientStore'
+      responses:
+        '200':
+          description: Updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ClientSingleResponse'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '422':
+          $ref: '#/components/responses/UnprocessableEntity'
+    delete:
+      tags:
+        - Clients
+      summary: Client (delete)
+      security:
+        - BearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/IdPath'
+      responses:
+        '200':
+          description: Deleted
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ClientDeleteResponse'
+              examples:
+                deleted:
+                  value:
+                    success: true
+                    message: Client deleted.
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '422':
+          description: Cannot be deleted (has related records)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ClientDeleteFailResponse'
+              examples:
+                fail:
+                  value:
+                    success: false
+                    message: Client cannot be deleted because it has related records (invoices, orders, checks, etc.).
+  /suppliers:
+    get:
+      tags:
+        - Suppliers
+      summary: Suppliers (list)
+      description: |
+        Lists suppliers (courier=false) with optional search and sorting. Paginated.
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: search
+          in: query
+          required: false
+          schema:
+            type: string
+          example: Papad
+        - name: search_fields
+          in: query
+          required: false
+          description: Comma-separated fields for OR LIKE. If field is `vat`, it searches `afm`.
+          schema:
+            type: string
+          example: invoice_name,company_name,vat,email
+        - name: sort_by
+          in: query
+          required: false
+          schema:
+            type: string
+            enum:
+              - id
+              - primary_id
+              - fname
+              - lname
+              - afm
+              - email
+              - invoice_name
+              - company_name
+              - created_at
+              - updated_at
+          example: id
+        - name: sort_order
+          in: query
+          required: false
+          schema:
+            type: string
+            enum:
+              - asc
+              - desc
+          example: asc
+        - name: page
+          in: query
+          required: false
+          schema:
+            type: integer
+            minimum: 1
+            default: 1
+          example: 1
+        - name: page_size
+          in: query
+          required: false
+          description: Page size (default 50, max 100).
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 100
+            default: 50
+          example: 50
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SupplierIndexResponse'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+    post:
+      tags:
+        - Suppliers
+      summary: Supplier (create)
+      security:
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SupplierStore'
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SupplierSingleResponse'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '422':
+          $ref: '#/components/responses/UnprocessableEntity'
+  /suppliers/{id}:
+    get:
+      tags:
+        - Suppliers
+      summary: Supplier (show)
+      security:
+        - BearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/IdPath'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SupplierSingleResponse'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+    patch:
+      tags:
+        - Suppliers
+      summary: Supplier (update partial)
+      security:
+        - BearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/IdPath'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SupplierUpdate'
+      responses:
+        '200':
+          description: Updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SupplierSingleResponse'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '422':
+          $ref: '#/components/responses/UnprocessableEntity'
+    put:
+      tags:
+        - Suppliers
+      summary: Supplier (update replace)
+      security:
+        - BearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/IdPath'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SupplierStore'
+      responses:
+        '200':
+          description: Updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SupplierSingleResponse'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '422':
+          $ref: '#/components/responses/UnprocessableEntity'
+    delete:
+      tags:
+        - Suppliers
+      summary: Supplier (delete)
+      security:
+        - BearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/IdPath'
+      responses:
+        '200':
+          description: Deleted
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SupplierDeleteResponse'
+              examples:
+                deleted:
+                  value:
+                    success: true
+                    message: Supplier deleted.
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '422':
+          description: Cannot be deleted (has related records)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SupplierDeleteFailResponse'
+              examples:
+                fail:
+                  value:
+                    success: false
+                    message: Supplier cannot be deleted because it has related records (invoices, orders, checks, etc.).
+  /invoice-series:
+    get:
+      tags:
+        - Invoice Series
+      summary: Invoice series (list)
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: visible
+          in: query
+          required: false
+          schema:
+            type: boolean
+          example: true
+        - name: search
+          in: query
+          required: false
+          schema:
+            type: string
+          example: retail
+        - name: sort_by
+          in: query
+          required: false
+          schema:
+            type: string
+            enum:
+              - id
+              - name
+              - description
+              - visible
+              - company_id
+          example: id
+        - name: sort_order
+          in: query
+          required: false
+          schema:
+            type: string
+            enum:
+              - asc
+              - desc
+          example: asc
+        - name: page
+          in: query
+          required: false
+          schema:
+            type: integer
+            minimum: 1
+            default: 1
+          example: 1
+        - name: page_size
+          in: query
+          required: false
+          description: Page size (default 50, max 100).
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 100
+            default: 50
+          example: 50
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: false
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/InvoiceSeries'
+                  meta:
+                    type: object
+                    additionalProperties: false
+                    properties:
+                      current_page:
+                        type: integer
+                        example: 1
+                      last_page:
+                        type: integer
+                        example: 3
+                      per_page:
+                        type: integer
+                        example: 50
+                      total:
+                        type: integer
+                        example: 120
+                    required:
+                      - current_page
+                      - last_page
+                      - per_page
+                      - total
+                required:
+                  - success
+                  - data
+                  - meta
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+    post:
+      tags:
+        - Invoice Series
+      summary: Invoice series (create)
+      security:
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/InvoiceSeriesStore'
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: false
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  data:
+                    $ref: '#/components/schemas/InvoiceSeries'
+                required:
+                  - success
+                  - data
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '422':
+          $ref: '#/components/responses/UnprocessableEntity'
+  /invoice-series/{id}:
+    get:
+      tags:
+        - Invoice Series
+      summary: Invoice series (show)
+      security:
+        - BearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/IdPath'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: false
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  data:
+                    $ref: '#/components/schemas/InvoiceSeries'
+                required:
+                  - success
+                  - data
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+    patch:
+      tags:
+        - Invoice Series
+      summary: Update invoice series
+      security:
+        - BearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/IdPath'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/InvoiceSeriesUpdate'
+      responses:
+        '200':
+          description: Updated
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: false
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  data:
+                    $ref: '#/components/schemas/InvoiceSeries'
+                required:
+                  - success
+                  - data
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '422':
+          $ref: '#/components/responses/UnprocessableEntity'
+    put:
+      tags:
+        - Invoice Series
+      summary: Replace invoice series
+      security:
+        - BearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/IdPath'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/InvoiceSeriesStore'
+      responses:
+        '200':
+          description: Updated
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: false
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  data:
+                    $ref: '#/components/schemas/InvoiceSeries'
+                required:
+                  - success
+                  - data
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '422':
+          $ref: '#/components/responses/UnprocessableEntity'
+  /invoice-types:
+    get:
+      tags:
+        - Invoice Types
+      summary: Invoice types (list)
+      description: |
+        List invoice types (document types) with filters: type, document_type, active, search and sorting. Response is paginated and wrapped as {success,data,meta}.
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: type
+          in: query
+          required: false
+          description: Filter by invoice type(s). Can be single integer or array.
+          style: form
+          explode: true
+          schema:
+            oneOf:
+              - type: integer
+                enum:
+                  - 1
+                  - 2
+                  - 3
+                  - 4
+                  - 5
+                  - 6
+                  - 7
+              - type: array
+                items:
+                  type: integer
+                  enum:
+                    - 1
+                    - 2
+                    - 3
+                    - 4
+                    - 5
+                    - 6
+                    - 7
+          examples:
+            single:
+              value: 3
+            multiple:
+              value:
+                - 1
+                - 3
+                - 7
+        - name: document_type
+          in: query
+          required: false
+          description: Filter by document_type exact match.
+          schema:
+            type: string
+            maxLength: 50
+          example: delivery-note
+        - name: active
+          in: query
+          required: false
+          description: Filter by active flag.
+          schema:
+            type: boolean
+          example: true
+        - name: search
+          in: query
+          required: false
+          description: Search by title (LIKE %...%).
+          schema:
+            type: string
+          example: invoice
+        - name: sort_by
+          in: query
+          required: false
+          description: Sort column (backend orderBy).
+          schema:
+            type: string
+            enum:
+              - id
+              - title
+              - type
+              - aade_type
+              - document_type
+              - active
+              - is_deliverable
+              - default
+              - template_id
+              - company_id
+          example: id
+        - name: sort_order
+          in: query
+          required: false
+          schema:
+            type: string
+            enum:
+              - asc
+              - desc
+          example: asc
+        - name: page
+          in: query
+          required: false
+          schema:
+            type: integer
+            minimum: 1
+            default: 1
+          example: 1
+        - name: page_size
+          in: query
+          required: false
+          description: Page size (default 50, max 100).
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 100
+            default: 50
+          example: 50
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InvoiceTypeIndexResponse'
+              examples:
+                default:
+                  value:
+                    success: true
+                    data:
+                      - id: 1166
+                        title: Invoice (no delivery)
+                        type: 1
+                        aade_type: '1.1'
+                        document_type: null
+                        active: true
+                        is_deliverable: false
+                        default: true
+                        template_id: null
+                        company: 1
+                    meta:
+                      current_page: 1
+                      last_page: 2
+                      per_page: 50
+                      total: 60
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+  /invoice-types/{id}:
+    get:
+      tags:
+        - Invoice Types
+      summary: Invoice type (show)
+      security:
+        - BearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/IdPath'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InvoiceTypeSingleResponse'
+              examples:
+                default:
+                  value:
+                    success: true
+                    data:
+                      id: 1166
+                      title: Invoice (no delivery)
+                      type: 1
+                      aade_type: '1.1'
+                      document_type: null
+                      active: true
+                      is_deliverable: false
+                      default: true
+                      template_id: null
+                      company: 1
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+    post:
+      tags:
+        - Invoice Types
+      summary: Invoice type (create)
+      description: |
+        Creates an invoice type. If `default=true`, other invoice types with same (type, document_type) are set to default=false. If `default=false` and no other default exists, backend forces default=true.
+      security:
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/InvoiceTypeStore'
+            examples:
+              default:
+                value:
+                  title: Invoice (no delivery)
+                  type: 1
+                  aade_type: '1.1'
+                  document_type: null
+                  fhm_code: null
+                  active: true
+                  is_deliverable: false
+                  default: true
+                  template_id: null
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InvoiceTypeSingleResponse'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '422':
+          $ref: '#/components/responses/UnprocessableEntity'
+  /taxes:
+    get:
+      tags:
+        - Taxes
+      summary: Taxes (list)
+      description: |
+        List taxes with filters: type, active, search and sorting. Response is paginated and wrapped as {success,data,meta}.
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: type
+          in: query
+          required: false
+          description: Filter by tax type(s). Can be single or array (backend-defined numeric types).
+          style: form
+          explode: true
+          schema:
+            oneOf:
+              - type: integer
+              - type: array
+                items:
+                  type: integer
+          examples:
+            single:
+              value: 1
+            multiple:
+              value:
+                - 1
+                - 2
+        - name: active
+          in: query
+          required: false
+          description: Filter by active flag.
+          schema:
+            type: boolean
+          example: true
+        - name: search
+          in: query
+          required: false
+          description: Search by title (LIKE %...%).
+          schema:
+            type: string
+          example: ΦΠΑ
+        - name: sort_by
+          in: query
+          required: false
+          description: Sort column (backend orderBy).
+          schema:
+            type: string
+            enum:
+              - id
+              - title
+              - value
+              - active
+              - type
+              - company_id
+          example: id
+        - name: sort_order
+          in: query
+          required: false
+          schema:
+            type: string
+            enum:
+              - asc
+              - desc
+          example: asc
+        - name: page
+          in: query
+          required: false
+          schema:
+            type: integer
+            minimum: 1
+            default: 1
+          example: 1
+        - name: page_size
+          in: query
+          required: false
+          description: Page size (default 50, max 100).
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 100
+            default: 50
+          example: 50
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TaxIndexResponse'
+              examples:
+                default:
+                  value:
+                    success: true
+                    data:
+                      - id: 1265
+                        title: ΦΠΑ 24%
+                        value: 24
+                        type: VAT
+                        operand: +
+                        amount: null
+                        percentage: 24
+                        aade_group: '1'
+                        aade_code: '1'
+                        calculateVat: true
+                        active: true
+                    meta:
+                      current_page: 1
+                      last_page: 1
+                      per_page: 50
+                      total: 1
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+  /taxes/{id}:
+    get:
+      tags:
+        - Taxes
+      summary: Tax (show)
+      security:
+        - BearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/IdPath'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TaxSingleResponse'
+              examples:
+                default:
+                  value:
+                    success: true
+                    data:
+                      id: 1265
+                      title: ΦΠΑ 24%
+                      value: 24
+                      type: VAT
+                      operand: +
+                      amount: null
+                      percentage: 24
+                      aade_group: '1'
+                      aade_code: '1'
+                      calculateVat: true
+                      active: true
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+  /expense-categories:
+    get:
+      tags:
+        - Expense Categories
+      summary: Expense categories (list)
+      description: |
+        Paginated list of expense categories. Supports search (search + search_fields) and sorting.
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: search
+          in: query
+          required: false
+          schema:
+            type: string
+          example: Fuel
+        - name: search_fields
+          in: query
+          required: false
+          description: Comma-separated fields used in OR LIKE search.
+          schema:
+            type: string
+          example: name
+        - name: sort_by
+          in: query
+          required: false
+          schema:
+            type: string
+            enum:
+              - id
+              - name
+              - created_at
+              - updated_at
+              - company_id
+          example: id
+        - name: sort_order
+          in: query
+          required: false
+          schema:
+            type: string
+            enum:
+              - asc
+              - desc
+          example: asc
+        - name: page
+          in: query
+          required: false
+          schema:
+            type: integer
+            minimum: 1
+            default: 1
+          example: 1
+        - name: page_size
+          in: query
+          required: false
+          description: Page size (default 50, max 100).
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 100
+            default: 50
+          example: 50
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ExpenseCategoryIndexResponse'
+              examples:
+                default:
+                  value:
+                    success: true
+                    data:
+                      - id: 10
+                        title: Fuel
+                        color: '#FF9900'
+                        parent: Car expenses
+                        company: 1
+                        created: '2026-02-11 10:00:00'
+                        modified: '2026-02-12 10:00:00'
+                    meta:
+                      current_page: 1
+                      last_page: 1
+                      per_page: 50
+                      total: 1
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+  /expense-categories/{id}:
+    get:
+      tags:
+        - Expense Categories
+      summary: Expense category (show)
+      security:
+        - BearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/IdPath'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ExpenseCategorySingleResponse'
+              examples:
+                default:
+                  value:
+                    success: true
+                    data:
+                      id: 10
+                      title: Fuel
+                      color: '#FF9900'
+                      parent: Car expenses
+                      company: 1
+                      created: '2026-02-11 10:00:00'
+                      modified: '2026-02-12 10:00:00'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+components:
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: 'Send `Authorization: Bearer {token}`'
+    XAssebloCompany:
+      type: apiKey
+      in: header
+      name: X-Asseblo-Company
+      description: 'Company ID. Example value: 1234567890'
+  parameters:
+    IdPath:
+      name: id
+      in: path
+      required: true
+      schema:
+        type: integer
+        format: int64
+      example: 1
+  responses:
+    Unauthorized:
+      description: Unauthorized
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          example:
+            message: Unauthorized.
+    Forbidden:
+      description: Forbidden
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          example:
+            message: Forbidden.
+    NotFound:
+      description: Not Found
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          example:
+            message: Not Found.
+    UnprocessableEntity:
+      description: Validation error (Laravel)
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ValidationError'
+  schemas:
+    Address:
+      type: object
+      additionalProperties: true
+      description: Minimal placeholder for AddressResource output.
+      properties:
+        id:
+          type: integer
+          format: int64
+          example: 1
+        address:
+          type: string
+          example: Main street
+        number:
+          type: string
+          nullable: true
+          example: '10'
+        town:
+          type: string
+          example: Athens
+        region:
+          type: string
+          nullable: true
+          example: Attica
+        tk:
+          type: string
+          description: Postal code.
+          example: '10558'
+        country:
+          type: string
+          nullable: true
+          example: GR
+        country_id:
+          type: integer
+          format: int64
+          nullable: true
+          example: 1
+        branch_code:
+          type: integer
+          nullable: true
+          example: 0
+    ContactDetail:
+      type: object
+      additionalProperties: true
+      description: Minimal placeholder for ContactDetailResource.
+      properties:
+        id:
+          type: integer
+          format: int64
+          example: 1
+        type:
+          type: string
+          example: email
+        value:
+          type: string
+          example: g@example.com
+    Tag:
+      type: object
+      additionalProperties: true
+      description: Minimal placeholder for TagResource.
+      properties:
+        id:
+          type: integer
+          format: int64
+          example: 1
+        title:
+          type: string
+          example: vip
+    Client:
+      type: object
+      additionalProperties: false
+      properties:
+        id:
+          type: integer
+          format: int64
+          example: 1
+        code:
+          type: string
+          nullable: true
+          description: Client code (primary_id).
+          example: C-0001
+        first_name:
+          type: string
+          nullable: true
+          example: Giorgos
+        last_name:
+          type: string
+          nullable: true
+          example: Papadopoulos
+        email:
+          type: string
+          nullable: true
+          example: g@example.com
+        telephone:
+          type: string
+          nullable: true
+          example: '2100000000'
+        cellphone:
+          type: string
+          nullable: true
+          example: null
+        vat:
+          type: string
+          nullable: true
+          example: '123456789'
+        invoice_name:
+          type: string
+          nullable: true
+          example: ACME SA
+        company_name:
+          type: string
+          nullable: true
+          example: ACME SA
+        tax_office:
+          type: string
+          nullable: true
+          description: Tax office name (computed).
+          example: Α Αθηνών
+        profession:
+          type: string
+          nullable: true
+          example: Engineer
+        client_type:
+          type: integer
+          description: Client type. Type 1 is company (B2B), type 2 is person (B2C).
+          nullable: true
+          enum:
+            - 1
+            - 2
+          example: 1
+        comments:
+          type: string
+          nullable: true
+          example: null
+        addresses:
+          type: array
+          items:
+            $ref: '#/components/schemas/Address'
+        contacts:
+          type: array
+          items:
+            $ref: '#/components/schemas/ContactDetail'
+        tags:
+          type: array
+          items:
+            $ref: '#/components/schemas/Tag'
+        company:
+          type: integer
+          format: int64
+          example: 1
+        created:
+          type: string
+          example: '2026-02-11 10:00:00'
+        modified:
+          type: string
+          example: '2026-02-12 10:00:00'
+      required:
+        - id
+        - company
+        - created
+        - modified
+    Tax:
+      type: object
+      additionalProperties: false
+      properties:
+        id:
+          type: integer
+          format: int64
+          example: 1265
+        title:
+          type: string
+          example: ΦΠΑ 24%
+        value:
+          type: number
+          example: 24
+        type:
+          type: string
+          description: Human readable tax type (type_human).
+          example: VAT
+        operand:
+          type: string
+          description: Enforcer/operand (enforcer).
+          example: +
+        amount:
+          type: number
+          nullable: true
+          description: Present when tax is NOT percentage (isPercentage=false).
+          example: null
+        percentage:
+          type: number
+          nullable: true
+          description: Present when tax is percentage (isPercentage=true).
+          example: 24
+        aade_group:
+          type: string
+          nullable: true
+          example: '1'
+        aade_code:
+          type: string
+          nullable: true
+          example: '1'
+        calculateVat:
+          type: boolean
+          nullable: true
+          example: true
+        active:
+          type: boolean
+          example: true
+      required:
+        - id
+        - title
+        - value
+        - type
+        - operand
+        - active
+    InvoiceLine:
+      type: object
+      additionalProperties: false
+      properties:
+        id:
+          type: integer
+        product_id:
+          type: integer
+          nullable: true
+        description:
+          type: string
+        quantity:
+          type: number
+        unit_measure:
+          type: string
+        unit_price:
+          type: number
+        discount_price:
+          type: number
+          nullable: true
+        net_amount:
+          type: number
+        taxes:
+          type: array
+          items:
+            $ref: '#/components/schemas/Tax'
+        classificationCategory:
+          type: string
+          nullable: true
+        classificationType:
+          type: string
+          nullable: true
+        vatExemptionCategory:
+          type: integer
+          nullable: true
+    Invoice:
+      type: object
+      additionalProperties: false
+      properties:
+        id:
+          type: integer
+        representation:
+          type: string
+          nullable: true
+        status:
+          type: string
+          example: published
+        document_title:
+          type: string
+          nullable: true
+        invoice_type_id:
+          type: integer
+          nullable: true
+        serial_number:
+          type: integer
+          nullable: true
+        series:
+          type: string
+          nullable: true
+        mydata_type:
+          type: string
+          nullable: true
+        date:
+          type: string
+          format: date
+        due_date:
+          type: string
+          format: date
+          nullable: true
+        client_id:
+          type: integer
+        client:
+          $ref: '#/components/schemas/Client'
+        billing_address:
+          $ref: '#/components/schemas/Address'
+        shipping_address:
+          nullable: true
+          $ref: '#/components/schemas/Address'
+        loading_address:
+          nullable: true
+          $ref: '#/components/schemas/Address'
+        payment_method:
+          type: string
+          nullable: true
+        pos_tid:
+          type: string
+          nullable: true
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/InvoiceLine'
+        sub_total:
+          type: number
+        tax_total:
+          type: number
+        grand_total:
+          type: number
+        currency_code:
+          type: string
+          nullable: true
+        exchange_rate:
+          type: number
+          nullable: true
+        terms:
+          type: string
+          nullable: true
+        notes:
+          type: string
+          nullable: true
+        public_link:
+          type: string
+          nullable: true
+        mydata_qr_code:
+          type: string
+          nullable: true
+        mydata_latest_mark:
+          type: string
+          nullable: true
+        mydata_uid:
+          type: string
+          nullable: true
+      required:
+        - id
+        - date
+        - client_id
+        - sub_total
+        - tax_total
+        - grand_total
+    InvoiceIndexResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/Invoice'
+        meta:
+          type: object
+          properties:
+            current_page:
+              type: integer
+            last_page:
+              type: integer
+            per_page:
+              type: integer
+            total:
+              type: integer
+      required:
+        - success
+        - data
+        - meta
+    ErrorResponse:
+      type: object
+      additionalProperties: false
+      properties:
+        message:
+          type: string
+          example: Unauthorized.
+      required:
+        - message
+    ClientAddressInput:
+      type: object
+      additionalProperties: false
+      properties:
+        address:
+          type: string
+          maxLength: 255
+          example: Main street
+        number:
+          type: string
+          nullable: true
+          maxLength: 50
+          example: '10'
+        town:
+          type: string
+          maxLength: 150
+          example: Athens
+        region:
+          type: string
+          nullable: true
+          maxLength: 150
+          example: Attica
+        zip:
+          type: string
+          description: Will be mapped to `tk` internally.
+          maxLength: 20
+          example: '10558'
+        country:
+          type: string
+          nullable: true
+          maxLength: 3
+          description: Country ISO code (exists:countries,code).
+          example: GR
+        country_id:
+          type: integer
+          format: int64
+          nullable: true
+          example: 1
+        branch_code:
+          type: integer
+          nullable: true
+          example: 0
+      required:
+        - address
+        - town
+        - zip
+    InvoiceStore:
+      type: object
+      additionalProperties: false
+      properties:
+        invoice_type_id:
+          type: integer
+        invoice_series_id:
+          type: integer
+        date:
+          type: string
+          format: date
+        due_date:
+          type: string
+          format: date
+          nullable: true
+        client_id:
+          type: integer
+        document_type:
+          type: string
+          enum:
+            - invoice
+            - credit-invoice
+            - delivery-note
+        grand_total:
+          type: number
+        billing_address:
+          $ref: '#/components/schemas/ClientAddressInput'
+        shipping_address:
+          nullable: true
+          $ref: '#/components/schemas/ClientAddressInput'
+        loading_address:
+          nullable: true
+          $ref: '#/components/schemas/ClientAddressInput'
+        items:
+          type: array
+          items:
+            type: object
+            properties:
+              product_id:
+                type: integer
+                nullable: true
+              description:
+                type: string
+                nullable: true
+              quantity:
+                type: number
+              unit_measure:
+                type: string
+              unit_price:
+                type: number
+              taxes:
+                type: array
+                items:
+                  type: integer
+        payment_methods:
+          type: array
+          nullable: true
+          items:
+            type: object
+            properties:
+              paymentMethod:
+                type: integer
+                enum:
+                  - 1
+                  - 2
+                  - 3
+                  - 4
+                  - 6
+                  - 7
+                  - 8
+                description: |
+                  Available only when myDATA integration is enabled.
+
+                  Values:
+                  - 1: Domestic Payments Account
+                  - 2: Foreign Payments Account
+                  - 3: Cash
+                  - 4: Cheque
+                  - 6: Web Banking
+                  - 7: POS / e-POS
+                  - 8: IRIS Direct Payment
+              paymentAmount:
+                type: number
+              terminal_id:
+                type: integer
+                nullable: true
+                description: terminal_id from CBO (terminals table). Only available when paymentMethod is 7 (POS / e-POS).
+              tip:
+                type: number
+                nullable: true
+                description: Tip amount. Only available when paymentMethod is 7 (POS / e-POS).
+              instalments:
+                type: integer
+                nullable: true
+                description: Number of instalments. Only available when paymentMethod is 7 (POS / e-POS).
+        terms:
+          type: string
+          nullable: true
+        notes:
+          type: string
+          nullable: true
+        isDraft:
+          type: boolean
+          nullable: true
+        mydata_submit:
+          type: boolean
+          nullable: true
+      required:
+        - date
+        - client_id
+        - document_type
+        - billing_address
+    InvoiceSingleResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+        data:
+          $ref: '#/components/schemas/Invoice'
+      required:
+        - success
+        - data
+    ValidationError:
+      type: object
+      additionalProperties: false
+      properties:
+        message:
+          type: string
+          example: The given data was invalid.
+        errors:
+          type: object
+          additionalProperties:
+            type: array
+            items:
+              type: string
+          example:
+            name:
+              - The name field is required.
+      required:
+        - message
+        - errors
+    InvoiceEmailRequest:
+      type: object
+      additionalProperties: false
+      properties:
+        to:
+          type: string
+          format: email
+          example: client@example.com
+        store_email:
+          type: boolean
+          nullable: true
+          default: false
+          example: true
+      required:
+        - to
+    InvoiceEmailResponse:
+      type: object
+      additionalProperties: false
+      properties:
+        success:
+          type: boolean
+          example: true
+        message:
+          type: string
+          example: Email sent successfully
+      required:
+        - success
+        - message
+    ClientIndexResponse:
+      type: object
+      additionalProperties: false
+      properties:
+        success:
+          type: boolean
+          example: true
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/Client'
+        meta:
+          type: object
+          additionalProperties: false
+          properties:
+            current_page:
+              type: integer
+              example: 1
+            last_page:
+              type: integer
+              example: 3
+            per_page:
+              type: integer
+              example: 50
+            total:
+              type: integer
+              example: 120
+          required:
+            - current_page
+            - last_page
+            - per_page
+            - total
+      required:
+        - success
+        - data
+        - meta
+    ClientStore:
+      type: object
+      additionalProperties: false
+      properties:
+        client_type:
+          type: integer
+          enum:
+            - 1
+            - 2
+          example: 1
+        invoice_name:
+          type: string
+          nullable: true
+          maxLength: 255
+          example: ACME SA
+        vat:
+          type: string
+          nullable: true
+          maxLength: 20
+          example: '123456789'
+        first_name:
+          type: string
+          nullable: true
+          maxLength: 255
+          example: Giorgos
+        last_name:
+          type: string
+          nullable: true
+          maxLength: 255
+          example: Papadopoulos
+        company_name:
+          type: string
+          nullable: true
+          maxLength: 255
+          example: ACME SA
+        profession:
+          type: string
+          nullable: true
+          maxLength: 255
+          example: Engineer
+        email:
+          type: string
+          nullable: true
+          format: email
+          example: g@example.com
+        telephone:
+          type: string
+          nullable: true
+          maxLength: 50
+          example: '2100000000'
+        cellphone:
+          type: string
+          nullable: true
+          maxLength: 50
+          example: null
+        fax:
+          type: string
+          nullable: true
+          maxLength: 50
+          example: null
+        tax_office:
+          type: string
+          nullable: true
+          maxLength: 255
+          example: Α Αθηνών
+        tax_offices_id:
+          type: integer
+          format: int64
+          nullable: true
+          example: 10
+        comments:
+          type: string
+          nullable: true
+          maxLength: 1000
+          example: null
+        dangerous:
+          type: boolean
+          nullable: true
+          example: false
+        billing_address:
+          $ref: '#/components/schemas/ClientAddressInput'
+        shipping_address:
+          oneOf:
+            - $ref: '#/components/schemas/ClientAddressInput'
+            - type: 'null'
+          nullable: true
+        tag:
+          type: array
+          nullable: true
+          items:
+            type: string
+          example:
+            - vip
+            - b2b
+      required:
+        - client_type
+        - billing_address
+    ClientSingleResponse:
+      type: object
+      additionalProperties: false
+      properties:
+        success:
+          type: boolean
+          example: true
+        data:
+          $ref: '#/components/schemas/Client'
+      required:
+        - success
+        - data
+    ClientDeleteResponse:
+      type: object
+      additionalProperties: false
+      properties:
+        success:
+          type: boolean
+          example: true
+        message:
+          type: string
+          example: Client deleted.
+      required:
+        - success
+        - message
+    ClientDeleteFailResponse:
+      type: object
+      additionalProperties: false
+      properties:
+        success:
+          type: boolean
+          example: false
+        message:
+          type: string
+          example: Client cannot be deleted because it has related records (invoices, orders, checks, etc.).
+      required:
+        - success
+        - message
+    ClientUpdate:
+      type: object
+      additionalProperties: false
+      properties:
+        client_type:
+          type: integer
+          nullable: true
+          enum:
+            - 1
+            - 2
+          example: 2
+        invoice_name:
+          type: string
+          nullable: true
+          maxLength: 255
+        vat:
+          type: string
+          nullable: true
+          maxLength: 20
+        first_name:
+          type: string
+          nullable: true
+          maxLength: 255
+        last_name:
+          type: string
+          nullable: true
+          maxLength: 255
+        company_name:
+          type: string
+          nullable: true
+          maxLength: 255
+        profession:
+          type: string
+          nullable: true
+          maxLength: 255
+        email:
+          type: string
+          nullable: true
+          format: email
+        telephone:
+          type: string
+          nullable: true
+          maxLength: 50
+        cellphone:
+          type: string
+          nullable: true
+          maxLength: 50
+        fax:
+          type: string
+          nullable: true
+          maxLength: 50
+        tax_office:
+          type: string
+          nullable: true
+          maxLength: 255
+        tax_offices_id:
+          type: integer
+          format: int64
+          nullable: true
+        comments:
+          type: string
+          nullable: true
+          maxLength: 1000
+        dangerous:
+          type: boolean
+          nullable: true
+        billing_address:
+          oneOf:
+            - $ref: '#/components/schemas/ClientAddressInput'
+            - type: 'null'
+          nullable: true
+        shipping_address:
+          oneOf:
+            - $ref: '#/components/schemas/ClientAddressInput'
+            - type: 'null'
+          nullable: true
+        tag:
+          type: array
+          nullable: true
+          items:
+            type: string
+    Supplier:
+      type: object
+      additionalProperties: false
+      properties:
+        id:
+          type: integer
+          format: int64
+          example: 1
+        code:
+          type: string
+          nullable: true
+          example: S-0001
+        first_name:
+          type: string
+          nullable: true
+          example: Nikos
+        last_name:
+          type: string
+          nullable: true
+          example: Supplier
+        email:
+          type: string
+          nullable: true
+          example: s@example.com
+        telephone:
+          type: string
+          nullable: true
+          example: '2100000000'
+        cellphone:
+          type: string
+          nullable: true
+          example: null
+        vat:
+          type: string
+          nullable: true
+          example: '123456789'
+        invoice_name:
+          type: string
+          nullable: true
+          example: Supplier SA
+        company_name:
+          type: string
+          nullable: true
+          example: Supplier SA
+        tax_office:
+          type: string
+          nullable: true
+          example: Α Αθηνών
+        expense_category_id:
+          type: integer
+          format: int64
+          nullable: true
+          description: Expense category (expense.id).
+          example: 10
+        profession:
+          type: string
+          nullable: true
+          example: Wholesale
+        comments:
+          type: string
+          nullable: true
+          example: null
+        addresses:
+          type: array
+          items:
+            $ref: '#/components/schemas/Address'
+        contacts:
+          type: array
+          items:
+            $ref: '#/components/schemas/ContactDetail'
+        tags:
+          type: array
+          items:
+            $ref: '#/components/schemas/Tag'
+        company:
+          type: integer
+          format: int64
+          example: 1
+        created:
+          type: string
+          example: '2026-02-11 10:00:00'
+        modified:
+          type: string
+          example: '2026-02-12 10:00:00'
+      required:
+        - id
+        - company
+        - created
+        - modified
+    SupplierIndexResponse:
+      type: object
+      additionalProperties: false
+      properties:
+        success:
+          type: boolean
+          example: true
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/Supplier'
+        meta:
+          type: object
+          additionalProperties: false
+          properties:
+            current_page:
+              type: integer
+              example: 1
+            last_page:
+              type: integer
+              example: 3
+            per_page:
+              type: integer
+              example: 50
+            total:
+              type: integer
+              example: 120
+          required:
+            - current_page
+            - last_page
+            - per_page
+            - total
+      required:
+        - success
+        - data
+        - meta
+    SupplierStore:
+      type: object
+      additionalProperties: false
+      properties:
+        id:
+          type: integer
+          format: int64
+          example: 1
+        code:
+          type: string
+          nullable: true
+          example: S-0001
+        first_name:
+          type: string
+          nullable: true
+          example: Nikos
+        last_name:
+          type: string
+          nullable: true
+          example: Supplier
+        email:
+          type: string
+          nullable: true
+          example: s@example.com
+        telephone:
+          type: string
+          nullable: true
+          example: '2100000000'
+        cellphone:
+          type: string
+          nullable: true
+          example: null
+        vat:
+          type: string
+          nullable: true
+          example: '123456789'
+        invoice_name:
+          type: string
+          nullable: true
+          example: Supplier SA
+        company_name:
+          type: string
+          nullable: true
+          example: Supplier SA
+        tax_office:
+          type: string
+          nullable: true
+          example: Α Αθηνών
+        expense_category_id:
+          type: integer
+          format: int64
+          nullable: true
+          description: Expense category (expense.id).
+          example: 10
+        profession:
+          type: string
+          nullable: true
+          example: Wholesale
+        comments:
+          type: string
+          nullable: true
+          example: null
+        addresses:
+          type: array
+          items:
+            $ref: '#/components/schemas/Address'
+        contacts:
+          type: array
+          items:
+            $ref: '#/components/schemas/ContactDetail'
+        tags:
+          type: array
+          items:
+            $ref: '#/components/schemas/Tag'
+        company:
+          type: integer
+          format: int64
+          example: 1
+        created:
+          type: string
+          example: '2026-02-11 10:00:00'
+        modified:
+          type: string
+          example: '2026-02-12 10:00:00'
+      required:
+        - id
+        - company
+        - created
+        - modified
+    SupplierSingleResponse:
+      type: object
+      additionalProperties: false
+      properties:
+        success:
+          type: boolean
+          example: true
+        data:
+          $ref: '#/components/schemas/Supplier'
+      required:
+        - success
+        - data
+    SupplierDeleteResponse:
+      type: object
+      additionalProperties: false
+      properties:
+        success:
+          type: boolean
+          example: true
+        message:
+          type: string
+          example: Supplier deleted.
+      required:
+        - success
+        - message
+    SupplierDeleteFailResponse:
+      type: object
+      additionalProperties: false
+      properties:
+        success:
+          type: boolean
+          example: false
+        message:
+          type: string
+          example: Supplier cannot be deleted because it has related records (invoices, orders, checks, etc.).
+      required:
+        - success
+        - message
+    SupplierUpdate:
+      type: object
+      additionalProperties: false
+      properties:
+        first_name:
+          type: string
+          nullable: true
+          maxLength: 255
+        last_name:
+          type: string
+          nullable: true
+          maxLength: 255
+        invoice_name:
+          type: string
+          nullable: true
+          maxLength: 255
+        vat:
+          type: string
+          nullable: true
+          maxLength: 20
+        company_name:
+          type: string
+          nullable: true
+          maxLength: 255
+        profession:
+          type: string
+          nullable: true
+          maxLength: 255
+        email:
+          type: string
+          nullable: true
+          format: email
+        telephone:
+          type: string
+          nullable: true
+          maxLength: 50
+        cellphone:
+          type: string
+          nullable: true
+          maxLength: 50
+        fax:
+          type: string
+          nullable: true
+          maxLength: 50
+        tax_office:
+          type: string
+          nullable: true
+          maxLength: 255
+        tax_offices_id:
+          type: integer
+          nullable: true
+        expense_category_id:
+          type: integer
+          nullable: true
+          description: Will be mapped to expense_id.
+        comments:
+          type: string
+          nullable: true
+          maxLength: 1000
+        billing_address:
+          oneOf:
+            - $ref: '#/components/schemas/ClientAddressInput'
+            - type: 'null'
+          nullable: true
+        shipping_address:
+          oneOf:
+            - $ref: '#/components/schemas/ClientAddressInput'
+            - type: 'null'
+          nullable: true
+        tag:
+          type: array
+          nullable: true
+          items:
+            type: string
+    InvoiceSeries:
+      type: object
+      additionalProperties: false
+      properties:
+        id:
+          type: integer
+          format: int64
+          example: 1
+        name:
+          type: string
+          example: Retail Series
+        description:
+          type: string
+          nullable: true
+          example: Main retail series
+        visible:
+          type: boolean
+          example: true
+        company:
+          type: integer
+          format: int64
+          example: 1
+      required:
+        - id
+        - name
+        - visible
+        - company
+    InvoiceSeriesStore:
+      type: object
+      additionalProperties: false
+      properties:
+        name:
+          type: string
+          example: Retail Series
+        description:
+          type: string
+          nullable: true
+          example: Main retail series
+        myf:
+          type: boolean
+          nullable: true
+          description: Stored in DB but not returned by resource.
+          example: false
+        visible:
+          type: boolean
+          nullable: true
+          example: true
+      required:
+        - name
+    InvoiceSeriesUpdate:
+      type: object
+      additionalProperties: false
+      properties:
+        name:
+          type: string
+          nullable: true
+          example: Retail Series Updated
+        description:
+          type: string
+          nullable: true
+          example: Updated description
+        myf:
+          type: boolean
+          nullable: true
+          description: Stored in DB but not returned by resource.
+          example: false
+        visible:
+          type: boolean
+          nullable: true
+          example: true
+    InvoiceType:
+      type: object
+      additionalProperties: false
+      properties:
+        id:
+          type: integer
+          format: int64
+          example: 1166
+        title:
+          type: string
+          example: Invoice (no delivery)
+        type:
+          type: integer
+          enum:
+            - 1
+            - 2
+            - 3
+            - 4
+            - 5
+            - 6
+            - 7
+          example: 1
+        aade_type:
+          type: string
+          maxLength: 20
+          example: '1.1'
+        document_type:
+          type: string
+          nullable: true
+          maxLength: 50
+          example: null
+        active:
+          type: boolean
+          example: true
+        is_deliverable:
+          type: boolean
+          example: false
+        default:
+          type: boolean
+          example: true
+        template_id:
+          type: integer
+          format: int64
+          nullable: true
+          example: null
+        company:
+          type: integer
+          format: int64
+          example: 1
+      required:
+        - id
+        - title
+        - type
+        - aade_type
+        - active
+        - is_deliverable
+        - default
+        - company
+    InvoiceTypeIndexResponse:
+      type: object
+      additionalProperties: false
+      properties:
+        success:
+          type: boolean
+          example: true
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/InvoiceType'
+        meta:
+          type: object
+          additionalProperties: false
+          properties:
+            current_page:
+              type: integer
+              example: 1
+            last_page:
+              type: integer
+              example: 3
+            per_page:
+              type: integer
+              example: 50
+            total:
+              type: integer
+              example: 120
+          required:
+            - current_page
+            - last_page
+            - per_page
+            - total
+      required:
+        - success
+        - data
+        - meta
+    InvoiceTypeSingleResponse:
+      type: object
+      additionalProperties: false
+      properties:
+        success:
+          type: boolean
+          example: true
+        data:
+          $ref: '#/components/schemas/InvoiceType'
+      required:
+        - success
+        - data
+    InvoiceTypeStore:
+      type: object
+      additionalProperties: false
+      properties:
+        title:
+          type: string
+          maxLength: 255
+          example: Invoice (no delivery)
+        type:
+          type: integer
+          enum:
+            - 1
+            - 2
+            - 3
+            - 4
+            - 5
+            - 6
+            - 7
+          example: 1
+        aade_type:
+          type: string
+          maxLength: 20
+          description: Must be one of the allowed values for the given `type` (backend validation).
+          example: '1.1'
+        document_type:
+          type: string
+          nullable: true
+          maxLength: 50
+          example: null
+        fhm_code:
+          type: string
+          nullable: true
+          maxLength: 50
+          example: null
+        active:
+          type: boolean
+          nullable: true
+          example: true
+        is_deliverable:
+          type: boolean
+          nullable: true
+          example: false
+        default:
+          type: boolean
+          nullable: true
+          example: true
+        template_id:
+          type: integer
+          format: int64
+          nullable: true
+          description: Must exist in templates table.
+          example: null
+      required:
+        - title
+        - type
+        - aade_type
+    TaxIndexResponse:
+      type: object
+      additionalProperties: false
+      properties:
+        success:
+          type: boolean
+          example: true
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/Tax'
+        meta:
+          type: object
+          additionalProperties: false
+          properties:
+            current_page:
+              type: integer
+              example: 1
+            last_page:
+              type: integer
+              example: 3
+            per_page:
+              type: integer
+              example: 50
+            total:
+              type: integer
+              example: 120
+          required:
+            - current_page
+            - last_page
+            - per_page
+            - total
+      required:
+        - success
+        - data
+        - meta
+    TaxSingleResponse:
+      type: object
+      additionalProperties: false
+      properties:
+        success:
+          type: boolean
+          example: true
+        data:
+          $ref: '#/components/schemas/Tax'
+      required:
+        - success
+        - data
+    ExpenseCategoryIndexResponse: ExpenseCategoryIndexResponse.yaml
+    ExpenseCategory:
+      type: object
+      additionalProperties: false
+      properties:
+        id:
+          type: integer
+          format: int64
+          example: 10
+        title:
+          type: string
+          example: Fuel
+        color:
+          type: string
+          nullable: true
+          description: Derived from related expense_categories (first color).
+          example: '#FF9900'
+        parent:
+          type: string
+          nullable: true
+          description: Derived from related expense_categories (first name).
+          example: Car expenses
+        company:
+          type: integer
+          format: int64
+          example: 1
+        created:
+          type: string
+          example: '2026-02-11 10:00:00'
+        modified:
+          type: string
+          example: '2026-02-12 10:00:00'
+      required:
+        - id
+        - title
+        - company
+        - created
+        - modified
+    ExpenseCategorySingleResponse:
+      type: object
+      additionalProperties: false
+      properties:
+        success:
+          type: boolean
+          example: true
+        data:
+          $ref: '#/components/schemas/ExpenseCategory'
+      required:
+        - success
+        - data
