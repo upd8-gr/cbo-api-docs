@@ -2,6 +2,9 @@ openapi: 3.0.3
 info:
   title: CBO API v1
   version: "1.0"
+  x-logo:
+    url: ../assets/logo.png
+    altText: Upd8.gr
   description: |
     CBO (Cloud Business Organiser) is a business management platform designed for Greek-market commercial operations.
 
@@ -15,10 +18,8 @@ info:
 
     All endpoints are company-scoped and require Bearer authentication.
     Responses follow consistent validation and pagination standards across the platform.
-  x-logo:
-    url: ../assets/logo.png
-    altText: Upd8.gr
-  description: |
+
+
     ## Authentication
 
     All API requests must include a **Bearer token** in the `Authorization` header.
