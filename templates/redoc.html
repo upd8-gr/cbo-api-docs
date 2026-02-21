@@ -64,7 +64,11 @@
       });
     })();
 
-    Redoc.init('openapi.yaml', {}, document.getElementById('redoc'));
+    Redoc.init('openapi.yaml', {
+      hideDownloadButton: true,
+      nativeScrollbars: true, 
+      scrollYOffset: "60",
+    }, document.getElementById('redoc'));
   </script>
 </body>
 </html>
