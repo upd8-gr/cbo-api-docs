@@ -108,7 +108,7 @@ get:
 
 post:
   tags: [Clients]
-  summary: Create client
+  summary: Client (create)
   security:
     - BearerAuth: []
   requestBody:

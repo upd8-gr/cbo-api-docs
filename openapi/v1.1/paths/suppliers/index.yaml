@@ -61,7 +61,7 @@ get:
 
 post:
   tags: [Suppliers]
-  summary: Create supplier
+  summary: Supplier (create)
   security:
     - BearerAuth: []
 

@@ -33,7 +33,7 @@ get:
 
 post:
   tags: [Invoice Types]
-  summary: Create invoice type
+  summary: Invoice type (create)
   description: >
     Creates an invoice type. If `default=true`, other invoice types with same (type, document_type)
     are set to default=false. If `default=false` and no other default exists, backend forces default=true.

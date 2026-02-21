@@ -115,7 +115,7 @@ get:
 
 post:
   tags: [Invoices]
-  summary: Create invoice
+  summary: Invoice (create)
   description: |
     Creates a new invoice.
     Response is wrapped as {success,data}.
