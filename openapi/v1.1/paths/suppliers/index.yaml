@@ -1,6 +1,6 @@
 get:
   tags: [Suppliers]
-  summary: List suppliers
+  summary: Suppliers (list)
   description: >
     Lists suppliers (courier=false) with optional search and sorting. Paginated.
   security:

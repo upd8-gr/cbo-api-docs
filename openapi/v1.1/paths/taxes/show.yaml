@@ -1,6 +1,6 @@
 get:
   tags: [Taxes]
-  summary: Show tax
+  summary: Tax (show)
   security:
     - BearerAuth: []
   parameters:

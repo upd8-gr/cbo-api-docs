@@ -1,6 +1,6 @@
 get:
   tags: [Invoice Types]
-  summary: Show invoice type
+  summary: Invoice type (show)
   security:
     - BearerAuth: []
   parameters:

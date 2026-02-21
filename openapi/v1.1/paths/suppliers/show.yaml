@@ -1,6 +1,6 @@
 get:
   tags: [Suppliers]
-  summary: Show supplier
+  summary: Supplier (show)
   security:
     - BearerAuth: []
   parameters:
@@ -17,7 +17,7 @@ get:
 
 patch:
   tags: [Suppliers]
-  summary: Update supplier (partial)
+  summary: Supplier (update partial)
   security:
     - BearerAuth: []
   parameters:
@@ -40,7 +40,7 @@ patch:
 
 put:
   tags: [Suppliers]
-  summary: Update supplier (replace)
+  summary: Supplier (update replace)
   security:
     - BearerAuth: []
   parameters:
@@ -63,7 +63,7 @@ put:
 
 delete:
   tags: [Suppliers]
-  summary: Delete supplier
+  summary: Supplier (delete)
   security:
     - BearerAuth: []
   parameters:

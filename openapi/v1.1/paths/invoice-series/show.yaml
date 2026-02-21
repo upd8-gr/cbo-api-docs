@@ -1,6 +1,6 @@
 get:
   tags: [Invoice Series]
-  summary: Show invoice series
+  summary: Invoice series (show)
   security:
     - BearerAuth: []
   parameters:

@@ -1,6 +1,6 @@
 get:
   tags: [Clients]
-  summary: List clients
+  summary: Clients (list)
   description: >
     Lists clients (isSeller=false) with optional search and client_type filtering.
     Response is paginated and wrapped as {success,data,meta}.

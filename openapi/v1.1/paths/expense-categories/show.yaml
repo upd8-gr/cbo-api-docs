@@ -1,6 +1,6 @@
 get:
   tags: [Expense Categories]
-  summary: Show expense category
+  summary: Expense category (show)
   security:
     - BearerAuth: []
 

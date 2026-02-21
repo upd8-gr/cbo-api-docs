@@ -1,7 +1,20 @@
 openapi: 3.0.3
 info:
-  title: API v1.1
-  version: "1.1.0"
+  title: CBO API v1.1
+  description: |
+    CBO (Cloud Business Organiser) is a business management platform designed for Greek-market commercial operations.
+
+    The CBO API provides secure, authenticated access to the core entities of the platform, allowing you to
+    programmatically manage organisational data, commercial documents, and operational workflows.
+
+    With the API you can:
+    - Integrate external applications to automate business processes and synchronize data.
+    - Connect your e-shop to CBO to manage products, orders, customers, and stock centrally.
+    - Use CBO as your billing system, fully supporting AADE/MyData requirements and digital document circulation flows where applicable.
+
+    All endpoints are company-scoped and require Bearer authentication.
+    Responses follow consistent validation and pagination standards across the platform.
+  version: "1.1"
   x-logo:
     url: ../assets/logo.png
     altText: Upd8.gr
@@ -15,7 +28,7 @@ info:
     Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
     ```
 
-    Obtain your token via the login endpoint or from [CBO](https://app.cbo.gr).
+    Obtain your token from your Profile page through the app [CBO](https://app.cbo.gr). 
 
     ---
 
@@ -44,6 +57,8 @@ info:
 servers:
   - url: https://app.cbo.gr/api/v1.1
     description: CBO production
+  - url: https://app.excelon.gr/api/v1.1
+    description: CBO staging environment
 
 security:
   - BearerAuth: []

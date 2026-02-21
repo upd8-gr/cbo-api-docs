@@ -1,6 +1,9 @@
 get:
   tags: [Invoices]
-  summary: List client invoices
+  summary: Invoices (list)
+  description: |
+    Lists invoices with optional search and filtering.
+    Response is paginated and wrapped as {success,data,meta}.
   security:
     - BearerAuth: []
 
@@ -112,7 +115,10 @@ get:
 
 post:
   tags: [Invoices]
-  summary: Create client invoice
+  summary: Create invoice
+  description: |
+    Creates a new invoice.
+    Response is wrapped as {success,data}.
   security:
     - BearerAuth: []
 

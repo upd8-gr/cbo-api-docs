@@ -1,6 +1,6 @@
 post:
   tags: [Invoices]
-  summary: Send invoice by email
+  summary: Invoice by email
   description: >
     Sends the invoice (or offer, if document_type=estimate-offer) to the given email.
     Optionally stores the email in client's contact details.

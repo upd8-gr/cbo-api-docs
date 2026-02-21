@@ -1,6 +1,9 @@
 get:
   tags: [Invoices]
-  summary: Show client invoice
+  summary: Invoice (show)
+  description: |
+    Shows an invoice by its ID.
+    Response is wrapped as {success,data}.
   security:
     - BearerAuth: []
 

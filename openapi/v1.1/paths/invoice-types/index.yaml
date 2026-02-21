@@ -1,6 +1,6 @@
 get:
   tags: [Invoice Types]
-  summary: List invoice types
+  summary: Invoice types (list)
   description: >
     List invoice types (document types) with filters: type, document_type, active, search and sorting.
     Response is paginated and wrapped as {success,data,meta}.

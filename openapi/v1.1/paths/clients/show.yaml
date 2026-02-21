@@ -1,6 +1,6 @@
 get:
   tags: [Clients]
-  summary: Show client
+  summary: Client (show)
   security:
     - BearerAuth: []
   parameters:
@@ -17,7 +17,7 @@ get:
 
 patch:
   tags: [Clients]
-  summary: Update client (partial)
+  summary: Client (update partial)
   security:
     - BearerAuth: []
   parameters:
@@ -40,7 +40,7 @@ patch:
 
 put:
   tags: [Clients]
-  summary: Update client (replace)
+  summary: Client (update replace)
   security:
     - BearerAuth: []
   parameters:
@@ -63,7 +63,7 @@ put:
 
 delete:
   tags: [Clients]
-  summary: Delete client
+  summary: Client (delete)
   security:
     - BearerAuth: []
   parameters:

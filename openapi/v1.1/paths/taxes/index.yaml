@@ -1,6 +1,6 @@
 get:
   tags: [Taxes]
-  summary: List taxes
+  summary: Taxes (list)
   description: >
     List taxes with filters: type, active, search and sorting.
     Response is paginated and wrapped as {success,data,meta}.

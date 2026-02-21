@@ -1,6 +1,6 @@
 get:
   tags: [Expense Categories]
-  summary: List expense categories
+  summary: Expense categories (list)
   description: >
     Paginated list of expense categories. Supports search (search + search_fields) and sorting.
   security:

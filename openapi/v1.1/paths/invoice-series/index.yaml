@@ -1,6 +1,6 @@
 get:
   tags: [Invoice Series]
-  summary: List invoice series
+  summary: Invoice series (list)
   security:
     - BearerAuth: []
   parameters:
@@ -73,7 +73,7 @@ get:
 
 post:
   tags: [Invoice Series]
-  summary: Create invoice series
+  summary: Invoice series (create)
   security:
     - BearerAuth: []
   requestBody:
