@@ -1,0 +1,57 @@
+type: object
+additionalProperties: true
+properties:
+  id: { type: integer, format: int64, example: 10 }
+
+  gateway_id:
+    type: integer
+    nullable: true
+    example: 1
+
+  amount:
+    type: number
+    example: 120.5
+
+  status:
+    type: string
+    example: "pending"
+
+  order_code:
+    type: string
+    nullable: true
+    example: "1234567890"
+
+  payment_url:
+    type: string
+    nullable: true
+    example: "https://www.vivapayments.com/web/checkout?ref=1234567890"
+
+  billable_id:
+    type: integer
+    nullable: true
+    example: 55
+
+  billable_type:
+    type: string
+    nullable: true
+    example: "`invoice` or `client`"
+
+  exact_amount:
+    type: boolean
+    nullable: true
+    example: true
+
+  max_installments:
+    type: integer
+    nullable: true
+    example: 3
+
+  payment_timeout:
+    type: integer
+    nullable: true
+    example: 65535
+
+  description:
+    type: string
+    nullable: true
+    example: "Invoice #55 payment"

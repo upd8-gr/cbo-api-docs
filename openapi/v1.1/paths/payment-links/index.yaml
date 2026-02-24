@@ -1,0 +1,91 @@
+get:
+  tags: [Payment Links]
+  summary: List payment links
+  description: Paginated list of payment links for the company.
+  security:
+    - BearerAuth: []
+
+  parameters:
+    - name: status
+      in: query
+      required: false
+      description: Filter by status (string or array).
+      style: form
+      explode: true
+      schema:
+        oneOf:
+          - type: string
+          - type: array
+            items: { type: string }
+      example: ["pending", "paid"]
+
+    - name: sort_by
+      in: query
+      required: false
+      schema: { type: string, default: id }
+      example: id
+
+    - name: sort_order
+      in: query
+      required: false
+      schema:
+        type: string
+        enum: [asc, desc]
+        default: desc
+      example: desc
+
+    - name: page
+      in: query
+      required: false
+      schema: { type: integer, minimum: 1, default: 1 }
+
+    - name: page_size
+      in: query
+      required: false
+      schema: { type: integer, minimum: 1, maximum: 100, default: 50 }
+
+  responses:
+    "200":
+      description: OK
+      content:
+        application/json:
+          schema:
+            $ref: ../../components/schemas/payment-links/PaymentLinkIndexResponse.yaml
+    "401": { $ref: ../../../_shared/components/responses/Unauthorized.yaml }
+    "403": { $ref: ../../../_shared/components/responses/Forbidden.yaml }
+
+post:
+  tags: [Payment Links]
+  summary: Create payment link
+  description: Creates a payment order and returns the hosted payment URL.
+  security:
+    - BearerAuth: []
+
+  requestBody:
+    required: true
+    content:
+      application/json:
+        schema:
+          $ref: ../../components/schemas/payment-links/PaymentLinkStoreRequest.yaml
+        examples:
+          invoice:
+            value:
+              gateway_id: 1
+              amount: 120.50
+              billable_type: "invoice"
+              billable_id: 55
+              exact_amount: true
+              max_installments: 3
+              payment_timeout: 65535
+              description: "Invoice #55 payment"
+
+  responses:
+    "201":
+      description: Created
+      content:
+        application/json:
+          schema:
+            $ref: ../../components/schemas/payment-links/PaymentLinkSingleResponse.yaml
+    "401": { $ref: ../../../_shared/components/responses/Unauthorized.yaml }
+    "403": { $ref: ../../../_shared/components/responses/Forbidden.yaml }
+    "422": { $ref: ../../../_shared/components/responses/UnprocessableEntity.yaml }

@@ -74,6 +74,7 @@ tags:
   - name: Invoice Types
   - name: Invoice Series
   - name: Expense Categories
+  - name: Payment Links
 
 paths:
   /invoices:
@@ -106,6 +107,12 @@ paths:
     $ref: ./paths/expense-categories/index.yaml
   /expense-categories/{id}:
     $ref: ./paths/expense-categories/show.yaml
+  /payment-links:
+    $ref: ./paths/payment-links/index.yaml
+  /payment-links/{id}:
+    $ref: ./paths/payment-links/show.yaml
+  /payment-links/{id}/cancel:
+    $ref: ./paths/payment-links/cancel.yaml
 
 components:
   securitySchemes:

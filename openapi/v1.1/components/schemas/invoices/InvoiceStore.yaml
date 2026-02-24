@@ -106,6 +106,7 @@ properties:
     nullable: true
 
 required:
+  - invoice_type_id
   - date
   - client_id
   - document_type

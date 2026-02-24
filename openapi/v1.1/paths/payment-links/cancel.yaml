@@ -1,0 +1,39 @@
+post:
+  tags: [Payment Links]
+  summary: Cancel payment link
+  description: Cancels a payment order (cannot cancel if already paid).
+  security:
+    - BearerAuth: []
+
+  parameters:
+    - $ref: ../../../_shared/components/parameters/IdPath.yaml
+
+  responses:
+    "200":
+      description: Canceled
+      content:
+        application/json:
+          schema:
+            $ref: ../../components/schemas/payment-links/PaymentLinkCancelResponse.yaml
+          examples:
+            success:
+              value:
+                success: true
+                message: "Payment link canceled."
+                data:
+                  id: 10
+                  status: "canceled"
+    "401": { $ref: ../../../_shared/components/responses/Unauthorized.yaml }
+    "403": { $ref: ../../../_shared/components/responses/Forbidden.yaml }
+    "404": { $ref: ../../../_shared/components/responses/NotFound.yaml }
+    "422":
+      description: Cannot cancel (e.g. already paid)
+      content:
+        application/json:
+          schema:
+            $ref: ../../components/schemas/payment-links/PaymentLinkErrorResponse.yaml
+          examples:
+            paid:
+              value:
+                success: false
+                message: "Cannot cancel a paid payment link."

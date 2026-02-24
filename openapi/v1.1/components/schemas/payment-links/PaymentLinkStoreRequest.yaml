@@ -1,0 +1,54 @@
+type: object
+additionalProperties: false
+properties:
+  gateway_id:
+    type: integer
+    format: int64
+    example: 1
+
+  amount:
+    type: number
+    minimum: 0
+    example: 120.5
+
+  billable_id:
+    type: integer
+    nullable: true
+    description: Required with billable_type.
+    example: 55
+
+  billable_type:
+    type: string
+    nullable: true
+    description: >
+      Accepts: "invoice" / "client-invoice" / "client".
+      Will be normalized server-side to the corresponding FQCN.
+    enum: [invoice, client-invoice, client]
+    example: invoice
+
+  exact_amount:
+    type: boolean
+    nullable: true
+    description: If true, customer cannot pay different amount.
+    example: true
+
+  max_installments:
+    type: integer
+    nullable: true
+    minimum: 0
+    example: 3
+
+  payment_timeout:
+    type: integer
+    nullable: true
+    minimum: 0
+    description: Time in seconds. Use 65535 for unlimited.
+    example: 65535
+
+  description:
+    type: string
+    nullable: true
+    maxLength: 1000
+    example: "Invoice #55 payment"
+
+required: [gateway_id, amount]

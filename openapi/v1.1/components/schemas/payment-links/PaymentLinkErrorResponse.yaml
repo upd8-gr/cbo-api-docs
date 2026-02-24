@@ -1,0 +1,6 @@
+type: object
+additionalProperties: false
+properties:
+  success: { type: boolean, example: false }
+  message: { type: string, example: "Payment link not found" }
+required: [success, message]
