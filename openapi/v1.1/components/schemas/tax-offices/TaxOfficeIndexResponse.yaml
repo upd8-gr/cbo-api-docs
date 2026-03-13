@@ -1,0 +1,35 @@
+type: object
+properties:
+
+  success:
+    type: boolean
+    example: true
+
+  data:
+    type: array
+    items:
+      $ref: ./TaxOffice.yaml
+
+  meta:
+    type: object
+    properties:
+      current_page:
+        type: integer
+        example: 1
+
+      last_page:
+        type: integer
+        example: 2
+
+      per_page:
+        type: integer
+        example: 50
+
+      total:
+        type: integer
+        example: 75
+
+required:
+  - success
+  - data
+  - meta

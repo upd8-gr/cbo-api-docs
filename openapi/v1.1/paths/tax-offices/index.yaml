@@ -1,0 +1,56 @@
+get:
+  tags:
+    - Tax Offices
+
+  summary: List tax offices
+
+  security:
+    - BearerAuth: []
+
+  parameters:
+
+    - name: code
+      in: query
+      required: false
+      schema:
+        type: string
+      description: Filter by tax office code
+      example: "1153"
+
+    - name: name
+      in: query
+      required: false
+      schema:
+        type: string
+      description: Search tax office name
+      example: "ΑΘΗΝ"
+
+    - name: page
+      in: query
+      required: false
+      schema:
+        type: integer
+        default: 1
+
+    - name: page_size
+      in: query
+      required: false
+      schema:
+        type: integer
+        default: 50
+        maximum: 100
+
+  responses:
+
+    "200":
+      description: Tax offices list
+      content:
+        application/json:
+          schema:
+            $ref: ../../components/schemas/tax-offices/TaxOfficeIndexResponse.yaml
+
+    "401":
+      $ref: ../../../_shared/components/responses/Unauthorized.yaml
+
+    "403":
+      $ref: ../../../_shared/components/responses/Forbidden.yaml

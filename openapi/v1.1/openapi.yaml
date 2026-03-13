@@ -74,6 +74,7 @@ tags:
   - name: Invoice Types
   - name: Invoice Series
   - name: Expense Categories
+  - name: Tax Offices
   - name: Payment Links
 
 paths:
@@ -113,6 +114,8 @@ paths:
     $ref: ./paths/payment-links/show.yaml
   /payment-links/{id}/cancel:
     $ref: ./paths/payment-links/cancel.yaml
+  /tax-offices:
+    $ref: ./paths/tax-offices/index.yaml
 
 components:
   securitySchemes:

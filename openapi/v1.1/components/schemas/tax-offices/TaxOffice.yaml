@@ -1,0 +1,18 @@
+type: object
+properties:
+  id:
+    type: integer
+    example: 1
+
+  name:
+    type: string
+    example: "Α ΑΘΗΝΩΝ"
+
+  code:
+    type: string
+    example: "1153"
+
+required:
+  - id
+  - name
+  - code
