@@ -11,8 +11,8 @@ properties:
   profession: { type: string, nullable: true, maxLength: 255 }
 
   email: { type: string, nullable: true, format: email }
-  telephone: { type: string, nullable: true, maxLength: 50 }
-  cellphone: { type: string, nullable: true, maxLength: 50 }
+  phone: { type: string, nullable: true, maxLength: 50 }
+  mobile: { type: string, nullable: true, maxLength: 50 }
   fax: { type: string, nullable: true, maxLength: 50 }
 
   tax_office: { type: string, nullable: true, maxLength: 255 }

@@ -37,11 +37,11 @@ properties:
     type: string
     nullable: true
     format: email
-  telephone:
+  phone:
     type: string
     nullable: true
     maxLength: 50
-  cellphone:
+  mobile:
     type: string
     nullable: true
     maxLength: 50

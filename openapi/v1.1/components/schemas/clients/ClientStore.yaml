@@ -45,12 +45,12 @@ properties:
     nullable: true
     format: email
     example: "g@example.com"
-  telephone:
+  phone:
     type: string
     nullable: true
     maxLength: 50
     example: "2100000000"
-  cellphone:
+  mobile:
     type: string
     nullable: true
     maxLength: 50

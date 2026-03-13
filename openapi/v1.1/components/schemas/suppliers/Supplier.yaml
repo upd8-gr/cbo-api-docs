@@ -8,8 +8,8 @@ properties:
   last_name: { type: string, nullable: true, example: "Supplier" }
 
   email: { type: string, nullable: true, example: "s@example.com" }
-  telephone: { type: string, nullable: true, example: "2100000000" }
-  cellphone: { type: string, nullable: true, example: null }
+  phone: { type: string, nullable: true, example: "2100000000" }
+  mobile: { type: string, nullable: true, example: null }
 
   vat: { type: string, nullable: true, example: "123456789" }
 
