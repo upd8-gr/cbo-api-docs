@@ -1,0 +1,56 @@
+type: object
+additionalProperties: false
+description: Product child as returned by `ProductChildResource` (API v1.1).
+properties:
+  id: { type: integer, format: int64, example: 1001 }
+  product_name: { type: string, example: "Sample product" }
+  description: { type: string, nullable: true }
+  code: { type: string, nullable: true }
+  barcode: { type: string, nullable: true }
+  group_id: { type: integer, nullable: true, example: 5 }
+  measurement_unit_id: { type: integer, nullable: true }
+  tax_id: { type: integer, nullable: true }
+  tax_percentage:
+    type: number
+    nullable: true
+    description: Tax rate from related tax record (`tax.value`).
+    example: 24
+  accounting_type: { type: integer, enum: [1, 2, 3, 4, 5], example: 1 }
+  cost_price: { type: number, nullable: true }
+  sell_price: { type: number, nullable: true }
+  retail_price: { type: number, nullable: true }
+  website_price: { type: number, nullable: true }
+  discounted_price: { type: number, nullable: true }
+  company_id: { type: integer, example: 1 }
+  visibility: { type: boolean, example: true }
+  count_storage:
+    type: number
+    nullable: true
+    description: Stock count from resource (`countStorage`).
+  created_at: { type: string, example: "2026-02-11 10:00:00" }
+  updated_at: { type: string, example: "2026-02-11 10:00:00" }
+  measurement_unit_name:
+    type: string
+    description: Present when `measurement_unit` relation is loaded.
+    example: "Τεμάχιο"
+  characteristics:
+    type: array
+    items:
+      $ref: ../../../../v1/components/schemas/resources/Characteristic.yaml
+  tiers:
+    type: array
+    items:
+      $ref: ../../../../v1/components/schemas/resources/Tier.yaml
+  catalogues:
+    type: array
+    items:
+      $ref: ../../../../v1/components/schemas/resources/Catalogue.yaml
+required:
+  - id
+  - product_name
+  - company_id
+  - created_at
+  - updated_at
+  - characteristics
+  - tiers
+  - catalogues

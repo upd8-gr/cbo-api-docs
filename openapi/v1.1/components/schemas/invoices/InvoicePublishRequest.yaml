@@ -1,0 +1,17 @@
+type: object
+additionalProperties: false
+description: >
+  Optional flags for publishing a draft invoice. When the invoice is already in `Executed` status,
+  set `mydata_submit` to true to allow re-submission flows.
+properties:
+  instant_receipt:
+    type: boolean
+    default: true
+    description: Whether to issue instant receipt behaviour (backend default true).
+    example: true
+  mydata_submit:
+    type: boolean
+    default: false
+    description: >
+      When true, allows processing even if the invoice is already published (`Executed`).
+      If status is `Executed` and this is false, the API returns 422 "Invoice is already published."

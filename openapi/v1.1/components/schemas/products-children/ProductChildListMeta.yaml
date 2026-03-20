@@ -1,0 +1,8 @@
+type: object
+additionalProperties: false
+properties:
+  current_page: { type: integer, minimum: 1, example: 1 }
+  last_page: { type: integer, minimum: 1, example: 3 }
+  per_page: { type: integer, minimum: 1, example: 50 }
+  total: { type: integer, minimum: 0, example: 120 }
+required: [current_page, last_page, per_page, total]

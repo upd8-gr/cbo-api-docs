@@ -1,0 +1,56 @@
+post:
+  tags: [Invoices]
+  summary: Publish draft invoice
+  description: |
+    Publishes a draft client invoice (`POST /api/v1.1/invoices/{id}/publish`).
+    Loads the invoice with items, taxes, client, type, series, dispatch and payment methods, then runs the publish service.
+
+    - If status is already `Executed` and `mydata_submit` is **false**, returns **422** with "Invoice is already published."
+    - On validation or business errors after commit checks, may return **422** with the first alert message.
+  security:
+    - BearerAuth: []
+  parameters:
+    - $ref: ../../../_shared/components/parameters/IdPath.yaml
+  requestBody:
+    required: false
+    content:
+      application/json:
+        schema:
+          $ref: ../../components/schemas/invoices/InvoicePublishRequest.yaml
+        examples:
+          default:
+            value:
+              instant_receipt: true
+              mydata_submit: false
+  responses:
+    "200":
+      description: Published — returns updated invoice resource
+      content:
+        application/json:
+          schema:
+            $ref: ../../components/schemas/invoices/InvoiceSingleResponse.yaml
+    "401": { $ref: ../../../_shared/components/responses/Unauthorized.yaml }
+    "403": { $ref: ../../../_shared/components/responses/Forbidden.yaml }
+    "404": { $ref: ../../../_shared/components/responses/NotFound.yaml }
+    "422":
+      description: Validation error, already published, or publish blocked by business rules
+      content:
+        application/json:
+          oneOf:
+            - $ref: ../../../_shared/components/schemas/errors/ValidationError.yaml
+            - $ref: ../../components/schemas/common/FailureMessageResponse.yaml
+          examples:
+            alreadyPublished:
+              value:
+                success: false
+                message: "Invoice is already published."
+            alertError:
+              value:
+                success: false
+                message: "First error message from alerts."
+    "500":
+      description: Server error (unexpected failure during transaction)
+      content:
+        application/json:
+          schema:
+            $ref: ../../components/schemas/common/FailureMessageResponse.yaml

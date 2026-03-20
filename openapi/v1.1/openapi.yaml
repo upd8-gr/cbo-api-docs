@@ -67,6 +67,7 @@ security:
   - XAssebloCompany: []
 
 tags:
+  - name: Product Children
   - name: Invoices
   - name: Clients
   - name: Suppliers
@@ -82,8 +83,14 @@ paths:
     $ref: ./paths/invoices/index.yaml
   /invoices/{id}:
     $ref: ./paths/invoices/show.yaml
+  /invoices/{id}/publish:
+    $ref: ./paths/invoices/publish.yaml
   /invoices/{id}/email:
     $ref: ./paths/invoices/email.yaml
+  /product-children:
+    $ref: ./paths/product-children/index.yaml
+  /product-children/{id}:
+    $ref: ./paths/product-children/show.yaml
   /clients:
     $ref: ./paths/clients/index.yaml
   /clients/{id}:

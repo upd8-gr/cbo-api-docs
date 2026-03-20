@@ -67,3 +67,61 @@ post:
     "401": { $ref: ../../../_shared/components/responses/Unauthorized.yaml }
     "403": { $ref: ../../../_shared/components/responses/Forbidden.yaml }
     "422": { $ref: ../../../_shared/components/responses/UnprocessableEntity.yaml }
+
+delete:
+  tags: [Invoice Types]
+  summary: Invoice type (delete)
+  description: |
+    Deletes an invoice type (document type). Cannot delete the default type for its category.
+    Returns 404 if the type does not exist or belongs to another company (same message as not found).
+  security:
+    - BearerAuth: []
+  parameters:
+    - $ref: ../../../_shared/components/parameters/IdPath.yaml
+  responses:
+    "200":
+      description: Deleted
+      content:
+        application/json:
+          schema:
+            $ref: ../../components/schemas/common/SuccessMessageResponse.yaml
+          examples:
+            deleted:
+              value:
+                success: true
+                message: "Invoice type deleted."
+    "401": { $ref: ../../../_shared/components/responses/Unauthorized.yaml }
+    "403": { $ref: ../../../_shared/components/responses/Forbidden.yaml }
+    "404":
+      description: Not found (unknown id or not in company scope)
+      content:
+        application/json:
+          schema:
+            $ref: ../../components/schemas/common/FailureMessageResponse.yaml
+          examples:
+            notFound:
+              value:
+                success: false
+                message: "Invoice type not found"
+    "409":
+      description: Conflict — cannot delete (related invoices, supplier invoices, or branch links)
+      content:
+        application/json:
+          schema:
+            $ref: ../../components/schemas/common/FailureMessageResponse.yaml
+          examples:
+            conflict:
+              value:
+                success: false
+                message: "Invoice type cannot be deleted because it has related invoices, supplier invoices, or branch links."
+    "422":
+      description: Cannot delete default document type for this category
+      content:
+        application/json:
+          schema:
+            $ref: ../../components/schemas/common/FailureMessageResponse.yaml
+          examples:
+            defaultType:
+              value:
+                success: false
+                message: "Cannot delete the default document type for this category."

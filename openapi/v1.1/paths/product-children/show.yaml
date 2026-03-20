@@ -1,0 +1,144 @@
+get:
+  tags: [Product Children]
+  summary: Product child (show)
+  description: Returns one product child for the company or 404 if not found / out of scope.
+  security:
+    - BearerAuth: []
+  parameters:
+    - $ref: ../../../_shared/components/parameters/IdPath.yaml
+  responses:
+    "200":
+      description: OK
+      content:
+        application/json:
+          schema:
+            $ref: ../../components/schemas/products-children/ProductChildSingleResponse.yaml
+    "401": { $ref: ../../../_shared/components/responses/Unauthorized.yaml }
+    "403": { $ref: ../../../_shared/components/responses/Forbidden.yaml }
+    "404":
+      description: Not found
+      content:
+        application/json:
+          schema:
+            $ref: ../../components/schemas/common/FailureMessageResponse.yaml
+          examples:
+            notFound:
+              value:
+                success: false
+                message: "Product not found"
+
+put:
+  tags: [Product Children]
+  summary: Product child (update full)
+  security:
+    - BearerAuth: []
+  parameters:
+    - $ref: ../../../_shared/components/parameters/IdPath.yaml
+  requestBody:
+    required: true
+    content:
+      application/json:
+        schema:
+          $ref: ../../components/schemas/products-children/ProductChildUpdate.yaml
+  responses:
+    "200":
+      description: Updated
+      content:
+        application/json:
+          schema:
+            $ref: ../../components/schemas/products-children/ProductChildSingleResponse.yaml
+    "401": { $ref: ../../../_shared/components/responses/Unauthorized.yaml }
+    "403": { $ref: ../../../_shared/components/responses/Forbidden.yaml }
+    "404":
+      description: Not found
+      content:
+        application/json:
+          schema:
+            $ref: ../../components/schemas/common/FailureMessageResponse.yaml
+    "500":
+      description: Update failed
+      content:
+        application/json:
+          schema:
+            $ref: ../../components/schemas/common/FailureMessageResponse.yaml
+          examples:
+            fail:
+              value:
+                success: false
+                message: "Failed to update product: ..."
+
+patch:
+  tags: [Product Children]
+  summary: Product child (update partial)
+  security:
+    - BearerAuth: []
+  parameters:
+    - $ref: ../../../_shared/components/parameters/IdPath.yaml
+  requestBody:
+    required: true
+    content:
+      application/json:
+        schema:
+          $ref: ../../components/schemas/products-children/ProductChildUpdate.yaml
+  responses:
+    "200":
+      description: Updated
+      content:
+        application/json:
+          schema:
+            $ref: ../../components/schemas/products-children/ProductChildSingleResponse.yaml
+    "401": { $ref: ../../../_shared/components/responses/Unauthorized.yaml }
+    "403": { $ref: ../../../_shared/components/responses/Forbidden.yaml }
+    "404":
+      description: Not found
+      content:
+        application/json:
+          schema:
+            $ref: ../../components/schemas/common/FailureMessageResponse.yaml
+    "500":
+      description: Update failed
+      content:
+        application/json:
+          schema:
+            $ref: ../../components/schemas/common/FailureMessageResponse.yaml
+
+delete:
+  tags: [Product Children]
+  summary: Product child (delete)
+  description: |
+    Deletes a product if it has no blocking relations (orders, invoices, price items, etc.).
+  security:
+    - BearerAuth: []
+  parameters:
+    - $ref: ../../../_shared/components/parameters/IdPath.yaml
+  responses:
+    "200":
+      description: Deleted
+      content:
+        application/json:
+          schema:
+            $ref: ../../components/schemas/common/SuccessMessageResponse.yaml
+          examples:
+            deleted:
+              value:
+                success: true
+                message: "Product deleted."
+    "401": { $ref: ../../../_shared/components/responses/Unauthorized.yaml }
+    "403": { $ref: ../../../_shared/components/responses/Forbidden.yaml }
+    "404":
+      description: Not found
+      content:
+        application/json:
+          schema:
+            $ref: ../../components/schemas/common/FailureMessageResponse.yaml
+    "409":
+      description: Conflict — related records prevent deletion
+      content:
+        application/json:
+          schema:
+            $ref: ../../components/schemas/common/FailureMessageResponse.yaml
+          examples:
+            conflict:
+              value:
+                success: false
+                message: "Product cannot be deleted because it has related records (orders, invoices, price items, etc.)."
