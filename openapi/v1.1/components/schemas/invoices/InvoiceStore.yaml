@@ -31,15 +31,18 @@ properties:
     type: number
 
   billing_address:
-    $ref: ../clients/ClientAddressInput.yaml
+    description: Single address object only (no array form for invoice create).
+    $ref: ../clients/ClientAddressInputObject.yaml
 
   shipping_address:
     nullable: true
-    $ref: ../clients/ClientAddressInput.yaml
+    description: Single address object only (no array form for invoice create).
+    $ref: ../clients/ClientAddressInputObject.yaml
 
   loading_address:
     nullable: true
-    $ref: ../clients/ClientAddressInput.yaml
+    description: Single address object only (no array form for invoice create).
+    $ref: ../clients/ClientAddressInputObject.yaml
 
   items:
     type: array
