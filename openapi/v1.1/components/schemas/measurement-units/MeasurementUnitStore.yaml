@@ -1,0 +1,44 @@
+type: object
+additionalProperties: false
+description: >
+  Create measurement unit (`StoreMeasurementUnitRequest`). Incoming `category` accepts either the
+  documented Greek label or common English/Greek aliases and is normalized server-side before validation.
+properties:
+  config_id:
+    type: integer
+    minimum: 0
+    maximum: 255
+    default: 0
+    description: Numeric config identifier.
+  name:
+    type: string
+    maxLength: 255
+  short_name:
+    type: string
+    maxLength: 255
+  peppol:
+    type: string
+    nullable: true
+    maxLength: 255
+    description: Empty string is normalized to `null`.
+  type:
+    type: integer
+    nullable: true
+    minimum: 0
+    maximum: 255
+  category:
+    type: string
+    description: >
+      Category label. Accepted aliases are normalized to one of the documented Greek values.
+    enum: [ΓΕΝΙΚΑ, ΒΑΡΟΣ, ΑΠΟΣΤΑΣΗ, ΟΓΚΟΣ, ΧΡΟΝΟΣ, ΕΝΕΡΓΕΙΑ]
+    default: ΓΕΝΙΚΑ
+  measurement_unit_id:
+    type: integer
+    nullable: true
+    description: Existing measurement unit id used as the conversion base. Required when `relation_amount` is sent.
+  relation_amount:
+    type: number
+    nullable: true
+    exclusiveMinimum: 0
+    description: Positive conversion amount. Required when `measurement_unit_id` is sent.
+required: [config_id, name, short_name, category]

@@ -1,0 +1,22 @@
+type: object
+additionalProperties: false
+description: Measurement unit as returned by `MeasurementUnitResource`.
+properties:
+  id: { type: integer, format: int64, example: 15 }
+  name: { type: string, example: "Τεμάχιο" }
+  short_name: { type: string, example: "τεμ." }
+  peppol: { type: string, nullable: true, example: "C62" }
+  category:
+    type: string
+    enum: [ΓΕΝΙΚΑ, ΒΑΡΟΣ, ΑΠΟΣΤΑΣΗ, ΟΓΚΟΣ, ΧΡΟΝΟΣ, ΕΝΕΡΓΕΙΑ]
+    example: "ΓΕΝΙΚΑ"
+  company: { type: integer, format: int64, example: 1 }
+  created:
+    type: string
+    format: date-time
+    example: "2026-03-25T10:15:00.000000Z"
+  modified:
+    type: string
+    format: date-time
+    example: "2026-03-25T10:15:00.000000Z"
+required: [id, name, short_name, category, company, created, modified]

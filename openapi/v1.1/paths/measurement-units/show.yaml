@@ -1,0 +1,149 @@
+get:
+  tags: [Measurement Units]
+  summary: Measurement unit (show)
+  description: Returns one measurement unit for the company or 404 if not found / out of scope.
+  security:
+    - BearerAuth: []
+  parameters:
+    - $ref: ../../../_shared/components/parameters/IdPath.yaml
+  responses:
+    "200":
+      description: OK
+      content:
+        application/json:
+          schema:
+            $ref: ../../components/schemas/measurement-units/MeasurementUnitSingleResponse.yaml
+    "401": { $ref: ../../../_shared/components/responses/Unauthorized.yaml }
+    "403": { $ref: ../../../_shared/components/responses/Forbidden.yaml }
+    "404":
+      description: Not found
+      content:
+        application/json:
+          schema:
+            $ref: ../../components/schemas/common/FailureMessageResponse.yaml
+          examples:
+            notFound:
+              value:
+                success: false
+                message: "Measurement unit not found"
+
+put:
+  tags: [Measurement Units]
+  summary: Measurement unit (update full)
+  description: |
+    Updates a measurement unit for the company. Validation failures return **422** with the standard
+    validation payload.
+  security:
+    - BearerAuth: []
+  parameters:
+    - $ref: ../../../_shared/components/parameters/IdPath.yaml
+  requestBody:
+    required: true
+    content:
+      application/json:
+        schema:
+          $ref: ../../components/schemas/measurement-units/MeasurementUnitUpdate.yaml
+  responses:
+    "200":
+      description: Updated
+      content:
+        application/json:
+          schema:
+            $ref: ../../components/schemas/measurement-units/MeasurementUnitSingleResponse.yaml
+    "401": { $ref: ../../../_shared/components/responses/Unauthorized.yaml }
+    "403": { $ref: ../../../_shared/components/responses/Forbidden.yaml }
+    "404":
+      description: Not found
+      content:
+        application/json:
+          schema:
+            $ref: ../../components/schemas/common/FailureMessageResponse.yaml
+    "422":
+      description: Validation error
+      content:
+        application/json:
+          schema:
+            $ref: ../../../_shared/components/schemas/errors/ValidationError.yaml
+
+patch:
+  tags: [Measurement Units]
+  summary: Measurement unit (update partial)
+  description: |
+    Partially updates a measurement unit for the company. Validation failures return **422** with the
+    standard validation payload.
+  security:
+    - BearerAuth: []
+  parameters:
+    - $ref: ../../../_shared/components/parameters/IdPath.yaml
+  requestBody:
+    required: true
+    content:
+      application/json:
+        schema:
+          $ref: ../../components/schemas/measurement-units/MeasurementUnitUpdate.yaml
+  responses:
+    "200":
+      description: Updated
+      content:
+        application/json:
+          schema:
+            $ref: ../../components/schemas/measurement-units/MeasurementUnitSingleResponse.yaml
+    "401": { $ref: ../../../_shared/components/responses/Unauthorized.yaml }
+    "403": { $ref: ../../../_shared/components/responses/Forbidden.yaml }
+    "404":
+      description: Not found
+      content:
+        application/json:
+          schema:
+            $ref: ../../components/schemas/common/FailureMessageResponse.yaml
+    "422":
+      description: Validation error
+      content:
+        application/json:
+          schema:
+            $ref: ../../../_shared/components/schemas/errors/ValidationError.yaml
+
+delete:
+  tags: [Measurement Units]
+  summary: Measurement unit (delete)
+  description: Deletes a measurement unit if it has no blocking relations.
+  security:
+    - BearerAuth: []
+  parameters:
+    - $ref: ../../../_shared/components/parameters/IdPath.yaml
+  responses:
+    "200":
+      description: Deleted
+      content:
+        application/json:
+          schema:
+            $ref: ../../components/schemas/common/SuccessMessageResponse.yaml
+          examples:
+            deleted:
+              value:
+                success: true
+                message: "Measurement unit deleted."
+    "401": { $ref: ../../../_shared/components/responses/Unauthorized.yaml }
+    "403": { $ref: ../../../_shared/components/responses/Forbidden.yaml }
+    "404":
+      description: Not found
+      content:
+        application/json:
+          schema:
+            $ref: ../../components/schemas/common/FailureMessageResponse.yaml
+          examples:
+            notFound:
+              value:
+                success: false
+                message: "Measurement unit not found"
+    "422":
+      description: Delete blocked by related records
+      content:
+        application/json:
+          schema:
+            $ref: ../../components/schemas/common/FailureMessageResponse.yaml
+          examples:
+            blocked:
+              value:
+                success: false
+                message: "Measurement unit cannot be deleted because it has related records."

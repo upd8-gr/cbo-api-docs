@@ -67,16 +67,18 @@ security:
   - XAssebloCompany: []
 
 tags:
-  - name: Product Children
   - name: Invoices
   - name: Clients
   - name: Suppliers
   - name: Taxes
   - name: Invoice Types
   - name: Invoice Series
+  - name: Product Children
+  - name: Measurement Units
   - name: Expense Categories
   - name: Tax Offices
   - name: Payment Links
+  - name: Countries
 
 paths:
   /invoices:
@@ -91,6 +93,10 @@ paths:
     $ref: ./paths/product-children/index.yaml
   /product-children/{id}:
     $ref: ./paths/product-children/show.yaml
+  /measurement-units:
+    $ref: ./paths/measurement-units/index.yaml
+  /measurement-units/{id}:
+    $ref: ./paths/measurement-units/show.yaml
   /clients:
     $ref: ./paths/clients/index.yaml
   /clients/{id}:
@@ -123,6 +129,8 @@ paths:
     $ref: ./paths/payment-links/cancel.yaml
   /tax-offices:
     $ref: ./paths/tax-offices/index.yaml
+  /countries:
+    $ref: ./paths/countries/index.yaml
 
 components:
   securitySchemes:

@@ -1,0 +1,100 @@
+get:
+  tags: [Measurement Units]
+  summary: Measurement units (list)
+  description: |
+    Lists measurement units for the company from `X-Asseblo-Company`.
+    Supports free-text search across `name`, `short_name`, `peppol`, optional category filtering,
+    sorting, and pagination. Response is wrapped as `{ success, data, meta }`.
+  security:
+    - BearerAuth: []
+  parameters:
+    - name: search
+      in: query
+      required: false
+      description: Search value used with SQL `LIKE`.
+      schema: { type: string }
+    - name: search_fields
+      in: query
+      required: false
+      description: Comma-separated subset of `name`, `short_name`, `peppol`. Invalid fields are ignored.
+      schema: { type: string }
+      example: "name,short_name"
+    - name: category
+      in: query
+      required: false
+      description: Single category or repeated array values. English and Greek aliases are normalized by the backend.
+      style: form
+      explode: true
+      schema:
+        oneOf:
+          - type: string
+          - type: array
+            items:
+              type: string
+      examples:
+        single:
+          value: general
+        multiple:
+          value: [general, βάρος]
+    - name: sort_by
+      in: query
+      required: false
+      schema:
+        type: string
+        enum: [id, name, short_name, type, category, created_at, updated_at]
+      example: id
+    - name: sort_order
+      in: query
+      required: false
+      schema:
+        type: string
+        enum: [asc, desc]
+      example: asc
+    - name: page
+      in: query
+      required: false
+      schema: { type: integer, minimum: 1, default: 1 }
+    - name: page_size
+      in: query
+      required: false
+      description: Page size (default 50, max 100).
+      schema: { type: integer, minimum: 1, maximum: 100, default: 50 }
+  responses:
+    "200":
+      description: OK
+      content:
+        application/json:
+          schema:
+            $ref: ../../components/schemas/measurement-units/MeasurementUnitIndexResponse.yaml
+    "401": { $ref: ../../../_shared/components/responses/Unauthorized.yaml }
+    "403": { $ref: ../../../_shared/components/responses/Forbidden.yaml }
+
+post:
+  tags: [Measurement Units]
+  summary: Measurement unit (create)
+  description: |
+    Creates a measurement unit for the company. Validation failures return **422** with the standard
+    validation payload.
+  security:
+    - BearerAuth: []
+  requestBody:
+    required: true
+    content:
+      application/json:
+        schema:
+          $ref: ../../components/schemas/measurement-units/MeasurementUnitStore.yaml
+  responses:
+    "201":
+      description: Created
+      content:
+        application/json:
+          schema:
+            $ref: ../../components/schemas/measurement-units/MeasurementUnitSingleResponse.yaml
+    "401": { $ref: ../../../_shared/components/responses/Unauthorized.yaml }
+    "403": { $ref: ../../../_shared/components/responses/Forbidden.yaml }
+    "422":
+      description: Validation error
+      content:
+        application/json:
+          schema:
+            $ref: ../../../_shared/components/schemas/errors/ValidationError.yaml
