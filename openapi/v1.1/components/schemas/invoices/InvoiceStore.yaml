@@ -7,6 +7,16 @@ properties:
 
   invoice_series_id:
     type: integer
+    nullable: true
+
+  mydata_type:
+    type: string
+    nullable: true
+    maxLength: 10
+
+  serial_number:
+    type: integer
+    nullable: true
 
   date:
     type: string
@@ -27,42 +37,153 @@ properties:
       - credit-invoice
       - delivery-note
 
+  vat_payment_suspension:
+    type: boolean
+    nullable: true
+
   grand_total:
     type: number
+    minimum: 0
 
   billing_address:
-    description: Single address object only (no array form for invoice create).
+    description: >
+      Single address object. `zip` is accepted and normalized internally to `tk`; account linkage is
+      injected automatically from `client_id`.
     $ref: ../clients/ClientAddressInputObject.yaml
 
   shipping_address:
     nullable: true
-    description: Single address object only (no array form for invoice create).
+    description: >
+      Single address object. When present, the request also prepares `dispatch_detail` from the flat
+      dispatch alias fields if provided.
     $ref: ../clients/ClientAddressInputObject.yaml
 
   loading_address:
     nullable: true
-    description: Single address object only (no array form for invoice create).
+    description: Single address object.
     $ref: ../clients/ClientAddressInputObject.yaml
+
+  dispatch_date:
+    type: string
+    format: date
+    nullable: true
+    description: Public alias used to construct `dispatch_detail.dispatchDateTime` together with `dispatch_time`.
+
+  dispatch_time:
+    type: string
+    nullable: true
+    description: Public alias used to construct `dispatch_detail.dispatchDateTime` together with `dispatch_date`.
+
+  vehicle_number:
+    type: string
+    nullable: true
+    maxLength: 50
+    description: Public alias for `dispatch_detail.vehicleNumber`.
+
+  move_purpose:
+    type: integer
+    nullable: true
+    description: Public alias for `dispatch_detail.movePurpose`.
+
+  other_move_purpose_title:
+    type: string
+    nullable: true
+    maxLength: 255
+    description: Public alias for `dispatch_detail.otherMovePurposeTitle`.
+
+  dispatch_detail:
+    type: object
+    nullable: true
+    additionalProperties: false
+    properties:
+      dispatchDateTime:
+        type: string
+        format: date-time
+        nullable: true
+      movePurpose:
+        type: integer
+        nullable: true
+      otherMovePurposeTitle:
+        type: string
+        nullable: true
+        maxLength: 255
+      reverseDeliveryNotePurpose:
+        type: integer
+        nullable: true
+      vehicleNumber:
+        type: string
+        nullable: true
+        maxLength: 50
 
   items:
     type: array
     items:
       type: object
+      additionalProperties: false
       properties:
         product_id: { type: integer, nullable: true }
         description: { type: string, nullable: true }
-        quantity: { type: number }
-        unit_measure: { type: string }
-        unit_price: { type: number }
+        quantity:
+          type: number
+          minimum: 0.001
+        measure_unit:
+          type: string
+          nullable: true
+          maxLength: 255
+        measurement_unit_id:
+          type: integer
+          nullable: true
+        unit_price:
+          type: number
+          nullable: true
+          minimum: 0
+        discount_percentage:
+          type: number
+          nullable: true
+          minimum: 0
+          maximum: 100
         taxes:
           type: array
+          nullable: true
           items: { type: integer }
+        mydata_classification_category:
+          type: string
+          nullable: true
+          maxLength: 255
+          description: Public alias mapped to `classificationCategory`.
+        mydata_classification_type:
+          type: string
+          nullable: true
+          maxLength: 255
+          description: Public alias mapped to `classificationType`.
+        vat_exemption_category:
+          type: integer
+          nullable: true
+          description: Public alias mapped to `vatExemptionCategory`.
+        classificationCategory:
+          type: string
+          nullable: true
+          maxLength: 255
+        classificationType:
+          type: string
+          nullable: true
+          maxLength: 255
+        vatExemptionCategory:
+          type: integer
+          nullable: true
+
+  taxes:
+    type: array
+    nullable: true
+    items: { type: integer }
 
   payment_methods:
     type: array
     nullable: true
+    description: Required when `payment_way` is `cash`; otherwise prohibited.
     items:
       type: object
+      additionalProperties: false
       properties:
         paymentMethod:
           type: integer
@@ -80,6 +201,7 @@ properties:
             - 8: IRIS Direct Payment
         paymentAmount:
           type: number
+          minimum: 0
         terminal_id:
           type: integer
           nullable: true
@@ -91,14 +213,31 @@ properties:
         instalments:
           type: integer
           nullable: true
+          minimum: 0
           description: Number of instalments. Only available when paymentMethod is 7 (POS / e-POS).
+        paymentMethodInfo:
+          type: string
+          nullable: true
+          maxLength: 255
   terms:
     type: string
     nullable: true
+    maxLength: 1000
 
   notes:
     type: string
     nullable: true
+    maxLength: 1000
+
+  payment_way:
+    type: string
+    nullable: true
+    enum: [cash, on-credit]
+
+  currency_code:
+    type: string
+    nullable: true
+    maxLength: 3
 
   isDraft:
     type: boolean
