@@ -4,7 +4,8 @@ get:
   description: |
     Lists product children for the company from `X-Asseblo-Company`. Supports search on
     `product_name`, `catalog_code`, `barcode`, `erp_code`; optional filters `group_id` and `visibility`;
-    sorting and pagination (`page_size` default 50, max 100).
+    sorting and pagination (`page_size` default 50, max 100). If `stock` is provided, each returned
+    item exposes partial stock output instead of the default full stock output.
     Response: `{ success, data[], meta }`.
   security:
     - BearerAuth: []
@@ -46,6 +47,11 @@ get:
       required: false
       description: Page size (default 50, max 100).
       schema: { type: integer, minimum: 1, maximum: 100, default: 50 }
+    - name: stock
+      in: query
+      required: false
+      description: Backend-defined stock selector used to return partial stock values per item.
+      schema: { type: string }
   responses:
     "200":
       description: OK
@@ -61,7 +67,8 @@ post:
   summary: Product child (create)
   description: |
     Creates a product child for the company. On validation/runtime errors from the store service,
-    returns **422** with `success: false` and `message`. On unexpected failure, **500** with message.
+    returns **422**. Validation errors use the framework validation payload; business/runtime errors from
+    the store service return `{ success: false, message }`. On unexpected failure, **500** with message.
   security:
     - BearerAuth: []
   requestBody:

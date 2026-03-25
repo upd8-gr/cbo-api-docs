@@ -2,6 +2,7 @@ type: object
 additionalProperties: false
 description: >
   Create product child (`StoreProductChildRequest`). `group_id` may be sent as `-1` to be normalized to `0`.
+  Incoming `sku` is normalized server-side into the internal `catalog_code` field.
   `catalogues` / `suppliers` are normalized server-side into `catalogue_rates` / `supplier_pivot`.
 properties:
   product_name:
@@ -12,7 +13,9 @@ properties:
     description: Must exist in `measurement_units`.
   accounting_type:
     type: integer
-    enum: [1, 2, 3, 4, 5]
+    enum: [1, 2, 3, 4, 5, 6]
+    description: >
+        Accounting type (1: Goods, 2: Product, 3: Service, 4: A Material, 5: B Material, 6: Fixed).
   tax_id:
     type: integer
     description: Must exist in `taxes` for the company from `X-Asseblo-Company`.
@@ -24,7 +27,11 @@ properties:
     type: integer
     nullable: true
     description: Optional expense; must exist in `expenses` for the company.
-  catalog_code: { type: string, nullable: true, maxLength: 255 }
+  sku:
+    type: string
+    nullable: true
+    maxLength: 255
+    description: Public SKU input; mapped to the internal `catalog_code` field before validation.
   cpv_code: { type: string, nullable: true, maxLength: 255 }
   accounting_code: { type: string, nullable: true, maxLength: 255 }
   cost_price: { type: number, nullable: true }
@@ -44,12 +51,6 @@ properties:
     description: Must exist in `branches` for the company.
   check_stock: { type: boolean, nullable: true }
   stock_alert: { type: number, nullable: true }
-  show_on_website: { type: boolean, nullable: true }
-  show_on_b2b: { type: boolean, nullable: true }
-  show_on_sales: { type: boolean, nullable: true }
-  show_on_puzzle: { type: boolean, nullable: true }
-  show_on_purchase: { type: boolean, nullable: true }
-  show_on_retail: { type: boolean, nullable: true }
   characteristic_ids:
     type: array
     items: { type: integer }
@@ -68,6 +69,7 @@ properties:
         supplier_code: { type: string, nullable: true, maxLength: 255 }
         supplier_name: { type: string, nullable: true, maxLength: 255 }
         product_cost: { type: number, nullable: true }
+      required: [supplier_id]
   catalogues:
     type: array
     items:
@@ -76,6 +78,7 @@ properties:
       properties:
         catalogue_id: { type: integer }
         ratio: { type: number, nullable: true }
+      required: [catalogue_id]
   serial_numbers:
     type: array
     items: { type: string, maxLength: 255 }
@@ -83,10 +86,18 @@ properties:
     type: array
     items:
       type: object
-      additionalProperties: true
+      additionalProperties: false
       properties:
-        min_quantity: {}
-        max_quantity: {}
+        min_quantity:
+          nullable: true
+          oneOf:
+            - type: number
+            - type: string
+        max_quantity:
+          nullable: true
+          oneOf:
+            - type: number
+            - type: string
         retail: { type: number, nullable: true }
         profit: { type: number, nullable: true }
         price: { type: number, nullable: true }

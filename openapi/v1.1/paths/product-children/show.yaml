@@ -30,6 +30,9 @@ get:
 put:
   tags: [Product Children]
   summary: Product child (update full)
+  description: |
+    Updates a product child for the company. Validation failures from the form request return **422**.
+    Application exceptions inside the update service return **500** with `{ success: false, message }`.
   security:
     - BearerAuth: []
   parameters:
@@ -55,6 +58,12 @@ put:
         application/json:
           schema:
             $ref: ../../components/schemas/common/FailureMessageResponse.yaml
+    "422":
+      description: Validation error
+      content:
+        application/json:
+          schema:
+            $ref: ../../../_shared/components/schemas/errors/ValidationError.yaml
     "500":
       description: Update failed
       content:
@@ -70,6 +79,10 @@ put:
 patch:
   tags: [Product Children]
   summary: Product child (update partial)
+  description: |
+    Partially updates a product child for the company. Validation failures from the form request return
+    **422**. Application exceptions inside the update service return **500** with
+    `{ success: false, message }`.
   security:
     - BearerAuth: []
   parameters:
@@ -95,6 +108,12 @@ patch:
         application/json:
           schema:
             $ref: ../../components/schemas/common/FailureMessageResponse.yaml
+    "422":
+      description: Validation error
+      content:
+        application/json:
+          schema:
+            $ref: ../../../_shared/components/schemas/errors/ValidationError.yaml
     "500":
       description: Update failed
       content:

@@ -3,13 +3,27 @@ additionalProperties: false
 description: >
   Update product child. Same fields as create where applicable; send only fields to change
   (`UpdateProductChildRequest` — rules align with store for company-scoped relations).
+  `sku` is accepted and normalized into `catalog_code`; `catalog_code` is also accepted directly.
 properties:
   product_name: { type: string, maxLength: 500 }
   measurement_unit_id: { type: integer }
-  accounting_type: { type: integer, enum: [1, 2, 3, 4, 5] }
-  tax_id: { type: integer }
-  group_id: { type: integer, nullable: true }
-  expense_id: { type: integer, nullable: true }
+  accounting_type: { type: integer, enum: [1, 2, 3, 4, 5, 6] }
+  tax_id:
+    type: integer
+    description: Must exist in `taxes` for the company from `X-Asseblo-Company`.
+  group_id:
+    type: integer
+    nullable: true
+    description: Product group; must belong to company if > 0. Send `-1` to normalize to `0`.
+  expense_id:
+    type: integer
+    nullable: true
+    description: Optional expense; must exist in `expenses` for the company.
+  sku:
+    type: string
+    nullable: true
+    maxLength: 255
+    description: Preferred public SKU input; mapped to the internal `catalog_code` field before validation.
   catalog_code: { type: string, nullable: true, maxLength: 255 }
   cpv_code: { type: string, nullable: true, maxLength: 255 }
   accounting_code: { type: string, nullable: true, maxLength: 255 }
@@ -24,21 +38,20 @@ properties:
   special_rules: { type: integer, enum: [0, 1, 2], nullable: true }
   count_storage: { type: boolean, nullable: true }
   initial_stock: { type: number, nullable: true }
-  branch_id: { type: integer, nullable: true }
+  branch_id:
+    type: integer
+    nullable: true
+    description: Must exist in `branches` for the company.
   check_stock: { type: boolean, nullable: true }
   stock_alert: { type: number, nullable: true }
-  show_on_website: { type: boolean, nullable: true }
-  show_on_b2b: { type: boolean, nullable: true }
-  show_on_sales: { type: boolean, nullable: true }
-  show_on_puzzle: { type: boolean, nullable: true }
-  show_on_purchase: { type: boolean, nullable: true }
-  show_on_retail: { type: boolean, nullable: true }
   characteristic_ids:
     type: array
     items: { type: integer }
+    description: Characteristic IDs belonging to the company.
   supplier_ids:
     type: array
     items: { type: integer }
+    description: Supplier IDs (non-courier suppliers for the company).
   suppliers:
     type: array
     items:
@@ -49,6 +62,7 @@ properties:
         supplier_code: { type: string, nullable: true, maxLength: 255 }
         supplier_name: { type: string, nullable: true, maxLength: 255 }
         product_cost: { type: number, nullable: true }
+      required: [supplier_id]
   catalogues:
     type: array
     items:
@@ -57,6 +71,7 @@ properties:
       properties:
         catalogue_id: { type: integer }
         ratio: { type: number, nullable: true }
+      required: [catalogue_id]
   serial_numbers:
     type: array
     items: { type: string, maxLength: 255 }
@@ -64,7 +79,22 @@ properties:
     type: array
     items:
       type: object
-      additionalProperties: true
+      additionalProperties: false
+      properties:
+        min_quantity:
+          nullable: true
+          oneOf:
+            - type: number
+            - type: string
+        max_quantity:
+          nullable: true
+          oneOf:
+            - type: number
+            - type: string
+        retail: { type: number, nullable: true }
+        profit: { type: number, nullable: true }
+        price: { type: number, nullable: true }
+        fixed: { type: number, nullable: true }
   tags:
     type: array
     items: { type: string, maxLength: 255 }

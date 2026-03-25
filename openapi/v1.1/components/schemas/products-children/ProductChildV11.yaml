@@ -1,12 +1,17 @@
 type: object
 additionalProperties: false
-description: Product child as returned by `ProductChildResource` (API v1.1).
+description: Product child as returned by `ProductChildResource` (API v1.1). Null-valued fields may be omitted.
 properties:
   id: { type: integer, format: int64, example: 1001 }
   product_name: { type: string, example: "Sample product" }
   description: { type: string, nullable: true }
   code: { type: string, nullable: true }
   barcode: { type: string, nullable: true }
+  sku:
+    type: string
+    nullable: true
+    description: Public SKU value returned from the internal `catalog_code` field.
+    example: "SKU-001"
   group_id: { type: integer, nullable: true, example: 5 }
   measurement_unit_id: { type: integer, nullable: true }
   tax_id: { type: integer, nullable: true }
@@ -15,18 +20,28 @@ properties:
     nullable: true
     description: Tax rate from related tax record (`tax.value`).
     example: 24
-  accounting_type: { type: integer, enum: [1, 2, 3, 4, 5], example: 1 }
+  accounting_type: { type: integer, enum: [1, 2, 3, 4, 5, 6], example: 1 }
   cost_price: { type: number, nullable: true }
   sell_price: { type: number, nullable: true }
   retail_price: { type: number, nullable: true }
   website_price: { type: number, nullable: true }
   discounted_price: { type: number, nullable: true }
+  builded_price: { type: number, nullable: true }
+  stock:
+    nullable: true
+    description: Full stock output by default, or partial stock output when the `stock` query parameter is used on the list endpoint.
+    oneOf:
+      - type: number
+        example: 12
+      - type: object
+        additionalProperties: true
   company_id: { type: integer, example: 1 }
   visibility: { type: boolean, example: true }
   count_storage:
-    type: number
+    type: boolean
     nullable: true
-    description: Stock count from resource (`countStorage`).
+    description: Whether storage counting is enabled for the product.
+  parent_name: { type: string, nullable: true, example: "Parent Product" }
   created_at: { type: string, example: "2026-02-11 10:00:00" }
   updated_at: { type: string, example: "2026-02-11 10:00:00" }
   measurement_unit_name:
@@ -49,8 +64,6 @@ required:
   - id
   - product_name
   - company_id
+  - visibility
   - created_at
   - updated_at
-  - characteristics
-  - tiers
-  - catalogues
