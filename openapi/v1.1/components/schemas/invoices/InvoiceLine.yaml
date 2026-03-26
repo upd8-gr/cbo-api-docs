@@ -4,7 +4,7 @@ properties:
   id: { type: integer }
   product_id: { type: integer, nullable: true }
   description: { type: string }
-  quantity: { type: number }
+  quantity: { type: number, required: true }
   unit_measure: { type: string }
   unit_price: { type: number }
   discount_price: { type: number, nullable: true }
