@@ -13,12 +13,12 @@ properties:
     type: array
     items:
       $ref: ../taxes/Tax.yaml
-  classificationCategory:
+  mydata_classification_category:
     type: string
     nullable: true
-  classificationType:
+  mydata_classification_type:
     type: string
     nullable: true
-  vatExemptionCategory:
+  vat_exemption_category:
     type: integer
     nullable: true

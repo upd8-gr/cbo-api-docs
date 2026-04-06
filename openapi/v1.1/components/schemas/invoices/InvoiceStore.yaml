@@ -147,15 +147,15 @@ properties:
           type: array
           nullable: true
           items: { type: integer }
-        classificationCategory:
+        mydata_classification_category:
           type: string
           nullable: true
           maxLength: 255
-        classificationType:
+        mydata_classification_type:
           type: string
           nullable: true
           maxLength: 255
-        vatExemptionCategory:
+        vat_exemption_category:
           type: integer
           nullable: true
 
