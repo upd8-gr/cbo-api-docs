@@ -1,0 +1,30 @@
+get:
+  tags: [Stocks]
+  summary: Show stock
+  description: Returns a single stock/warehouse location by ID.
+  security:
+    - BearerAuth: []
+  parameters:
+    - name: stock
+      in: path
+      required: true
+      description: The ID of the stock location.
+      schema:
+        type: integer
+        format: int64
+      example: 1
+
+  responses:
+    "200":
+      description: OK
+      content:
+        application/json:
+          schema:
+            $ref: ../../components/schemas/stocks/StockResponse.yaml
+          example:
+            data:
+              id: 1
+              name: "Αποθήκη Αθήνα"
+    "401": { $ref: ../../../_shared/components/responses/Unauthorized.yaml }
+    "403": { $ref: ../../../_shared/components/responses/Forbidden.yaml }
+    "404": { $ref: ../../../_shared/components/responses/NotFound.yaml }

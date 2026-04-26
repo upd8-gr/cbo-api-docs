@@ -1,0 +1,6 @@
+type: object
+additionalProperties: false
+properties:
+  data:
+    $ref: ./Order.yaml
+required: [data]

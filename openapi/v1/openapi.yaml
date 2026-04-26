@@ -79,6 +79,24 @@ paths:
     $ref: ./paths/groups/index.yaml
   /groups/{id}:
     $ref: ./paths/groups/show.yaml
+  /characteristics:
+    $ref: ./paths/characteristics/index.yaml
+  /characteristics/{characteristic}:
+    $ref: ./paths/characteristics/show.yaml
+  /characteristics-categories:
+    $ref: ./paths/characteristics-categories/index.yaml
+  /characteristics-categories/{category}:
+    $ref: ./paths/characteristics-categories/show.yaml
+  /stocks:
+    $ref: ./paths/stocks/index.yaml
+  /stocks/{stock}:
+    $ref: ./paths/stocks/show.yaml
+  /orders:
+    $ref: ./paths/orders/index.yaml
+  /orders/{order}:
+    $ref: ./paths/orders/show.yaml
+  /create/order:
+    $ref: ./paths/orders/create.yaml
 
 components:
   securitySchemes:
@@ -119,6 +137,56 @@ components:
       $ref: ./components/schemas/groups/GroupCollection.yaml
     GroupPaginatedCollection:
       $ref: ./components/schemas/groups/GroupPaginatedCollection.yaml
+
+    # characteristics
+    CharacteristicSlim:
+      $ref: ./components/schemas/characteristics/CharacteristicSlim.yaml
+    CharacteristicCategoryResource:
+      $ref: ./components/schemas/characteristics/CharacteristicCategoryResource.yaml
+    CharacteristicResource:
+      $ref: ./components/schemas/characteristics/CharacteristicResource.yaml
+    CharacteristicCollection:
+      $ref: ./components/schemas/characteristics/CharacteristicCollection.yaml
+    CharacteristicPaginatedCollection:
+      $ref: ./components/schemas/characteristics/CharacteristicPaginatedCollection.yaml
+    CharacteristicResponse:
+      $ref: ./components/schemas/characteristics/CharacteristicResponse.yaml
+    CharacteristicCategoryCollection:
+      $ref: ./components/schemas/characteristics/CharacteristicCategoryCollection.yaml
+    CharacteristicCategoryPaginatedCollection:
+      $ref: ./components/schemas/characteristics/CharacteristicCategoryPaginatedCollection.yaml
+    CharacteristicCategoryResponse:
+      $ref: ./components/schemas/characteristics/CharacteristicCategoryResponse.yaml
+
+    # stocks
+    Stock:
+      $ref: ./components/schemas/stocks/Stock.yaml
+    StockCollection:
+      $ref: ./components/schemas/stocks/StockCollection.yaml
+    StockPaginatedCollection:
+      $ref: ./components/schemas/stocks/StockPaginatedCollection.yaml
+    StockResponse:
+      $ref: ./components/schemas/stocks/StockResponse.yaml
+
+    # orders
+    AddressInput:
+      $ref: ./components/schemas/orders/AddressInput.yaml
+    OrderItemInput:
+      $ref: ./components/schemas/orders/OrderItemInput.yaml
+    FeeItemInput:
+      $ref: ./components/schemas/orders/FeeItemInput.yaml
+    Order:
+      $ref: ./components/schemas/orders/Order.yaml
+    OrderCollection:
+      $ref: ./components/schemas/orders/OrderCollection.yaml
+    OrderPaginatedCollection:
+      $ref: ./components/schemas/orders/OrderPaginatedCollection.yaml
+    OrderResponse:
+      $ref: ./components/schemas/orders/OrderResponse.yaml
+    OrderStore:
+      $ref: ./components/schemas/orders/OrderStore.yaml
+    OrderCreateResponse:
+      $ref: ./components/schemas/orders/OrderCreateResponse.yaml
 
   responses:
     Unauthorized:

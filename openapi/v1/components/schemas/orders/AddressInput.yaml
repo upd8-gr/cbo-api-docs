@@ -1,0 +1,33 @@
+type: object
+description: Address input for a client (billing, shipping, or other).
+additionalProperties: false
+properties:
+  address_type:
+    type: string
+    enum: [billing, shipping, other]
+    example: billing
+  address:
+    type: string
+    example: "Σταδίου"
+  number:
+    type: string
+    nullable: true
+    example: "10"
+  branch_code:
+    type: string
+    nullable: true
+    example: null
+  zip:
+    type: string
+    example: "10562"
+  city:
+    type: string
+    example: "Αθήνα"
+  region:
+    type: string
+    nullable: true
+    example: "Αττική"
+  country:
+    type: string
+    example: "GR"
+required: [address_type, address, zip, city, country]

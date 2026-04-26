@@ -1,0 +1,42 @@
+type: object
+additionalProperties: false
+properties:
+  id:
+    type: integer
+    format: int64
+    example: 1
+  serial_number:
+    type: string
+    example: "#1001"
+  title:
+    type: string
+    example: "Order for Papadopoulos"
+  billing_account:
+    type: object
+    nullable: true
+    additionalProperties: true
+    description: Client billing account object, if attached.
+    example: null
+  isOffer:
+    type: boolean
+    example: false
+  isExternal:
+    type: boolean
+    example: true
+  items:
+    type: array
+    items:
+      type: object
+      additionalProperties: true
+    description: Order line items.
+  comments:
+    type: string
+    nullable: true
+    example: null
+  updated:
+    type: string
+    example: "2026-04-27 10:00:00"
+  created:
+    type: string
+    example: "2026-04-27 09:00:00"
+required: [id, serial_number, title, isOffer, isExternal, items, updated, created]

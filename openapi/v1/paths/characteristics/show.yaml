@@ -1,0 +1,38 @@
+get:
+  tags: [Characteristics]
+  summary: Show characteristic
+  description: Returns a single characteristic by ID.
+  security:
+    - BearerAuth: []
+  parameters:
+    - name: characteristic
+      in: path
+      required: true
+      description: The ID of the characteristic.
+      schema:
+        type: integer
+        format: int64
+      example: 1
+
+  responses:
+    "200":
+      description: OK
+      content:
+        application/json:
+          schema:
+            $ref: ../../components/schemas/characteristics/CharacteristicResponse.yaml
+          example:
+            data:
+              id: 1
+              name: "Red"
+              image: null
+              category:
+                id: 1
+                name: "Color"
+                characteristics:
+                  - id: 1
+                    name: "Red"
+                    image: null
+    "401": { $ref: ../../../_shared/components/responses/Unauthorized.yaml }
+    "403": { $ref: ../../../_shared/components/responses/Forbidden.yaml }
+    "404": { $ref: ../../../_shared/components/responses/NotFound.yaml }

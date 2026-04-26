@@ -1,0 +1,80 @@
+post:
+  tags: [Orders]
+  summary: Create order
+  description: >
+    Creates a new order from an external source (e.g. e-shop).
+    Finds or creates the client by email, attaches addresses, line items, fee and shipping items.
+  security:
+    - BearerAuth: []
+  requestBody:
+    required: true
+    content:
+      application/json:
+        schema:
+          $ref: ../../components/schemas/orders/OrderStore.yaml
+        example:
+          email: "customer@example.com"
+          first_name: "Γιώργος"
+          last_name: "Παπαδόπουλος"
+          telephone: "2100000000"
+          cellphone: "6900000000"
+          addresses:
+            - address_type: billing
+              address: "Σταδίου"
+              number: "10"
+              zip: "10562"
+              city: "Αθήνα"
+              country: "GR"
+            - address_type: shipping
+              address: "Σταδίου"
+              number: "10"
+              zip: "10562"
+              city: "Αθήνα"
+              country: "GR"
+          order_items:
+            - product_id: "SKU-001"
+              title: "Laptop 15\""
+              quantity: 1
+              unit_price: 500.00
+              total_tax: 120.00
+          shipping_items:
+            - title: "Shipping"
+              price: 5.00
+              total_tax: 1.20
+          isExternal: true
+
+  responses:
+    "201":
+      description: Order created
+      content:
+        application/json:
+          schema:
+            $ref: ../../components/schemas/orders/OrderCreateResponse.yaml
+          example:
+            data:
+              id: 101
+              serial_number: "#1001"
+              title: "Order for Παπαδόπουλος"
+              billing_account: null
+              isOffer: false
+              isExternal: true
+              items: []
+              comments: null
+              updated: "2026-04-27 10:00:00"
+              created: "2026-04-27 10:00:00"
+    "400":
+      description: Bad Request — required field missing (e.g. email)
+      content:
+        application/json:
+          schema:
+            type: object
+            additionalProperties: false
+            properties:
+              error:
+                type: string
+                example: "Το email είναι υποχρεωτικό"
+            required: [error]
+          example:
+            error: "Το email είναι υποχρεωτικό"
+    "401": { $ref: ../../../_shared/components/responses/Unauthorized.yaml }
+    "422": { $ref: ../../../_shared/components/responses/UnprocessableEntity.yaml }

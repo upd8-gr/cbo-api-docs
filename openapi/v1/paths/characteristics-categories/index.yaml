@@ -1,0 +1,68 @@
+get:
+  tags: [Characteristics]
+  summary: List characteristic categories
+  description: >
+    Returns characteristic categories (each with its slim-characteristics list).
+    If `page_size` is provided, response is Laravel paginated. Otherwise returns a plain resource collection.
+  security:
+    - BearerAuth: []
+  parameters:
+    - name: page_size
+      in: query
+      required: false
+      description: >
+        Page size for Laravel pagination. Use an integer for a fixed page size,
+        or `"all"` to return all records unpaginated.
+      schema:
+        oneOf:
+          - type: integer
+            minimum: 1
+          - type: string
+            enum: ["all"]
+      example: 100
+
+  responses:
+    "200":
+      description: OK (collection or paginated collection)
+      content:
+        application/json:
+          schema:
+            oneOf:
+              - $ref: ../../components/schemas/characteristics/CharacteristicCategoryCollection.yaml
+              - $ref: ../../components/schemas/characteristics/CharacteristicCategoryPaginatedCollection.yaml
+          examples:
+            collection:
+              summary: Non-paginated
+              value:
+                data:
+                  - id: 1
+                    name: "Color"
+                    characteristics:
+                      - id: 1
+                        name: "Red"
+                        image: null
+            paginated:
+              summary: Paginated (page_size provided)
+              value:
+                data:
+                  - id: 1
+                    name: "Color"
+                    characteristics:
+                      - id: 1
+                        name: "Red"
+                        image: null
+                links:
+                  first: "/api/v1/characteristics-categories?page=1"
+                  last: "/api/v1/characteristics-categories?page=3"
+                  prev: null
+                  next: "/api/v1/characteristics-categories?page=2"
+                meta:
+                  current_page: 1
+                  from: 1
+                  last_page: 3
+                  path: "/api/v1/characteristics-categories"
+                  per_page: 100
+                  to: 100
+                  total: 300
+    "401": { $ref: ../../../_shared/components/responses/Unauthorized.yaml }
+    "403": { $ref: ../../../_shared/components/responses/Forbidden.yaml }

@@ -1,0 +1,33 @@
+type: object
+description: A product line item for an order.
+additionalProperties: false
+properties:
+  product_id:
+    type: string
+    example: "SKU-001"
+  title:
+    type: string
+    example: "Laptop 15\""
+  quantity:
+    type: number
+    example: 2
+  unit_price:
+    type: number
+    example: 500.00
+  total_tax:
+    type: number
+    nullable: true
+    example: 240.00
+  comments:
+    type: string
+    nullable: true
+    example: null
+  discount_percentage:
+    type: number
+    nullable: true
+    example: 10
+  discount_percentage2:
+    type: number
+    nullable: true
+    example: null
+required: [product_id, title, quantity, unit_price]

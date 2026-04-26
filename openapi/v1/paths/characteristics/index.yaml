@@ -1,0 +1,130 @@
+get:
+  tags: [Characteristics]
+  summary: List characteristics
+  description: >
+    Returns characteristics with optional filtering by category, group, and specific IDs.
+    If `page_size` is provided, response is Laravel paginated. Otherwise returns a plain resource collection.
+  security:
+    - BearerAuth: []
+  parameters:
+    - name: needle_category
+      in: query
+      required: false
+      description: Filter characteristics by category ID.
+      schema:
+        type: integer
+        format: int64
+      example: 3
+
+    - name: group_id
+      in: query
+      required: false
+      description: Filter characteristics linked to a specific group.
+      schema:
+        type: integer
+        format: int64
+      example: 5
+
+    - name: characteristic_id
+      in: query
+      required: false
+      description: Filter by a specific characteristic ID.
+      schema:
+        type: integer
+        format: int64
+      example: 12
+
+    - name: fromWebsite
+      in: query
+      required: false
+      description: Filter by website visibility.
+      schema:
+        type: boolean
+        default: true
+      example: true
+
+    - name: checkStock
+      in: query
+      required: false
+      description: Whether to check stock availability when filtering.
+      schema:
+        type: boolean
+      example: false
+
+    - name: ordering
+      in: query
+      required: false
+      description: >
+        Ordering string. Prefix column name with `-` for descending order.
+        Multiple columns separated by comma.
+      schema:
+        type: string
+      example: "id,-name"
+
+    - name: page_size
+      in: query
+      required: false
+      description: >
+        Page size for Laravel pagination. Use an integer for a fixed page size,
+        or `"all"` to return all records unpaginated.
+      schema:
+        oneOf:
+          - type: integer
+            minimum: 1
+          - type: string
+            enum: ["all"]
+      example: 100
+
+  responses:
+    "200":
+      description: OK (collection or paginated collection)
+      content:
+        application/json:
+          schema:
+            oneOf:
+              - $ref: ../../components/schemas/characteristics/CharacteristicCollection.yaml
+              - $ref: ../../components/schemas/characteristics/CharacteristicPaginatedCollection.yaml
+          examples:
+            collection:
+              summary: Non-paginated
+              value:
+                data:
+                  - id: 1
+                    name: "Red"
+                    image: null
+                    category:
+                      id: 1
+                      name: "Color"
+                      characteristics:
+                        - id: 1
+                          name: "Red"
+                          image: null
+            paginated:
+              summary: Paginated (page_size provided)
+              value:
+                data:
+                  - id: 1
+                    name: "Red"
+                    image: null
+                    category:
+                      id: 1
+                      name: "Color"
+                      characteristics:
+                        - id: 1
+                          name: "Red"
+                          image: null
+                links:
+                  first: "/api/v1/characteristics?page=1"
+                  last: "/api/v1/characteristics?page=5"
+                  prev: null
+                  next: "/api/v1/characteristics?page=2"
+                meta:
+                  current_page: 1
+                  from: 1
+                  last_page: 5
+                  path: "/api/v1/characteristics"
+                  per_page: 100
+                  to: 100
+                  total: 500
+    "401": { $ref: ../../../_shared/components/responses/Unauthorized.yaml }
+    "403": { $ref: ../../../_shared/components/responses/Forbidden.yaml }

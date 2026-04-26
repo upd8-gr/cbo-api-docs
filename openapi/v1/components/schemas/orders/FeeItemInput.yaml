@@ -1,0 +1,19 @@
+type: object
+description: A fee or shipping line item for an order.
+additionalProperties: false
+properties:
+  title:
+    type: string
+    example: "Shipping"
+  price:
+    type: number
+    example: 5.00
+  total_tax:
+    type: number
+    nullable: true
+    example: 1.20
+  discount_percentage:
+    type: number
+    nullable: true
+    example: null
+required: [title, price]

@@ -1,0 +1,16 @@
+type: object
+description: A characteristic category with its slim-characteristics list.
+additionalProperties: false
+properties:
+  id:
+    type: integer
+    format: int64
+    example: 1
+  name:
+    type: string
+    example: "Color"
+  characteristics:
+    type: array
+    items:
+      $ref: ./CharacteristicSlim.yaml
+required: [id, name, characteristics]

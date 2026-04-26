@@ -1,0 +1,6 @@
+type: object
+additionalProperties: false
+properties:
+  data:
+    $ref: ./CharacteristicCategoryResource.yaml
+required: [data]

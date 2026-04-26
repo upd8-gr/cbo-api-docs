@@ -1,0 +1,94 @@
+get:
+  tags: [Orders]
+  summary: List orders
+  description: >
+    Returns orders with optional item loading and ordering.
+    If `page_size` is provided, response is Laravel paginated. Otherwise returns a plain resource collection.
+  security:
+    - BearerAuth: []
+  parameters:
+    - name: withItems
+      in: query
+      required: false
+      description: If true, each order includes its line items.
+      schema:
+        type: boolean
+      example: true
+
+    - name: ordering
+      in: query
+      required: false
+      description: >
+        Ordering string. Prefix column name with `-` for descending order.
+        Multiple columns separated by comma.
+      schema:
+        type: string
+      example: "id,-created_at"
+
+    - name: page_size
+      in: query
+      required: false
+      description: >
+        Page size for Laravel pagination. Use an integer for a fixed page size,
+        or `"all"` to return all records unpaginated.
+      schema:
+        oneOf:
+          - type: integer
+            minimum: 1
+          - type: string
+            enum: ["all"]
+      example: 100
+
+  responses:
+    "200":
+      description: OK (collection or paginated collection)
+      content:
+        application/json:
+          schema:
+            oneOf:
+              - $ref: ../../components/schemas/orders/OrderCollection.yaml
+              - $ref: ../../components/schemas/orders/OrderPaginatedCollection.yaml
+          examples:
+            collection:
+              summary: Non-paginated
+              value:
+                data:
+                  - id: 1
+                    serial_number: "#1001"
+                    title: "Order for Παπαδόπουλος"
+                    billing_account: null
+                    isOffer: false
+                    isExternal: true
+                    items: []
+                    comments: null
+                    updated: "2026-04-27 10:00:00"
+                    created: "2026-04-27 09:00:00"
+            paginated:
+              summary: Paginated (page_size provided)
+              value:
+                data:
+                  - id: 1
+                    serial_number: "#1001"
+                    title: "Order for Παπαδόπουλος"
+                    billing_account: null
+                    isOffer: false
+                    isExternal: true
+                    items: []
+                    comments: null
+                    updated: "2026-04-27 10:00:00"
+                    created: "2026-04-27 09:00:00"
+                links:
+                  first: "/api/v1/orders?page=1"
+                  last: "/api/v1/orders?page=10"
+                  prev: null
+                  next: "/api/v1/orders?page=2"
+                meta:
+                  current_page: 1
+                  from: 1
+                  last_page: 10
+                  path: "/api/v1/orders"
+                  per_page: 100
+                  to: 100
+                  total: 1000
+    "401": { $ref: ../../../_shared/components/responses/Unauthorized.yaml }
+    "403": { $ref: ../../../_shared/components/responses/Forbidden.yaml }

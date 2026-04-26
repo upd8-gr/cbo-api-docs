@@ -1,0 +1,62 @@
+get:
+  tags: [Stocks]
+  summary: List stocks
+  description: >
+    Returns warehouse/stock locations.
+    If `page_size` is provided, response is Laravel paginated. Otherwise returns a plain resource collection.
+  security:
+    - BearerAuth: []
+  parameters:
+    - name: page_size
+      in: query
+      required: false
+      description: >
+        Page size for Laravel pagination. Use an integer for a fixed page size,
+        or `"all"` to return all records unpaginated.
+      schema:
+        oneOf:
+          - type: integer
+            minimum: 1
+          - type: string
+            enum: ["all"]
+      example: 100
+
+  responses:
+    "200":
+      description: OK (collection or paginated collection)
+      content:
+        application/json:
+          schema:
+            oneOf:
+              - $ref: ../../components/schemas/stocks/StockCollection.yaml
+              - $ref: ../../components/schemas/stocks/StockPaginatedCollection.yaml
+          examples:
+            collection:
+              summary: Non-paginated
+              value:
+                data:
+                  - id: 1
+                    name: "Αποθήκη Αθήνα"
+                  - id: 2
+                    name: "Αποθήκη Θεσσαλονίκη"
+            paginated:
+              summary: Paginated (page_size provided)
+              value:
+                data:
+                  - id: 1
+                    name: "Αποθήκη Αθήνα"
+                links:
+                  first: "/api/v1/stocks?page=1"
+                  last: "/api/v1/stocks?page=1"
+                  prev: null
+                  next: null
+                meta:
+                  current_page: 1
+                  from: 1
+                  last_page: 1
+                  path: "/api/v1/stocks"
+                  per_page: 100
+                  to: 2
+                  total: 2
+    "401": { $ref: ../../../_shared/components/responses/Unauthorized.yaml }
+    "403": { $ref: ../../../_shared/components/responses/Forbidden.yaml }

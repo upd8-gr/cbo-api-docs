@@ -1,0 +1,38 @@
+get:
+  tags: [Orders]
+  summary: Show order
+  description: Returns a single order by ID.
+  security:
+    - BearerAuth: []
+  parameters:
+    - name: order
+      in: path
+      required: true
+      description: The ID of the order.
+      schema:
+        type: integer
+        format: int64
+      example: 1
+
+  responses:
+    "200":
+      description: OK
+      content:
+        application/json:
+          schema:
+            $ref: ../../components/schemas/orders/OrderResponse.yaml
+          example:
+            data:
+              id: 1
+              serial_number: "#1001"
+              title: "Order for Παπαδόπουλος"
+              billing_account: null
+              isOffer: false
+              isExternal: true
+              items: []
+              comments: null
+              updated: "2026-04-27 10:00:00"
+              created: "2026-04-27 09:00:00"
+    "401": { $ref: ../../../_shared/components/responses/Unauthorized.yaml }
+    "403": { $ref: ../../../_shared/components/responses/Forbidden.yaml }
+    "404": { $ref: ../../../_shared/components/responses/NotFound.yaml }
