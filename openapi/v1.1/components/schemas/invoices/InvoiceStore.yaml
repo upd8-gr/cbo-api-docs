@@ -126,6 +126,7 @@ properties:
         quantity:
           type: number
           minimum: 0.001
+          required: true
         measure_unit:
           type: string
           nullable: true
@@ -150,25 +151,11 @@ properties:
           type: string
           nullable: true
           maxLength: 255
-          description: Public alias mapped to `classificationCategory`.
         mydata_classification_type:
           type: string
           nullable: true
           maxLength: 255
-          description: Public alias mapped to `classificationType`.
         vat_exemption_category:
-          type: integer
-          nullable: true
-          description: Public alias mapped to `vatExemptionCategory`.
-        classificationCategory:
-          type: string
-          nullable: true
-          maxLength: 255
-        classificationType:
-          type: string
-          nullable: true
-          maxLength: 255
-        vatExemptionCategory:
           type: integer
           nullable: true
 

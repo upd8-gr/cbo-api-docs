@@ -4,12 +4,6 @@ description: >
   Create measurement unit (`StoreMeasurementUnitRequest`). Incoming `category` accepts either the
   documented Greek label or common English/Greek aliases and is normalized server-side before validation.
 properties:
-  config_id:
-    type: integer
-    minimum: 0
-    maximum: 255
-    default: 0
-    description: Numeric config identifier.
   name:
     type: string
     maxLength: 255
@@ -41,4 +35,4 @@ properties:
     nullable: true
     exclusiveMinimum: 0
     description: Positive conversion amount. Required when `measurement_unit_id` is sent.
-required: [config_id, name, short_name, category]
+required: [name, short_name, category]
