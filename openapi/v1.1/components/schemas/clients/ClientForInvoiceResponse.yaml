@@ -1,0 +1,15 @@
+type: object
+additionalProperties: false
+properties:
+  id: { type: integer, format: int64, example: 1 }
+
+  first_name: { type: string, nullable: true, example: "Giorgos" }
+  last_name: { type: string, nullable: true, example: "Papadopoulos" }
+  email: { type: string, nullable: true, example: "g@example.com" }
+  phone: { type: string, nullable: true, example: "2100000000" }
+  mobile: { type: string, nullable: true, example: null }
+
+  vat: { type: string, nullable: true, example: "123456789" }
+
+  invoice_name: { type: string, nullable: true, example: "ACME SA" }
+  company_name: { type: string, nullable: true, example: "ACME SA" }

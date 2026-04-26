@@ -91,30 +91,6 @@ properties:
     maxLength: 255
     description: Public alias for `dispatch_detail.otherMovePurposeTitle`.
 
-  dispatch_detail:
-    type: object
-    nullable: true
-    additionalProperties: false
-    properties:
-      dispatchDateTime:
-        type: string
-        format: date-time
-        nullable: true
-      movePurpose:
-        type: integer
-        nullable: true
-      otherMovePurposeTitle:
-        type: string
-        nullable: true
-        maxLength: 255
-      reverseDeliveryNotePurpose:
-        type: integer
-        nullable: true
-      vehicleNumber:
-        type: string
-        nullable: true
-        maxLength: 50
-
   items:
     type: array
     items:
@@ -206,6 +182,17 @@ properties:
           type: string
           nullable: true
           maxLength: 255
+
+  related_documents:
+    type: array
+    nullable: true
+    items: { type: integer, description: id of invoice with document_type `credit-invoice` }
+
+  delivery_notes:
+    type: array
+    nullable: true
+    items: { type: integer , description: id of invoice with document_type `delivery-note` }
+  
   terms:
     type: string
     nullable: true

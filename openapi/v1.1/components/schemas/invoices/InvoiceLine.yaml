@@ -12,7 +12,7 @@ properties:
   taxes:
     type: array
     items:
-      $ref: ../taxes/Tax.yaml
+      $ref: ../taxes/TaxForInvoiceLine.yaml
   mydata_classification_category:
     type: string
     nullable: true

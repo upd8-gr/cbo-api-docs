@@ -1,0 +1,8 @@
+type: object
+additionalProperties: false
+properties:
+  id: { type: integer, format: int64, example: 1265 }
+  title: { type: string, example: "ΦΠΑ 24%" }
+  value:
+    type: number
+    example: 24

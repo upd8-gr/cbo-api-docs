@@ -44,7 +44,7 @@ properties:
     type: integer
 
   client:
-    $ref: ../clients/Client.yaml
+    $ref: ../clients/ClientForInvoiceResponse.yaml
 
   billing_address:
     $ref: ../resources/Address.yaml
