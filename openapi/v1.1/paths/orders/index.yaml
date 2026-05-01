@@ -1,0 +1,231 @@
+get:
+  tags: [Orders]
+  summary: Orders (list)
+  description: >
+    Lists orders with optional search, filtering, sorting, and pagination.
+    Response is always paginated and wrapped as `{success, data, meta}`.
+  security:
+    - BearerAuth: []
+  parameters:
+    - name: search
+      in: query
+      required: false
+      description: Search term. Applied as a LIKE filter across the fields specified in `search_fields`.
+      schema: { type: string, maxLength: 255 }
+      example: "Website"
+
+    - name: search_fields
+      in: query
+      required: false
+      description: >
+        Comma-separated list of fields to search in. Allowed values: `title`, `purchase_order`, `primary_id`.
+      schema: { type: string }
+      example: "title,purchase_order"
+
+    - name: client_id
+      in: query
+      required: false
+      description: Filter orders by client ID.
+      schema: { type: integer }
+      example: 5
+
+    - name: is_offer
+      in: query
+      required: false
+      description: Filter by offer flag. `true` returns only offers/quotes; `false` returns only standard orders.
+      schema: { type: boolean }
+      example: false
+
+    - name: date_from
+      in: query
+      required: false
+      description: Return only orders created on or after this date.
+      schema: { type: string, format: date }
+      example: "2026-01-01"
+
+    - name: date_to
+      in: query
+      required: false
+      description: Return only orders created on or before this date. Must be ≥ `date_from`.
+      schema: { type: string, format: date }
+      example: "2026-12-31"
+
+    - name: sort_by
+      in: query
+      required: false
+      schema:
+        type: string
+        enum: [id, title, created_at, updated_at]
+        default: id
+      example: id
+
+    - name: sort_order
+      in: query
+      required: false
+      schema:
+        type: string
+        enum: [asc, desc]
+        default: desc
+      example: desc
+
+    - name: page
+      in: query
+      required: false
+      schema: { type: integer, minimum: 1, default: 1 }
+      example: 1
+
+    - name: page_size
+      in: query
+      required: false
+      description: Number of results per page (default 50, max 100).
+      schema: { type: integer, minimum: 1, maximum: 100, default: 50 }
+      example: 50
+
+  responses:
+    "200":
+      description: OK
+      content:
+        application/json:
+          schema:
+            $ref: ../../components/schemas/orders/OrderIndexResponse.yaml
+          examples:
+            default:
+              value:
+                success: true
+                data:
+                  - id: 1
+                    serial_number: "#1001"
+                    title: "Website redesign order"
+                    purchase_order: "PO-2026-001"
+                    is_offer: false
+                    is_external: false
+                    client_id: 5
+                    client: null
+                    items: []
+                    comments: null
+                    project_id: null
+                    created: "2026-04-27 09:00:00"
+                    modified: "2026-04-27 10:00:00"
+                meta:
+                  current_page: 1
+                  last_page: 3
+                  per_page: 50
+                  total: 120
+    "401": { $ref: ../../../_shared/components/responses/Unauthorized.yaml }
+    "403": { $ref: ../../../_shared/components/responses/Forbidden.yaml }
+    "422": { $ref: ../../../_shared/components/responses/UnprocessableEntity.yaml }
+    "429": { $ref: ../../../_shared/components/responses/TooManyRequests.yaml }
+
+post:
+  tags: [Orders]
+  summary: Order (create)
+  description: >
+    Creates a new order.
+
+    **Client resolution precedence:**
+
+    1. `client_id` supplied → attach existing client by ID.
+    2. `client.afm` (or `client.vat`) supplied → find by VAT within the company, or create a new company (B2B) client. `client.invoice_name` is required in this case.
+    3. `client.email` supplied → find by e-mail within the company, or create a new person (B2C) client.
+
+    Exactly one of `client_id` or a `client` block must be provided.
+
+    A `billing_address` is always required. A `shipping_address` is required only when dispatch details are provided.
+  security:
+    - BearerAuth: []
+  requestBody:
+    required: true
+    content:
+      application/json:
+        schema:
+          $ref: ../../components/schemas/orders/OrderStore.yaml
+        examples:
+          with_client_id:
+            summary: Existing client by ID
+            value:
+              client_id: 7
+              billing_address:
+                address: "Σταδίου"
+                number: "10"
+                town: "Αθήνα"
+                zip: "10562"
+                country: "GR"
+              title: "B2B order"
+              purchase_order: "PO-2026-001"
+              items:
+                - product_id: 42
+                  quantity: 2
+                  retail_price: 24.80
+                  total_tax: 4.80
+          new_company_client:
+            summary: New company (B2B) client via VAT
+            value:
+              client:
+                afm: "123456789"
+                invoice_name: "ACME SA"
+                company_name: "ACME SA"
+                client_type: 1
+                tax_office: "Α Αθηνών"
+              billing_address:
+                address: "Ερμού"
+                number: "5"
+                town: "Αθήνα"
+                zip: "10563"
+                country: "GR"
+              items:
+                - description: "Custom service"
+                  quantity: 1
+                  net_price: 100.00
+                  taxes: [1]
+          new_person_client:
+            summary: New person (B2C) client via email
+            value:
+              client:
+                first_name: "Giorgos"
+                last_name: "Papadopoulos"
+                email: "g@example.com"
+                mobile: "6900000000"
+              billing_address:
+                address: "Πανεπιστημίου"
+                town: "Αθήνα"
+                zip: "10564"
+              items:
+                - product_id: 10
+                  quantity: 1
+                  retail_price: 31.00
+                  total_tax: 6.00
+              shipping_items:
+                - title: "Standard Shipping"
+                  price: 3.90
+                  total_tax: 0.75
+  responses:
+    "201":
+      description: Order created
+      content:
+        application/json:
+          schema:
+            $ref: ../../components/schemas/orders/OrderSingleResponse.yaml
+          example:
+            success: true
+            data:
+              id: 101
+              serial_number: "#1001"
+              title: null
+              purchase_order: null
+              is_offer: false
+              is_external: false
+              client_id: 5
+              client:
+                id: 5
+                invoice_name: "ACME SA"
+                company_name: "ACME SA"
+                vat: "123456789"
+              items: []
+              comments: null
+              project_id: null
+              created: "2026-04-27 10:00:00"
+              modified: "2026-04-27 10:00:00"
+    "401": { $ref: ../../../_shared/components/responses/Unauthorized.yaml }
+    "403": { $ref: ../../../_shared/components/responses/Forbidden.yaml }
+    "422": { $ref: ../../../_shared/components/responses/UnprocessableEntity.yaml }
+    "429": { $ref: ../../../_shared/components/responses/TooManyRequests.yaml }

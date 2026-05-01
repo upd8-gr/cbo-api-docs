@@ -1,0 +1,146 @@
+get:
+  tags: [Orders]
+  summary: Order (show)
+  description: Returns a single order by ID, including its client and line items.
+  security:
+    - BearerAuth: []
+  parameters:
+    - $ref: ../../../_shared/components/parameters/IdPath.yaml
+  responses:
+    "200":
+      description: OK
+      content:
+        application/json:
+          schema:
+            $ref: ../../components/schemas/orders/OrderSingleResponse.yaml
+          example:
+            success: true
+            data:
+              id: 1
+              serial_number: "#1001"
+              title: "Website redesign order"
+              purchase_order: "PO-2026-001"
+              is_offer: false
+              is_external: false
+              client_id: 5
+              client:
+                id: 5
+                invoice_name: "ACME SA"
+                company_name: "ACME SA"
+                vat: "123456789"
+              items:
+                - id: 10
+                  name: "Custom Widget"
+                  quantity: 2
+                  unit_price: 20.00
+                  discount: 0
+              comments: null
+              project_id: null
+              created: "2026-04-27 09:00:00"
+              modified: "2026-04-27 10:00:00"
+    "401": { $ref: ../../../_shared/components/responses/Unauthorized.yaml }
+    "403": { $ref: ../../../_shared/components/responses/Forbidden.yaml }
+    "404": { $ref: ../../../_shared/components/responses/NotFound.yaml }
+    "429": { $ref: ../../../_shared/components/responses/TooManyRequests.yaml }
+
+put:
+  tags: [Orders]
+  summary: Order (update replace)
+  description: >
+    Replaces updatable fields on an existing order.
+    All fields are optional; only supplied fields are updated.
+  security:
+    - BearerAuth: []
+  parameters:
+    - $ref: ../../../_shared/components/parameters/IdPath.yaml
+  requestBody:
+    required: true
+    content:
+      application/json:
+        schema:
+          $ref: ../../components/schemas/orders/OrderUpdate.yaml
+        example:
+          title: "Updated order title"
+          purchase_order: "PO-2026-002"
+          comments: "Rush delivery requested."
+          isOffer: false
+  responses:
+    "200":
+      description: Updated
+      content:
+        application/json:
+          schema:
+            $ref: ../../components/schemas/orders/OrderSingleResponse.yaml
+    "401": { $ref: ../../../_shared/components/responses/Unauthorized.yaml }
+    "403": { $ref: ../../../_shared/components/responses/Forbidden.yaml }
+    "404": { $ref: ../../../_shared/components/responses/NotFound.yaml }
+    "422": { $ref: ../../../_shared/components/responses/UnprocessableEntity.yaml }
+    "429": { $ref: ../../../_shared/components/responses/TooManyRequests.yaml }
+
+patch:
+  tags: [Orders]
+  summary: Order (update partial)
+  description: >
+    Partially updates an existing order.
+    Identical behaviour to PUT — all fields are optional.
+  security:
+    - BearerAuth: []
+  parameters:
+    - $ref: ../../../_shared/components/parameters/IdPath.yaml
+  requestBody:
+    required: true
+    content:
+      application/json:
+        schema:
+          $ref: ../../components/schemas/orders/OrderUpdate.yaml
+        example:
+          comments: "Customer confirmed delivery date."
+  responses:
+    "200":
+      description: Updated
+      content:
+        application/json:
+          schema:
+            $ref: ../../components/schemas/orders/OrderSingleResponse.yaml
+    "401": { $ref: ../../../_shared/components/responses/Unauthorized.yaml }
+    "403": { $ref: ../../../_shared/components/responses/Forbidden.yaml }
+    "404": { $ref: ../../../_shared/components/responses/NotFound.yaml }
+    "422": { $ref: ../../../_shared/components/responses/UnprocessableEntity.yaml }
+    "429": { $ref: ../../../_shared/components/responses/TooManyRequests.yaml }
+
+delete:
+  tags: [Orders]
+  summary: Order (delete)
+  description: Deletes an order. Fails with 422 if the order has related records that prevent deletion.
+  security:
+    - BearerAuth: []
+  parameters:
+    - $ref: ../../../_shared/components/parameters/IdPath.yaml
+  responses:
+    "200":
+      description: Deleted
+      content:
+        application/json:
+          schema:
+            $ref: ../../components/schemas/orders/OrderDeleteResponse.yaml
+          examples:
+            deleted:
+              value:
+                success: true
+                message: "Order deleted."
+    "401": { $ref: ../../../_shared/components/responses/Unauthorized.yaml }
+    "403": { $ref: ../../../_shared/components/responses/Forbidden.yaml }
+    "404": { $ref: ../../../_shared/components/responses/NotFound.yaml }
+    "422":
+      description: Cannot be deleted (has related records)
+      content:
+        application/json:
+          schema:
+            $ref: ../../components/schemas/orders/OrderDeleteFailResponse.yaml
+          examples:
+            fail:
+              value:
+                status: "business_validation_error"
+                message: "Order cannot be deleted because it has related records."
+                errors: []
+    "429": { $ref: ../../../_shared/components/responses/TooManyRequests.yaml }

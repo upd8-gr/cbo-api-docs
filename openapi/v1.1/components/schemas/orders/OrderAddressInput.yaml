@@ -1,0 +1,47 @@
+type: object
+additionalProperties: false
+description: >
+  Address block for billing or shipping.
+properties:
+  address:
+    type: string
+    maxLength: 255
+    example: "Σταδίου"
+
+  number:
+    type: string
+    nullable: true
+    maxLength: 50
+    example: "10"
+
+  town:
+    type: string
+    maxLength: 150
+    example: "Αθήνα"
+
+  region:
+    type: string
+    nullable: true
+    maxLength: 150
+    example: "Αττική"
+
+  zip:
+    type: string
+    maxLength: 20
+    description: Postal code.
+    example: "10562"
+
+  country:
+    type: string
+    nullable: true
+    maxLength: 3
+    description: ISO 3166-1 alpha-2 or alpha-3 country code.
+    example: "GR"
+
+  branch_code:
+    type: integer
+    nullable: true
+    description: Greek tax branch (ΔΟΥ) branch code.
+    example: 0
+
+required: [address, town, zip]

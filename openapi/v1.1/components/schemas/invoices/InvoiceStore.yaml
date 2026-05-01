@@ -47,7 +47,7 @@ properties:
 
   billing_address:
     description: >
-      Single address object. `zip` is accepted and normalized internally to `tk`; account linkage is
+      Single address object. account linkage is
       injected automatically from `client_id`.
     $ref: ../clients/ClientAddressInputObject.yaml
 

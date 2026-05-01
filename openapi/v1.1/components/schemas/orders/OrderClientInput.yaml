@@ -1,0 +1,81 @@
+type: object
+additionalProperties: false
+description: >
+  Inline client block used when creating an order without an existing client_id.
+  Either `afm` (for company/B2B clients) or `email` (for person/B2C clients) is required.
+  If `afm` is provided, `invoice_name` is also required.
+properties:
+  client_type:
+    type: integer
+    enum: [1, 2]
+    description: Client type. 1 = company (B2B), 2 = person (B2C). Defaults to 1 when afm is set, 2 otherwise.
+    example: 1
+
+  invoice_name:
+    type: string
+    nullable: true
+    maxLength: 255
+    description: Required when `afm` is provided.
+    example: "ACME SA"
+
+  afm:
+    type: string
+    nullable: true
+    maxLength: 20
+    description: Greek VAT number. Can also be submitted as `vat` (alias). Leading 2-letter country prefix is stripped automatically.
+    example: "123456789"
+
+  company_name:
+    type: string
+    nullable: true
+    maxLength: 255
+    example: "ACME SA"
+
+  first_name:
+    type: string
+    nullable: true
+    maxLength: 255
+    example: "Giorgos"
+
+  last_name:
+    type: string
+    nullable: true
+    maxLength: 255
+    example: "Papadopoulos"
+
+  email:
+    type: string
+    nullable: true
+    format: email
+    example: "g@example.com"
+
+  phone:
+    type: string
+    nullable: true
+    maxLength: 50
+    example: "2100000000"
+
+  mobile:
+    type: string
+    nullable: true
+    maxLength: 50
+    example: "6900000000"
+
+  profession:
+    type: string
+    nullable: true
+    maxLength: 255
+    example: "Engineer"
+
+  tax_office:
+    type: string
+    nullable: true
+    maxLength: 255
+    description: Tax office name (free text).
+    example: "Α Αθηνών"
+
+  tax_offices_id:
+    type: integer
+    nullable: true
+    description: Tax office ID (from /tax-offices).
+    example: 3

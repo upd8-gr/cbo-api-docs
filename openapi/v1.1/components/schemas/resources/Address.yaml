@@ -7,7 +7,7 @@ properties:
   number: { type: string, nullable: true, example: "10" }
   town: { type: string, example: "Athens" }
   region: { type: string, nullable: true, example: "Attica" }
-  tk:
+  zip:
     type: string
     description: Postal code.
     example: "10558"

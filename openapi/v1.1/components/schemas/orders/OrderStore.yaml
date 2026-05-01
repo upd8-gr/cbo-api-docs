@@ -1,0 +1,109 @@
+type: object
+additionalProperties: false
+description: >
+  Request body for creating an order (POST /orders).
+
+  **Client resolution precedence:**
+  1. `client_id` supplied → attach existing client by ID.
+  2. `client.afm` supplied → find by VAT within company, or create a new company (B2B) client.
+  3. `client.email` supplied → find by e-mail within company, or create a new person (B2C) client.
+
+  Exactly one of `client_id` or a `client` block must be provided.
+properties:
+  # ── Client resolution ──────────────────────────────────────────────────
+  client_id:
+    type: integer
+    nullable: true
+    description: ID of an existing client. Mutually exclusive with the `client` block.
+    example: 7
+
+  client:
+    nullable: true
+    description: Inline client data. Used to find or create a client when `client_id` is not supplied.
+    allOf:
+      - $ref: ./OrderClientInput.yaml
+
+  # ── Addresses ──────────────────────────────────────────────────────────
+  billing_address:
+    description: Billing address for the order.
+    allOf:
+      - $ref: ./OrderAddressInput.yaml
+
+  shipping_address:
+    description: >
+      Shipping address for the order. Required when `dispatch_detail` is provided.
+    allOf:
+      - $ref: ./OrderAddressInput.yaml
+
+  # ── Order fields ───────────────────────────────────────────────────────
+  title:
+    type: string
+    nullable: true
+    maxLength: 255
+    example: "Website redesign order"
+
+  purchase_order:
+    type: string
+    nullable: true
+    maxLength: 20
+    example: "PO-2026-001"
+
+  comments:
+    type: string
+    nullable: true
+    maxLength: 5000
+    example: null
+
+  isOffer:
+    type: boolean
+    nullable: true
+    description: Mark this order as an offer/quote.
+    example: false
+
+  isExternal:
+    type: boolean
+    nullable: true
+    description: Mark this order as externally originated (e.g. e-shop).
+    example: false
+
+  project_id:
+    type: integer
+    nullable: true
+    description: Attach order to an existing project.
+    example: null
+
+  address_id:
+    type: integer
+    nullable: true
+    description: Existing account address ID to associate with the order.
+    example: null
+
+  # ── Line items ─────────────────────────────────────────────────────────
+  items:
+    type: array
+    nullable: true
+    description: >
+      Standard order line items. Each item requires either `product_id` or `description`,
+      and exactly one of `retail_price` or `net_price`.
+    items:
+      $ref: ./OrderItemInput.yaml
+
+  fee_items:
+    type: array
+    nullable: true
+    description: >
+      Fee items (e.g. handling charges). Normalised internally to job items
+      with quantity 1 and measure unit "Υπηρεσία".
+    items:
+      $ref: ./OrderAncillaryItemInput.yaml
+
+  shipping_items:
+    type: array
+    nullable: true
+    description: >
+      Shipping charge items. Normalised internally to job items
+      with quantity 1 and measure unit "Υπηρεσία".
+    items:
+      $ref: ./OrderAncillaryItemInput.yaml
+
+required: [billing_address]

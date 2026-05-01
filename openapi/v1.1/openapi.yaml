@@ -77,10 +77,15 @@ tags:
   - name: Measurement Units
   - name: Expense Categories
   - name: Tax Offices
+  - name: Orders
   - name: Payment Links
   - name: Countries
 
 paths:
+  /orders:
+    $ref: ./paths/orders/index.yaml
+  /orders/{id}:
+    $ref: ./paths/orders/show.yaml
   /invoices:
     $ref: ./paths/invoices/index.yaml
   /invoices/{id}:

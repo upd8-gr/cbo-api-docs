@@ -1,0 +1,13 @@
+type: object
+additionalProperties: false
+properties:
+  status:
+    type: string
+    example: "business_validation_error"
+  message:
+    type: string
+    example: "Order cannot be deleted because it has related records."
+  errors:
+    type: array
+    items: {}
+required: [status, message, errors]

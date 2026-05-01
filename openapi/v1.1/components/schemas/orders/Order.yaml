@@ -1,0 +1,79 @@
+type: object
+additionalProperties: false
+properties:
+  id:
+    type: integer
+    format: int64
+    example: 1
+
+  serial_number:
+    type: string
+    description: Human-readable order number prefixed with #.
+    example: "#1001"
+
+  title:
+    type: string
+    nullable: true
+    maxLength: 255
+    example: "Order for ACME SA"
+
+  purchase_order:
+    type: string
+    nullable: true
+    maxLength: 20
+    example: "PO-2026-001"
+
+  is_offer:
+    type: boolean
+    description: Whether this order is treated as an offer/quote.
+    example: false
+
+  is_external:
+    type: boolean
+    description: Whether this order originated from an external source (e.g. e-shop).
+    example: false
+
+  client_id:
+    type: integer
+    format: int64
+    nullable: true
+    description: ID of the billing client.
+    example: 5
+
+  client:
+    nullable: true
+    description: Client object (included when loaded).
+    oneOf:
+      - $ref: ../clients/Client.yaml
+    example: null
+
+  items:
+    type: array
+    description: Order line items (included when loaded).
+    items:
+      type: object
+      additionalProperties: true
+
+  comments:
+    type: string
+    nullable: true
+    maxLength: 5000
+    example: null
+
+  project_id:
+    type: integer
+    format: int64
+    nullable: true
+    example: null
+
+  created:
+    type: string
+    description: Creation datetime (raw DB value).
+    example: "2026-04-27 09:00:00"
+
+  modified:
+    type: string
+    description: Last modification datetime (raw DB value).
+    example: "2026-04-27 10:00:00"
+
+required: [id, serial_number, is_offer, is_external, items, created, modified]

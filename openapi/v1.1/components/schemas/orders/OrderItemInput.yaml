@@ -1,0 +1,100 @@
+type: object
+additionalProperties: false
+description: >
+  A line item on an order.
+  - Either `product_id` or `description` must be provided.
+  - Either `retail_price` or `net_price` must be provided, but not both.
+    If `total_tax` is also provided the price is treated as already net; otherwise
+    `retail_price` is converted from gross to net using the resolved tax rate.
+properties:
+  product_id:
+    type: integer
+    nullable: true
+    description: Product child ID (from /product-children). Required when `description` is omitted.
+    example: 42
+
+  description:
+    type: string
+    nullable: true
+    maxLength: 255
+    description: Item description. Required when `product_id` is omitted.
+    example: "Custom Widget"
+
+  measure_unit:
+    type: string
+    nullable: true
+    maxLength: 255
+    description: Measurement unit name (e.g. "Τεμάχιο"). Looked up against /measurement-units.
+    example: "Τεμάχιο"
+
+  measurement_unit_id:
+    type: integer
+    nullable: true
+    description: Measurement unit ID (from /measurement-units). Takes precedence over `measure_unit`.
+    example: 1
+
+  retail_price:
+    type: number
+    format: float
+    nullable: true
+    minimum: 0
+    description: >
+      Gross (incl. tax) unit price. Mutually exclusive with `net_price`.
+      Converted to net automatically unless `total_tax` is provided.
+    example: 24.80
+
+  net_price:
+    type: number
+    format: float
+    nullable: true
+    minimum: 0
+    description: Net (excl. tax) unit price. Mutually exclusive with `retail_price`.
+    example: 20.00
+
+  quantity:
+    type: number
+    format: float
+    minimum: 0.001
+    description: Item quantity.
+    example: 2
+
+  discount_percentage:
+    type: number
+    format: float
+    nullable: true
+    minimum: 0
+    maximum: 100
+    description: First discount percentage applied to the unit price.
+    example: 10
+
+  discount_percentage2:
+    type: number
+    format: float
+    nullable: true
+    minimum: 0
+    maximum: 100
+    description: Second (cascading) discount percentage.
+    example: 0
+
+  comments:
+    type: string
+    nullable: true
+    maxLength: 1000
+    example: null
+
+  total_tax:
+    type: number
+    format: float
+    nullable: true
+    description: Total tax amount for this item. When supplied, the price is treated as already net.
+    example: 4.80
+
+  taxes:
+    type: array
+    nullable: true
+    description: Array of tax IDs to apply (from /taxes).
+    items:
+      type: integer
+    example: [1, 3]
+
+required: [quantity]

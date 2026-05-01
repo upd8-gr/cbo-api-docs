@@ -8,7 +8,6 @@ properties:
   region: { type: string, nullable: true, maxLength: 150, example: "Attica" }
   zip:
     type: string
-    description: Will be mapped to `tk` internally.
     maxLength: 20
     example: "10558"
   country:

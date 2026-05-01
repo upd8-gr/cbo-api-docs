@@ -1,0 +1,79 @@
+type: object
+additionalProperties: false
+description: >
+  Request body for partially updating an order (PUT/PATCH /orders/{id}).
+  All fields are optional; only supplied fields are updated.
+properties:
+  title:
+    type: string
+    nullable: true
+    maxLength: 255
+    example: "Updated order title"
+
+  purchase_order:
+    type: string
+    nullable: true
+    maxLength: 20
+    example: "PO-2026-002"
+
+  comments:
+    type: string
+    nullable: true
+    maxLength: 5000
+    example: null
+
+  isOffer:
+    type: boolean
+    nullable: true
+    description: Mark or unmark the order as an offer/quote.
+    example: false
+
+  isExternal:
+    type: boolean
+    nullable: true
+    description: Mark or unmark the order as externally originated.
+    example: false
+
+  project_id:
+    type: integer
+    nullable: true
+    description: Attach order to a different project.
+    example: null
+
+  address_id:
+    type: integer
+    nullable: true
+    description: Existing account address ID to associate with the order.
+    example: null
+
+  client_id:
+    type: integer
+    nullable: true
+    description: Reassign order to a different client by ID.
+    example: null
+
+  billing_account_id:
+    type: integer
+    nullable: true
+    description: Alias for `client_id`; reassigns the billing client.
+    example: null
+
+  discount:
+    type: number
+    format: float
+    nullable: true
+    minimum: 0
+    description: Global discount applied to the order total.
+    example: null
+
+  showTotal:
+    type: boolean
+    nullable: true
+    description: Whether the order total is shown on printed documents.
+    example: true
+
+  showTax:
+    type: boolean
+    nullable: true
+    description: Whether tax breakdown is shown on printed documents.
+    example: true
