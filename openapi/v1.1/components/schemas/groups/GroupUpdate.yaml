@@ -1,0 +1,30 @@
+type: object
+additionalProperties: false
+description: |
+  Partial or full update payload for a group.
+
+  Moving a group under itself or any of its descendants is rejected with a business validation error.
+properties:
+  name:
+    type: string
+    nullable: true
+    maxLength: 255
+  description:
+    type: string
+    nullable: true
+    maxLength: 255
+  group_id:
+    type: integer
+    nullable: true
+    description: Parent group id within the same company. Use `null` or `0` to move the group to the root level.
+    example: 2
+  sort:
+    type: integer
+    nullable: true
+    minimum: 0
+    maximum: 255
+    example: 20
+  master:
+    type: boolean
+    nullable: true
+    example: true

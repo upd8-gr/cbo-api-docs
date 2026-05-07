@@ -1,0 +1,32 @@
+type: object
+additionalProperties: false
+properties:
+  id: { type: integer, format: int64, example: 15 }
+  name: { type: string, example: "Mobile Phones" }
+  slug: { type: string, nullable: true, example: "mobile-phones" }
+  description: { type: string, nullable: true, example: "Smartphones and accessories" }
+  deep: { type: integer, example: 1 }
+  sort: { type: integer, nullable: true, example: 10 }
+  parent_id: { type: integer, format: int64, nullable: true, example: 2 }
+  is_master: { type: boolean, example: false }
+  company: { type: integer, format: int64, example: 1 }
+  created: { type: string, example: "2026-02-11 10:00:00" }
+  modified: { type: string, example: "2026-02-12 09:30:00" }
+
+  image:
+    type: object
+    additionalProperties: false
+    description: Present only when the group has an image path.
+    properties:
+      thumb: { type: string, nullable: true, example: "https://app.cbo.gr/storage/groups/thumb/mobile-phones.jpg" }
+      normal: { type: string, nullable: true, example: "https://app.cbo.gr/storage/groups/mobile-phones.jpg" }
+
+  parent:
+    type: object
+    additionalProperties: false
+    description: Present when the parent relation is loaded.
+    properties:
+      id: { type: integer, format: int64, example: 2 }
+      name: { type: string, example: "Phones" }
+    required: [id, name]
+required: [id, name, deep, is_master, company, created, modified]

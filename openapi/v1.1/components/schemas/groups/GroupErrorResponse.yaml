@@ -1,0 +1,16 @@
+type: object
+additionalProperties: false
+properties:
+  status:
+    type: string
+    enum: [not_found, business_validation_error, server_error]
+    example: business_validation_error
+  message:
+    type: string
+    example: Group could not be updated.
+  errors:
+    type: array
+    description: Returned by the controller as an empty array for these error cases.
+    items: {}
+    example: []
+required: [status, message, errors]

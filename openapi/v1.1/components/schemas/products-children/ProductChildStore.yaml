@@ -36,19 +36,19 @@ properties:
   accounting_code: { type: string, nullable: true, maxLength: 255 }
   cost_price: { type: number, nullable: true }
   sell_price: { type: number, nullable: true }
-  sell_lock: { type: integer, enum: [0, 1], nullable: true }
+  # sell_lock: { type: integer, enum: [0, 1], nullable: true }
   retail_price: { type: number, nullable: true }
   website_price: { type: number, nullable: true }
   discounted_price: { type: number, nullable: true }
   description: { type: string, nullable: true }
   barcode: { type: string, nullable: true, maxLength: 255 }
-  special_rules: { type: integer, enum: [0, 1, 2], nullable: true }
+  # special_rules: { type: integer, enum: [0, 1, 2], nullable: true }
   count_storage: { type: boolean, nullable: true }
   initial_stock: { type: number, nullable: true }
   branch_id:
     type: integer
     nullable: true
-    description: Must exist in `branches` for the company.
+    description: It indicates the branch where the product is stored. Must exist in `branches` for the company.
   check_stock: { type: boolean, nullable: true }
   stock_alert: { type: number, nullable: true }
   characteristic_ids:
@@ -79,9 +79,9 @@ properties:
         catalogue_id: { type: integer }
         ratio: { type: number, nullable: true }
       required: [catalogue_id]
-  serial_numbers:
-    type: array
-    items: { type: string, maxLength: 255 }
+  # serial_numbers:
+  #   type: array
+  #   items: { type: string, maxLength: 255 }
   tiers:
     type: array
     items:

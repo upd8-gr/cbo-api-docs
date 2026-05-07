@@ -66,6 +66,11 @@ properties:
     nullable: true
     example: null
 
+  company:
+    type: integer
+    format: int64
+    example: 1
+    
   created:
     type: string
     description: Creation datetime (raw DB value).

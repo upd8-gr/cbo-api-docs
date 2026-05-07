@@ -6,27 +6,35 @@ properties:
   product_name: { type: string, example: "Sample product" }
   description: { type: string, nullable: true }
   code: { type: string, nullable: true }
-  barcode: { type: string, nullable: true }
-  sku:
+
+  image:
+    type: object
+    additionalProperties: false
+    properties:
+      thumb: { type: string, nullable: true, example: null }
+      normal: { type: string, nullable: true, example: null }
+    required: [thumb, normal]
+  
+  measurement_unit_name: 
     type: string
-    nullable: true
-    description: Public SKU value returned from the internal `catalog_code` field.
-    example: "SKU-001"
-  group_id: { type: integer, nullable: true, example: 5 }
+    description: Present when `measurement_unit` name
+    example: "Τεμάχιο"
   measurement_unit_id: { type: integer, nullable: true }
-  tax_id: { type: integer, nullable: true }
+  
   tax_percentage:
     type: number
     nullable: true
     description: Tax rate from related tax record (`tax.value`).
     example: 24
-  accounting_type: { type: integer, enum: [1, 2, 3, 4, 5, 6], example: 1 }
+  tax_id: { type: integer, nullable: true }
+
   cost_price: { type: number, nullable: true }
   sell_price: { type: number, nullable: true }
   retail_price: { type: number, nullable: true }
   website_price: { type: number, nullable: true }
   discounted_price: { type: number, nullable: true }
   builded_price: { type: number, nullable: true }
+  
   stock:
     nullable: true
     description: Full stock output by default, or partial stock output when the `stock` query parameter is used on the list endpoint.
@@ -35,19 +43,35 @@ properties:
         example: 12
       - type: object
         additionalProperties: true
-  company_id: { type: integer, example: 1 }
-  visibility: { type: boolean, example: true }
+  stock_alert: { type: number, nullable: true }
   count_storage:
     type: boolean
     nullable: true
     description: Whether storage counting is enabled for the product.
+
   parent_name: { type: string, nullable: true, example: "Parent Product" }
-  created_at: { type: string, example: "2026-02-11 10:00:00" }
-  updated_at: { type: string, example: "2026-02-11 10:00:00" }
-  measurement_unit_name:
+  group_id: { type: integer, nullable: true, example: 5 }
+  group_hierarchy: { type: string, nullable: true, example: "Group A / Group B / Group C" }
+  
+  accounting_type: { type: integer, enum: [1, 2, 3, 4, 5, 6], example: 1 }
+  visibility: { type: boolean, example: true }
+  barcode: { type: string, nullable: true }
+  sku:
     type: string
-    description: Present when `measurement_unit` relation is loaded.
-    example: "Τεμάχιο"
+    nullable: true
+    description: Public SKU value returned from the internal `catalog_code` field.
+    example: "SKU-001"
+  cpv_code: { type: string, nullable: true, maxLength: 255 }
+  expense_id: { type: integer, nullable: true }
+
+  company: { type: integer, example: 1 }
+  created: { type: string, example: "2026-02-11 10:00:00" }
+  modified: { type: string, example: "2026-02-11 10:00:00" }
+
+  tags:
+    type: array
+    items:
+      $ref: ../../../../v1/components/schemas/resources/Tag.yaml
   characteristics:
     type: array
     items:
@@ -63,7 +87,5 @@ properties:
 required:
   - id
   - product_name
-  - company_id
-  - visibility
-  - created_at
-  - updated_at
+  - created
+  - modified

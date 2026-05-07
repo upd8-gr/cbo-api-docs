@@ -1,0 +1,236 @@
+get:
+  tags: [Groups]
+  summary: Group (show)
+  description: Returns one group for the current company.
+  security:
+    - BearerAuth: []
+
+  parameters:
+    - $ref: ../../../_shared/components/parameters/IdPath.yaml
+
+  responses:
+    "200":
+      description: OK
+      content:
+        application/json:
+          schema:
+            $ref: ../../components/schemas/groups/GroupSingleResponse.yaml
+          examples:
+            default:
+              value:
+                success: true
+                data:
+                  id: 15
+                  name: Mobile Phones
+                  slug: mobile-phones
+                  description: Smartphones and accessories
+                  deep: 1
+                  sort: 10
+                  parent_id: 2
+                  is_master: false
+                  company: 1
+                  created: "2026-02-11 10:00:00"
+                  modified: "2026-02-12 09:30:00"
+                  parent:
+                    id: 2
+                    name: Phones
+    "401": { $ref: ../../../_shared/components/responses/Unauthorized.yaml }
+    "403": { $ref: ../../../_shared/components/responses/Forbidden.yaml }
+    "404":
+      description: Group not found
+      content:
+        application/json:
+          schema:
+            $ref: ../../components/schemas/groups/GroupErrorResponse.yaml
+          examples:
+            notFound:
+              value:
+                status: not_found
+                message: Group not found.
+                errors: []
+
+patch:
+  tags: [Groups]
+  summary: Group (update partial)
+  description: Updates a group for the current company.
+  security:
+    - BearerAuth: []
+
+  parameters:
+    - $ref: ../../../_shared/components/parameters/IdPath.yaml
+
+  requestBody:
+    required: true
+    content:
+      application/json:
+        schema:
+          $ref: ../../components/schemas/groups/GroupUpdate.yaml
+        examples:
+          rename:
+            value:
+              name: Smartphones
+              sort: 20
+
+  responses:
+    "200":
+      description: Updated
+      content:
+        application/json:
+          schema:
+            $ref: ../../components/schemas/groups/GroupSingleResponse.yaml
+    "401": { $ref: ../../../_shared/components/responses/Unauthorized.yaml }
+    "403": { $ref: ../../../_shared/components/responses/Forbidden.yaml }
+    "404":
+      description: Group not found
+      content:
+        application/json:
+          schema:
+            $ref: ../../components/schemas/groups/GroupErrorResponse.yaml
+          examples:
+            notFound:
+              value:
+                status: not_found
+                message: Group not found.
+                errors: []
+    "422":
+      description: Validation error or business rule violation
+      content:
+        application/json:
+          oneOf:
+            - $ref: ../../../_shared/components/schemas/errors/ValidationError.yaml
+            - $ref: ../../components/schemas/groups/GroupErrorResponse.yaml
+          examples:
+            invalidParent:
+              value:
+                status: business_validation_error
+                message: Group cannot be moved inside itself or one of its descendants.
+                errors: []
+            validation:
+              value:
+                message: The given data was invalid.
+                errors:
+                  group_id:
+                    - The selected group id is invalid.
+    "500":
+      description: Server error while updating the group
+      content:
+        application/json:
+          schema:
+            $ref: ../../components/schemas/groups/GroupErrorResponse.yaml
+          examples:
+            server:
+              value:
+                status: server_error
+                message: Failed to update group.
+                errors: []
+
+put:
+  tags: [Groups]
+  summary: Group (update)
+  description: Updates a group for the current company.
+  security:
+    - BearerAuth: []
+
+  parameters:
+    - $ref: ../../../_shared/components/parameters/IdPath.yaml
+
+  requestBody:
+    required: true
+    content:
+      application/json:
+        schema:
+          $ref: ../../components/schemas/groups/GroupUpdate.yaml
+
+  responses:
+    "200":
+      description: Updated
+      content:
+        application/json:
+          schema:
+            $ref: ../../components/schemas/groups/GroupSingleResponse.yaml
+    "401": { $ref: ../../../_shared/components/responses/Unauthorized.yaml }
+    "403": { $ref: ../../../_shared/components/responses/Forbidden.yaml }
+    "404":
+      description: Group not found
+      content:
+        application/json:
+          schema:
+            $ref: ../../components/schemas/groups/GroupErrorResponse.yaml
+    "422":
+      description: Validation error or business rule violation
+      content:
+        application/json:
+          oneOf:
+            - $ref: ../../../_shared/components/schemas/errors/ValidationError.yaml
+            - $ref: ../../components/schemas/groups/GroupErrorResponse.yaml
+    "500":
+      description: Server error while updating the group
+      content:
+        application/json:
+          schema:
+            $ref: ../../components/schemas/groups/GroupErrorResponse.yaml
+
+delete:
+  tags: [Groups]
+  summary: Group (delete)
+  description: |
+    Deletes a group for the current company.
+
+    Descendants are deleted first, deepest to shallowest. Deletion is blocked if the target group or
+    any descendant still has related products or child groups.
+  security:
+    - BearerAuth: []
+
+  parameters:
+    - $ref: ../../../_shared/components/parameters/IdPath.yaml
+
+  responses:
+    "200":
+      description: Deleted
+      content:
+        application/json:
+          schema:
+            $ref: ../../components/schemas/common/SuccessMessageResponse.yaml
+          examples:
+            deleted:
+              value:
+                success: true
+                message: Group deleted.
+    "401": { $ref: ../../../_shared/components/responses/Unauthorized.yaml }
+    "403": { $ref: ../../../_shared/components/responses/Forbidden.yaml }
+    "404":
+      description: Group not found
+      content:
+        application/json:
+          schema:
+            $ref: ../../components/schemas/groups/GroupErrorResponse.yaml
+          examples:
+            notFound:
+              value:
+                status: not_found
+                message: Group not found.
+                errors: []
+    "422":
+      description: Delete blocked by related products or child groups
+      content:
+        application/json:
+          schema:
+            $ref: ../../components/schemas/groups/GroupErrorResponse.yaml
+          examples:
+            blocked:
+              value:
+                status: business_validation_error
+                message: Group cannot be deleted because it has related products or child groups.
+                errors: []
+    "500":
+      description: Server error while deleting the group
+      content:
+        application/json:
+          schema:
+            $ref: ../../components/schemas/groups/GroupErrorResponse.yaml
+          examples:
+            server:
+              value:
+                status: server_error
+                message: Failed to delete group.
+                errors: []

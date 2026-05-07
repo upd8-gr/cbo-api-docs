@@ -74,6 +74,7 @@ tags:
   - name: Invoice Types
   - name: Invoice Series
   - name: Product Children
+  - name: Groups
   - name: Measurement Units
   - name: Expense Categories
   - name: Tax Offices
@@ -98,6 +99,10 @@ paths:
     $ref: ./paths/product-children/index.yaml
   /product-children/{id}:
     $ref: ./paths/product-children/show.yaml
+  /groups:
+    $ref: ./paths/groups/index.yaml
+  /groups/{id}:
+    $ref: ./paths/groups/show.yaml
   /measurement-units:
     $ref: ./paths/measurement-units/index.yaml
   /measurement-units/{id}:

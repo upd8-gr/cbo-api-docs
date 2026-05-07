@@ -1,0 +1,204 @@
+get:
+  tags: [Groups]
+  summary: Groups (list)
+  description: |
+    Lists groups for the current company.
+
+    Supports free-text search on `name` and `description`, filtering by parent/root group,
+    depth, `master` flag, sorting, and pagination.
+  security:
+    - BearerAuth: []
+
+  parameters:
+    - name: search
+      in: query
+      required: false
+      description: Search text used with SQL `LIKE`.
+      schema: { type: string, maxLength: 255 }
+      example: phone
+
+    - name: search_fields
+      in: query
+      required: false
+      description: Comma-separated subset of `name,description`. Defaults to both fields.
+      schema: { type: string }
+      example: name,description
+
+    - name: group_id
+      in: query
+      required: false
+      description: Parent group id to filter by. Use `0` to return only root groups.
+      schema: { type: integer, minimum: 0 }
+      example: 2
+
+    - name: parent_id
+      in: query
+      required: false
+      description: Alias for `group_id`.
+      schema: { type: integer, minimum: 0 }
+      example: 2
+
+    - name: deep
+      in: query
+      required: false
+      description: Exact depth level.
+      schema: { type: integer, minimum: 1 }
+      example: 2
+
+    - name: master
+      in: query
+      required: false
+      description: Filter by master flag.
+      schema: { type: boolean }
+      example: false
+
+    - name: sort_by
+      in: query
+      required: false
+      schema:
+        type: string
+        enum: [id, name, sort, deep, temporary_id, created_at, updated_at]
+      example: id
+
+    - name: sort_order
+      in: query
+      required: false
+      schema:
+        type: string
+        enum: [asc, desc]
+      example: asc
+
+    - name: page
+      in: query
+      required: false
+      schema: { type: integer, minimum: 1, default: 1 }
+      example: 1
+
+    - name: page_size
+      in: query
+      required: false
+      description: Page size. Defaults to `50` and is capped at `100`.
+      schema: { type: integer, minimum: 1, maximum: 100, default: 50 }
+      example: 50
+
+  responses:
+    "200":
+      description: OK
+      content:
+        application/json:
+          schema:
+            $ref: ../../components/schemas/groups/GroupIndexResponse.yaml
+          examples:
+            default:
+              value:
+                success: true
+                data:
+                  - id: 15
+                    name: Mobile Phones
+                    slug: mobile-phones
+                    description: Smartphones and accessories
+                    deep: 1
+                    sort: 10
+                    parent_id: 2
+                    is_master: false
+                    company: 1
+                    created: "2026-02-11 10:00:00"
+                    modified: "2026-02-12 09:30:00"
+                    parent:
+                      id: 2
+                      name: Phones
+                meta:
+                  current_page: 1
+                  last_page: 1
+                  per_page: 50
+                  total: 1
+    "401": { $ref: ../../../_shared/components/responses/Unauthorized.yaml }
+    "403": { $ref: ../../../_shared/components/responses/Forbidden.yaml }
+    "422":
+      description: Validation error, including unknown query parameters
+      content:
+        application/json:
+          schema:
+            $ref: ../../../_shared/components/schemas/errors/ValidationError.yaml
+
+post:
+  tags: [Groups]
+  summary: Group (create)
+  description: Creates a group for the current company.
+  security:
+    - BearerAuth: []
+
+  requestBody:
+    required: true
+    content:
+      application/json:
+        schema:
+          $ref: ../../components/schemas/groups/GroupStore.yaml
+        examples:
+          default:
+            value:
+              name: Mobile Phones
+              description: Smartphones and accessories
+              group_id: 2
+              sort: 10
+              master: false
+
+  responses:
+    "201":
+      description: Created
+      content:
+        application/json:
+          schema:
+            $ref: ../../components/schemas/groups/GroupSingleResponse.yaml
+          examples:
+            default:
+              value:
+                success: true
+                data:
+                  id: 15
+                  name: Mobile Phones
+                  slug: mobile-phones
+                  description: Smartphones and accessories
+                  deep: 1
+                  sort: 10
+                  parent_id: 2
+                  is_master: false
+                  company: 1
+                  created: "2026-02-11 10:00:00"
+                  modified: "2026-02-11 10:00:00"
+                  parent:
+                    id: 2
+                    name: Phones
+    "401": { $ref: ../../../_shared/components/responses/Unauthorized.yaml }
+    "403": { $ref: ../../../_shared/components/responses/Forbidden.yaml }
+    "422":
+      description: Validation error or business failure while saving
+      content:
+        application/json:
+          oneOf:
+            - $ref: ../../../_shared/components/schemas/errors/ValidationError.yaml
+            - $ref: ../../components/schemas/groups/GroupErrorResponse.yaml
+          examples:
+            validation:
+              value:
+                message: The given data was invalid.
+                errors:
+                  name:
+                    - The name field is required.
+            saveFailed:
+              value:
+                status: business_validation_error
+                message: Group could not be created.
+                errors: []
+    "500":
+      description: Server error while creating the group
+      content:
+        application/json:
+          schema:
+            $ref: ../../components/schemas/groups/GroupErrorResponse.yaml
+          examples:
+            server:
+              value:
+                status: server_error
+                message: Failed to create group.
+                errors: []

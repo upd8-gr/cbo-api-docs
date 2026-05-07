@@ -1,0 +1,28 @@
+type: object
+additionalProperties: false
+description: |
+  Create group payload.
+properties:
+  name:
+    type: string
+    maxLength: 255
+  description:
+    type: string
+    nullable: true
+    maxLength: 255
+  group_id:
+    type: integer
+    nullable: true
+    description: Parent group id within the same company.
+    example: 2
+  sort:
+    type: integer
+    nullable: true
+    minimum: 0
+    maximum: 255
+    example: 10
+  master:
+    type: boolean
+    nullable: true
+    example: false
+required: [name]

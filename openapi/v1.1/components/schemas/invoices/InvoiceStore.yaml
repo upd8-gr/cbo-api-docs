@@ -54,42 +54,61 @@ properties:
   shipping_address:
     nullable: true
     description: >
-      Single address object. When present, the request also prepares `dispatch_detail` from the flat
-      dispatch alias fields if provided.
+      Single address object.
     $ref: ../clients/ClientAddressInputObject.yaml
 
   loading_address:
     nullable: true
-    description: Single address object.
+    description: Single address object. Required on invoices with delivery.
     $ref: ../clients/ClientAddressInputObject.yaml
 
   dispatch_date:
     type: string
     format: date
     nullable: true
-    description: Public alias used to construct `dispatch_detail.dispatchDateTime` together with `dispatch_time`.
+    description: Required on invoices with delivery.
 
   dispatch_time:
     type: string
     nullable: true
-    description: Public alias used to construct `dispatch_detail.dispatchDateTime` together with `dispatch_date`.
+    description: Required on invoices with delivery.
 
   vehicle_number:
     type: string
     nullable: true
     maxLength: 50
-    description: Public alias for `dispatch_detail.vehicleNumber`.
+    description: Required on invoices with delivery.
 
   move_purpose:
     type: integer
     nullable: true
-    description: Public alias for `dispatch_detail.movePurpose`.
+    description: |
+      - 1: Πώληση
+      - 2: Πώληση για Λογαριασμό Τρίτων
+      - 3: Δειγματισμός
+      - 4: Έκθεση
+      - 5: Επιστροφή
+      - 6: Φύλαξη
+      - 7: Επεξεργασία - Συναρμολόγηση - Αποσυναρμολόγηση
+      - 8: Ενδοδιακίνηση
+      - 9: Αγορά
+      - 10: Εφοδιασμός πλοίων και αεροσκαφών
+      - 11: Δωρεάν διάθεση
+      - 12: Εγγύηση
+      - 13: Χρησιδανεισμός
+      - 14: Αποθήκευση σε Τρίτους
+      - 15: Επιστροφή από Φύλαξη
+      - 16: Ανακύκλωση
+      - 17: Καταστροφή άχρηστου υλικού
+      - 18: Διακίνηση Παγίων (Ενδοδιακίνηση)
+      - 19: Λοιπές Διακινήσεις
+      - 20: Μεταφορές – Ταχυμεταφορές
 
   other_move_purpose_title:
     type: string
     nullable: true
     maxLength: 255
-    description: Public alias for `dispatch_detail.otherMovePurposeTitle`.
+    description: When move_purpose is 19, this field is required.
 
   items:
     type: array
