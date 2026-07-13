@@ -1,0 +1,72 @@
+get:
+  tags: [Users]
+  summary: List users
+  description: >
+    Returns the users that belong to the authenticated company (matched via the
+    `X-Asseblo-Company` header).
+    If `page_size` is provided, response is Laravel paginated. Otherwise returns a plain resource collection.
+  security:
+    - BearerAuth: []
+  parameters:
+    - name: page_size
+      in: query
+      required: false
+      description: >
+        Page size for Laravel pagination. Use an integer for a fixed page size,
+        or `"all"` to return all records unpaginated. Defaults to 100 when omitted.
+      schema:
+        oneOf:
+          - type: integer
+            minimum: 1
+          - type: string
+            enum: ["all"]
+      example: 100
+
+  responses:
+    "200":
+      description: OK (collection or paginated collection)
+      content:
+        application/json:
+          schema:
+            oneOf:
+              - $ref: ../../components/schemas/users/UserCollection.yaml
+              - $ref: ../../components/schemas/users/UserPaginatedCollection.yaml
+          examples:
+            collection:
+              summary: Non-paginated (page_size=all)
+              value:
+                data:
+                  - id: 1
+                    name: "Γιώργος Παπαδόπουλος"
+                    email: "giorgos@example.com"
+                    created: "2026-04-27 09:00:00"
+                    updated: "2026-04-27 10:00:00"
+                  - id: 2
+                    name: "Μαρία Ιωάννου"
+                    email: "maria@example.com"
+                    created: "2026-04-27 09:05:00"
+                    updated: "2026-04-27 10:05:00"
+            paginated:
+              summary: Paginated (default, or numeric page_size)
+              value:
+                data:
+                  - id: 1
+                    name: "Γιώργος Παπαδόπουλος"
+                    email: "giorgos@example.com"
+                    created: "2026-04-27 09:00:00"
+                    updated: "2026-04-27 10:00:00"
+                links:
+                  first: "/api/v1/users?page=1"
+                  last: "/api/v1/users?page=1"
+                  prev: null
+                  next: null
+                meta:
+                  current_page: 1
+                  from: 1
+                  last_page: 1
+                  path: "/api/v1/users"
+                  per_page: 100
+                  to: 2
+                  total: 2
+    "401": { $ref: ../../../_shared/components/responses/Unauthorized.yaml }
+    "403": { $ref: ../../../_shared/components/responses/Forbidden.yaml }

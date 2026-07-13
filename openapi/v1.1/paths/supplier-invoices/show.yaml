@@ -1,0 +1,22 @@
+get:
+  tags: [Supplier Invoices]
+  summary: Supplier invoice (show)
+  description: |
+    Shows a supplier invoice by its ID.
+    Response is wrapped as {success,data}.
+  security:
+    - BearerAuth: []
+
+  parameters:
+    - $ref: ../../../_shared/components/parameters/IdPath.yaml
+
+  responses:
+    "200":
+      description: OK
+      content:
+        application/json:
+          schema:
+            $ref: ../../components/schemas/supplier-invoices/SupplierInvoiceSingleResponse.yaml
+    "401": { $ref: ../../../_shared/components/responses/Unauthorized.yaml }
+    "403": { $ref: ../../../_shared/components/responses/Forbidden.yaml }
+    "404": { $ref: ../../../_shared/components/responses/NotFound.yaml }

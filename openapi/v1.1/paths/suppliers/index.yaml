@@ -16,16 +16,19 @@ get:
     - name: search_fields
       in: query
       required: false
-      description: Comma-separated fields for OR LIKE. If field is `vat`, it searches `afm`.
+      description: >
+        Comma-separated fields for OR LIKE. Allowed fields are
+        `invoice_name`, `company_name`, `afm`, `fname`, `lname`, `vat`, `tax_type`, `payment_way`, `expense_category_id`.
+        If the field is `vat`, it searches the `afm` column.
       schema: { type: string }
-      example: "invoice_name,company_name,vat,email"
+      example: "invoice_name,company_name,vat,fname"
 
     - name: sort_by
       in: query
       required: false
       schema:
         type: string
-        enum: [id, primary_id, fname, lname, afm, email, invoice_name, company_name, created_at, updated_at]
+        enum: [id, invoice_name, company_name, afm, created_at, updated_at]
       example: id
 
     - name: sort_order

@@ -61,7 +61,7 @@ put:
     required: true
     content:
       application/json:
-        schema: { $ref: ../../components/schemas/invoice-series/InvoiceSeriesStore.yaml }
+        schema: { $ref: ../../components/schemas/invoice-series/InvoiceSeriesUpdate.yaml }
   responses:
     "200":
       description: Updated

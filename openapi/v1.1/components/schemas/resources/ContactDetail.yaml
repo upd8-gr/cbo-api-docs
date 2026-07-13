@@ -1,7 +1,12 @@
 type: object
 additionalProperties: true
-description: Minimal placeholder for ContactDetailResource.
+description: Contact output (ContactResource). Null fields are omitted from the response.
 properties:
   id: { type: integer, format: int64, example: 1 }
-  type: { type: string, example: "email" }
-  value: { type: string, example: "g@example.com" }
+  first_name: { type: string, nullable: true, example: "Maria" }
+  last_name: { type: string, nullable: true, example: "Nikolaou" }
+  email: { type: string, nullable: true, example: "m@example.com" }
+  telephone: { type: string, nullable: true, description: "Maps from phone.", example: "2100000000" }
+  mobile: { type: string, nullable: true, example: "6900000000" }
+  position: { type: string, nullable: true, example: "Manager" }
+  isDefault: { type: boolean, example: true }

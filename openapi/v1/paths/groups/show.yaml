@@ -132,23 +132,24 @@ get:
           examples:
             default:
               value:
-                id: 1
-                title: "Group A"
-                slug: "group-a"
-                description: null
-                deep: 0
-                images: ""
-                parent_id: null
-                temp_id: null
-                company: 1
-                created: "2026-02-11 10:00:00"
-                updated: "2026-02-11 10:00:00"
-                child: []
-                retail_price: 100
-                hasProducts: true
-                hasChildren: false
-                products: []
-                characteristics: []
+                data:
+                  id: 1
+                  title: "Group A"
+                  slug: "group-a"
+                  description: null
+                  deep: 0
+                  images: ""
+                  parent_id: null
+                  temp_id: null
+                  company: 1
+                  created: "2026-02-11 10:00:00"
+                  updated: "2026-02-11 10:00:00"
+                  child: []
+                  retail_price: 100
+                  hasProducts: true
+                  hasChildren: false
+                  products: []
+                  characteristics: []
     "401": { $ref: ../../../_shared/components/responses/Unauthorized.yaml }
     "403": { $ref: ../../../_shared/components/responses/Forbidden.yaml }
     "404": { $ref: ../../../_shared/components/responses/NotFound.yaml }

@@ -13,7 +13,7 @@ properties:
   group_id:
     type: integer
     nullable: true
-    description: Parent group id within the same company.
+    description: Parent group id within the same company (must be a category). Accepts `parent_id` as an alias. Null/0 for a root group.
     example: 2
   sort:
     type: integer
@@ -21,8 +21,4 @@ properties:
     minimum: 0
     maximum: 255
     example: 10
-  master:
-    type: boolean
-    nullable: true
-    example: false
 required: [name]

@@ -1,0 +1,37 @@
+get:
+  tags: [Invoices]
+  summary: Stream invoice PDF (inline)
+  description: |
+    Generates the invoice PDF and returns it for inline display in the browser
+    (`GET /api/v1.1/invoices/{id}/pdf/stream`). The response is sent with
+    `Content-Disposition: inline` and rendered in "print" layout.
+
+    If the invoice belongs to a different company than the `X-Asseblo-Company`
+    header, a JSON **404** is returned instead of a PDF.
+  security:
+    - BearerAuth: []
+  parameters:
+    - $ref: ../../../_shared/components/parameters/IdPath.yaml
+    - name: connector
+      in: query
+      required: false
+      description: >
+        When truthy, returns the provider (myDATA connector) PDF image for the
+        invoice instead of the locally generated document, when one exists.
+      schema: { type: boolean }
+    - name: unauthorized
+      in: query
+      required: false
+      description: Internal flag altering how the invoice is resolved for public/unauthenticated access.
+      schema: { type: boolean }
+  responses:
+    "200":
+      description: Invoice PDF (inline)
+      content:
+        application/pdf:
+          schema:
+            type: string
+            format: binary
+    "401": { $ref: ../../../_shared/components/responses/Unauthorized.yaml }
+    "403": { $ref: ../../../_shared/components/responses/Forbidden.yaml }
+    "404": { $ref: ../../../_shared/components/responses/NotFound.yaml }

@@ -17,17 +17,11 @@ properties:
     description: Enforcer/operand (enforcer).
     example: "+"
 
-  amount:
-    type: number
+  is_percentage:
+    type: boolean
     nullable: true
-    description: Present when tax is NOT percentage (isPercentage=false).
-    example: null
-
-  percentage:
-    type: number
-    nullable: true
-    description: Present when tax is percentage (isPercentage=true).
-    example: 24
+    description: Whether the tax value is expressed as a percentage.
+    example: true
 
   aade_group:
     type: string

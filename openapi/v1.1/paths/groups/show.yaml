@@ -27,7 +27,6 @@ get:
                   deep: 1
                   sort: 10
                   parent_id: 2
-                  is_master: false
                   company: 1
                   created: "2026-02-11 10:00:00"
                   modified: "2026-02-12 09:30:00"

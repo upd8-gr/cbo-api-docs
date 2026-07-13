@@ -1,8 +1,13 @@
 type: object
 additionalProperties: false
 properties:
-  success: { type: boolean, example: false }
+  status:
+    type: string
+    example: "business_validation_error"
   message:
     type: string
     example: "Supplier cannot be deleted because it has related records (invoices, orders, checks, etc.)."
-required: [success, message]
+  errors:
+    type: array
+    items: {}
+required: [status, message, errors]

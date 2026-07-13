@@ -11,12 +11,6 @@ properties:
     enum: [ΓΕΝΙΚΑ, ΒΑΡΟΣ, ΑΠΟΣΤΑΣΗ, ΟΓΚΟΣ, ΧΡΟΝΟΣ, ΕΝΕΡΓΕΙΑ]
     example: "ΓΕΝΙΚΑ"
   company: { type: integer, format: int64, example: 1 }
-  created:
-    type: string
-    format: date-time
-    example: "2026-03-25T10:15:00.000000Z"
-  modified:
-    type: string
-    format: date-time
-    example: "2026-03-25T10:15:00.000000Z"
+  created: { type: string, example: "2026-03-25 10:15:00" }
+  modified: { type: string, example: "2026-03-25 10:15:00" }
 required: [id, name, short_name, category, company, created, modified]

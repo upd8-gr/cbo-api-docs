@@ -56,24 +56,42 @@ properties:
 
   characteristics:
     type: array
-    items: { $ref: ../resources/Characteristic.yaml }
+    items: { $ref: ../characteristics/CharacteristicResource.yaml }
 
   tiers:
+    description: Pricing tiers (TierResource output).
     type: array
-    items: { $ref: ../resources/Tier.yaml }
+    items:
+      type: object
+      additionalProperties: false
+      properties:
+        min: { type: integer, nullable: true, example: 1 }
+        max: { type: integer, nullable: true, example: 10 }
+        price: { type: number, nullable: true, example: 15.5 }
+        is_fixed: { type: boolean, example: false }
+      required: [min, max, price, is_fixed]
 
   catalogues:
+    description: Related catalogues (CatalogueResource output; null values are stripped).
     type: array
-    items: { $ref: ../resources/Catalogue.yaml }
+    items:
+      type: object
+      additionalProperties: true
+      properties:
+        id: { type: integer, format: int64, example: 1 }
+        name: { type: string, example: "Catalogue A" }
+        rate: { type: number, nullable: true, example: 1.2 }
+        priority: { type: integer, nullable: true, example: 1 }
+        type: { type: string, nullable: true, example: "retail" }
+        active: { type: boolean, example: true }
 
   group_hierarchy:
-    description: Present only when `getGroupHierarchy=true`.
-    nullable: true
-    oneOf:
-      - type: array
-        items: { $ref: ../groups/Group.yaml }
-      - type: object
-        additionalProperties: true
+    description: >
+      Present only when `getGroupHierarchy=true`. A slash-separated string of the
+      group ancestor names ending with the group name (e.g. "Cat / Sub / Product"),
+      or an empty string when the product has no group.
+    type: string
+    example: "Category / Subcategory"
 required:
   - id
   - title

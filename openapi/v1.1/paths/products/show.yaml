@@ -1,0 +1,209 @@
+get:
+  tags: [Products]
+  summary: Product (show)
+  description: |
+    Returns one parent product for the company, including its full list of variants under `children`.
+    Returns **404** with `status: not_found` if the product does not exist or is out of the company scope.
+  security:
+    - BearerAuth: []
+  parameters:
+    - $ref: ../../../_shared/components/parameters/IdPath.yaml
+  responses:
+    "200":
+      description: OK
+      content:
+        application/json:
+          schema:
+            $ref: ../../components/schemas/products/ProductSingleResponse.yaml
+    "401": { $ref: ../../../_shared/components/responses/Unauthorized.yaml }
+    "403": { $ref: ../../../_shared/components/responses/Forbidden.yaml }
+    "404":
+      description: Not found
+      content:
+        application/json:
+          schema:
+            $ref: ../../components/schemas/products/ProductErrorResponse.yaml
+          examples:
+            notFound:
+              value:
+                status: not_found
+                message: "Product not found."
+                errors: []
+
+put:
+  tags: [Products]
+  summary: Product (update full)
+  description: |
+    Updates a parent product for the company. Validation failures return **422** with
+    `status: validation_error`. If the model fails to persist, **422** with
+    `status: business_validation_error`. An unexpected runtime exception rolls back and returns **500**
+    with `status: server_error`.
+  security:
+    - BearerAuth: []
+  parameters:
+    - $ref: ../../../_shared/components/parameters/IdPath.yaml
+  requestBody:
+    required: true
+    content:
+      application/json:
+        schema:
+          $ref: ../../components/schemas/products/ProductUpdate.yaml
+  responses:
+    "200":
+      description: Updated
+      content:
+        application/json:
+          schema:
+            $ref: ../../components/schemas/products/ProductSingleResponse.yaml
+    "401": { $ref: ../../../_shared/components/responses/Unauthorized.yaml }
+    "403": { $ref: ../../../_shared/components/responses/Forbidden.yaml }
+    "404":
+      description: Not found
+      content:
+        application/json:
+          schema:
+            $ref: ../../components/schemas/products/ProductErrorResponse.yaml
+          examples:
+            notFound:
+              value:
+                status: not_found
+                message: "Product not found."
+                errors: []
+    "422":
+      description: Validation error or business validation error
+      content:
+        application/json:
+          schema:
+            $ref: ../../components/schemas/products/ProductErrorResponse.yaml
+          examples:
+            validation:
+              value:
+                status: validation_error
+                message: "Validation failed."
+                errors:
+                  group_id: ["The selected group_id must be a category."]
+            business:
+              value:
+                status: business_validation_error
+                message: "Product could not be updated."
+                errors: []
+    "500":
+      description: Unexpected error while updating the product
+      content:
+        application/json:
+          schema:
+            $ref: ../../components/schemas/products/ProductErrorResponse.yaml
+          examples:
+            server:
+              value:
+                status: server_error
+                message: "Failed to update product."
+                errors: []
+
+patch:
+  tags: [Products]
+  summary: Product (update partial)
+  description: |
+    Partially updates a parent product for the company. Behaves identically to `PUT` — send only the
+    fields to change. Validation failures return **422** (`status: validation_error`), a failed persist
+    returns **422** (`status: business_validation_error`), and an unexpected exception returns **500**
+    (`status: server_error`).
+  security:
+    - BearerAuth: []
+  parameters:
+    - $ref: ../../../_shared/components/parameters/IdPath.yaml
+  requestBody:
+    required: true
+    content:
+      application/json:
+        schema:
+          $ref: ../../components/schemas/products/ProductUpdate.yaml
+  responses:
+    "200":
+      description: Updated
+      content:
+        application/json:
+          schema:
+            $ref: ../../components/schemas/products/ProductSingleResponse.yaml
+    "401": { $ref: ../../../_shared/components/responses/Unauthorized.yaml }
+    "403": { $ref: ../../../_shared/components/responses/Forbidden.yaml }
+    "404":
+      description: Not found
+      content:
+        application/json:
+          schema:
+            $ref: ../../components/schemas/products/ProductErrorResponse.yaml
+    "422":
+      description: Validation error or business validation error
+      content:
+        application/json:
+          schema:
+            $ref: ../../components/schemas/products/ProductErrorResponse.yaml
+    "500":
+      description: Unexpected error while updating the product
+      content:
+        application/json:
+          schema:
+            $ref: ../../components/schemas/products/ProductErrorResponse.yaml
+
+delete:
+  tags: [Products]
+  summary: Product (delete)
+  description: |
+    Deletes a parent product. If the product has any variants (child products), deletion is refused with
+    **409** (`status: conflict`). If the delete otherwise fails, **422** with
+    `status: business_validation_error`. On success returns `{ success: true, message }`.
+  security:
+    - BearerAuth: []
+  parameters:
+    - $ref: ../../../_shared/components/parameters/IdPath.yaml
+  responses:
+    "200":
+      description: Deleted
+      content:
+        application/json:
+          schema:
+            $ref: ../../components/schemas/common/SuccessMessageResponse.yaml
+          examples:
+            deleted:
+              value:
+                success: true
+                message: "Product deleted."
+    "401": { $ref: ../../../_shared/components/responses/Unauthorized.yaml }
+    "403": { $ref: ../../../_shared/components/responses/Forbidden.yaml }
+    "404":
+      description: Not found
+      content:
+        application/json:
+          schema:
+            $ref: ../../components/schemas/products/ProductErrorResponse.yaml
+          examples:
+            notFound:
+              value:
+                status: not_found
+                message: "Product not found."
+                errors: []
+    "409":
+      description: Conflict — product has variants and cannot be deleted
+      content:
+        application/json:
+          schema:
+            $ref: ../../components/schemas/products/ProductErrorResponse.yaml
+          examples:
+            conflict:
+              value:
+                status: conflict
+                message: "Product cannot be deleted because it has variants."
+                errors: []
+    "422":
+      description: Business validation error — delete failed
+      content:
+        application/json:
+          schema:
+            $ref: ../../components/schemas/products/ProductErrorResponse.yaml
+          examples:
+            business:
+              value:
+                status: business_validation_error
+                message: "Product could not be deleted."
+                errors: []

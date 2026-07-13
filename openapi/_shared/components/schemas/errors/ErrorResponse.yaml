@@ -1,7 +1,19 @@
 type: object
-additionalProperties: false
+description: >
+  Generic error envelope. API-generated errors (403/404 from controllers and form
+  requests) include `status` and an empty `errors` array; framework-level responses
+  (401 authentication, 429 rate limit) return only `message`.
 properties:
+  status:
+    type: string
+    description: Machine-readable error code (e.g. `forbidden`, `not_found`). Absent on framework auth/rate-limit responses.
+    example: "not_found"
   message:
     type: string
-    example: "Unauthorized."
+    example: "Resource not found."
+  errors:
+    type: array
+    description: Present (usually empty) on API-generated errors; absent on framework responses.
+    items: {}
+    example: []
 required: [message]

@@ -1,0 +1,25 @@
+type: object
+additionalProperties: false
+properties:
+  id:
+    type: integer
+    format: int64
+    example: 1
+  name:
+    type: string
+    example: "Γιώργος Παπαδόπουλος"
+  email:
+    type: string
+    format: email
+    example: "user@example.com"
+  created:
+    type: string
+    nullable: true
+    description: Raw `created_at` value from the database.
+    example: "2026-04-27 09:00:00"
+  updated:
+    type: string
+    nullable: true
+    description: Raw `updated_at` value from the database.
+    example: "2026-04-27 10:00:00"
+required: [id, name, email, created, updated]

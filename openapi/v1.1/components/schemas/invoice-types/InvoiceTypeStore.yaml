@@ -9,12 +9,12 @@ properties:
     type: integer
     enum: [1,2,3,4,5,6]
     description: |
-      1 - `Debit Invoice`, 
-      2 - `Credit Invoice`, 
-      3 - `Delivery Note`, 
-      4 - `Offers`, 
-      5 - `Special Invoice`, 
-      6 - `Suppliers Invoice`, 
+      1 - `Debit Invoice`,
+      2 - `Credit Invoice`,
+      3 - `Delivery Note`,
+      4 - `Offers`,
+      5 - `Special Invoice`,
+      6 - `Accounts`
     example: 1
   aade_type:
     type: string
@@ -24,12 +24,18 @@ properties:
   document_type:
     type: string
     nullable: true
-    maxLength: 50
-    example: null
-  fhm_code:
-    type: string
-    nullable: true
-    maxLength: 50
+    description: >
+      Required when `type = 3` (delivery notes); otherwise the backend derives it from `type`.
+      Must be one of the allowed values.
+    enum:
+      - invoice
+      - credit-invoice
+      - estimate-offer
+      - delivery-note
+      - delivery-return
+      - delivery-internal
+      - delivery-centralized
+      - delivery-service
     example: null
   active:
     type: boolean

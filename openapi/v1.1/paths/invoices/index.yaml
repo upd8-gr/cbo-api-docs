@@ -25,7 +25,7 @@ get:
     - name: serial_number
       in: query
       required: false
-      schema: { type: integer }
+      schema: { type: string, maxLength: 255 }
 
     - name: date_from
       in: query
@@ -80,7 +80,7 @@ get:
       required: false
       schema:
         type: string
-        enum: [payment_date, serial_number, status, created_at]
+        enum: [id, serial_number, payment_date, created_at, updated_at]
       example: payment_date
 
     - name: sort_order

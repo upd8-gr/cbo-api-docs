@@ -17,8 +17,11 @@ get:
       schema:
         oneOf:
           - type: integer
+            enum: [1, 2, 3, 4, 5]
           - type: array
-            items: { type: integer }
+            items:
+              type: integer
+              enum: [1, 2, 3, 4, 5]
       examples:
         single:
           value: 1
@@ -45,7 +48,7 @@ get:
       description: Sort column (backend orderBy).
       schema:
         type: string
-        enum: [id, title, value, active, type, company_id]
+        enum: [id, title, type, value, active, created_at, updated_at]
       example: id
 
     - name: sort_order
@@ -86,8 +89,7 @@ get:
                     value: 24
                     type: "VAT"
                     operand: "+"
-                    amount: null
-                    percentage: 24
+                    is_percentage: true
                     aade_group: "1"
                     aade_code: "1"
                     calculateVat: true

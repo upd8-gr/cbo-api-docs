@@ -1,0 +1,33 @@
+type: object
+additionalProperties: false
+description: >
+  Create a parent product (`StoreProductRequest`). The product is always created as a master group
+  (`master = 1`) scoped to the company from `X-Asseblo-Company`. `category_id` is accepted as an alias
+  for `group_id`; before validation the value is normalized so that `null`, `''`, or `0` become `null`
+  (ungrouped). When provided, `group_id` must reference a group belonging to the company and must be a
+  valid category (parent) per the catalog rules.
+properties:
+  name:
+    type: string
+    maxLength: 255
+  description:
+    type: string
+    nullable: true
+    maxLength: 255
+  group_id:
+    type: integer
+    nullable: true
+    description: >
+      Parent category id; must exist in `groups` for the company and be a valid category.
+      Null / 0 means ungrouped.
+  category_id:
+    type: integer
+    nullable: true
+    description: Write-only alias for `group_id` (used only when `group_id` is not supplied).
+  sort:
+    type: integer
+    minimum: 0
+    maximum: 255
+    nullable: true
+required:
+  - name

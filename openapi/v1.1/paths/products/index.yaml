@@ -1,0 +1,135 @@
+get:
+  tags: [Products]
+  summary: Products (list)
+  description: |
+    Lists parent products (master groups) for the company from `X-Asseblo-Company`. Each item embeds a
+    summary of its default variant, aggregate stock, image, and a `children_count`. Supports search on
+    `name` and `description`, an optional `group_id` filter, sorting, and pagination
+    (`page_size` default 50, max 100).
+
+    Notes:
+    - `search_fields` is a comma-separated subset of `name,description`; other fields are rejected.
+    - `parent_id` is accepted as an alias for `group_id`.
+    - `group_id` (or `parent_id`) of `0` / null filters to ungrouped products.
+    - Unknown query parameters are rejected with **422**.
+
+    Response: `{ success, data[], meta }`.
+  security:
+    - BearerAuth: []
+  parameters:
+    - name: search
+      in: query
+      required: false
+      schema: { type: string, maxLength: 255 }
+      description: Search term matched against the selected search fields.
+    - name: search_fields
+      in: query
+      required: false
+      schema: { type: string }
+      description: Comma-separated subset of `name,description`. Invalid fields are rejected.
+      example: "name,description"
+    - name: group_id
+      in: query
+      required: false
+      schema: { type: integer, minimum: 0 }
+      description: Filter by parent group id. `0` / null returns ungrouped products.
+    - name: parent_id
+      in: query
+      required: false
+      schema: { type: integer, minimum: 0 }
+      description: Alias for `group_id` (used only when `group_id` is not supplied).
+    - name: sort_by
+      in: query
+      required: false
+      schema:
+        type: string
+        enum: [id, name, sort, created_at, updated_at]
+      example: id
+    - name: sort_order
+      in: query
+      required: false
+      schema:
+        type: string
+        enum: [asc, desc]
+      example: asc
+    - name: page
+      in: query
+      required: false
+      schema: { type: integer, minimum: 1, default: 1 }
+    - name: page_size
+      in: query
+      required: false
+      description: Page size (default 50, max 100).
+      schema: { type: integer, minimum: 1, maximum: 100, default: 50 }
+  responses:
+    "200":
+      description: OK
+      content:
+        application/json:
+          schema:
+            $ref: ../../components/schemas/products/ProductIndexResponse.yaml
+    "401": { $ref: ../../../_shared/components/responses/Unauthorized.yaml }
+    "403": { $ref: ../../../_shared/components/responses/Forbidden.yaml }
+    "422":
+      description: Validation error (invalid filter/sort value or unknown query parameter)
+      content:
+        application/json:
+          schema:
+            $ref: ../../components/schemas/products/ProductErrorResponse.yaml
+          examples:
+            validation:
+              value:
+                status: validation_error
+                message: "Validation failed."
+                errors:
+                  query: ["Unknown query parameters: foo"]
+
+post:
+  tags: [Products]
+  summary: Product (create)
+  description: |
+    Creates a parent product (master group) for the company. On validation failure returns **422** with
+    `status: validation_error`. On an unexpected runtime failure the transaction is rolled back and
+    **500** is returned with `status: server_error`.
+  security:
+    - BearerAuth: []
+  requestBody:
+    required: true
+    content:
+      application/json:
+        schema:
+          $ref: ../../components/schemas/products/ProductStore.yaml
+  responses:
+    "201":
+      description: Created
+      content:
+        application/json:
+          schema:
+            $ref: ../../components/schemas/products/ProductSingleResponse.yaml
+    "401": { $ref: ../../../_shared/components/responses/Unauthorized.yaml }
+    "403": { $ref: ../../../_shared/components/responses/Forbidden.yaml }
+    "422":
+      description: Validation error
+      content:
+        application/json:
+          schema:
+            $ref: ../../components/schemas/products/ProductErrorResponse.yaml
+          examples:
+            validation:
+              value:
+                status: validation_error
+                message: "Validation failed."
+                errors:
+                  name: ["The name field is required."]
+    "500":
+      description: Unexpected error while creating the product
+      content:
+        application/json:
+          schema:
+            $ref: ../../components/schemas/products/ProductErrorResponse.yaml
+          examples:
+            server:
+              value:
+                status: server_error
+                message: "Failed to create product."
+                errors: []

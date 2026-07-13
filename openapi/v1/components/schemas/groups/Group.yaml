@@ -63,7 +63,7 @@ properties:
     description: Present when showCharacteristics=true. (CharCategoryResource output)
     type: array
     items:
-      $ref: ../resources/CharCategory.yaml
+      $ref: ../characteristics/CharacteristicCategoryResource.yaml
 required:
   - id
   - title

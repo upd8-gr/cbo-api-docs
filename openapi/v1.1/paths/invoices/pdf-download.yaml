@@ -1,0 +1,37 @@
+get:
+  tags: [Invoices]
+  summary: Download invoice PDF (attachment)
+  description: |
+    Generates the invoice PDF and returns it as a file download
+    (`GET /api/v1.1/invoices/{id}/pdf/download`). The response is sent with
+    `Content-Disposition: attachment; filename="<invoice-name>.pdf"`.
+
+    If the invoice belongs to a different company than the `X-Asseblo-Company`
+    header, a JSON **404** is returned instead of a PDF.
+  security:
+    - BearerAuth: []
+  parameters:
+    - $ref: ../../../_shared/components/parameters/IdPath.yaml
+    - name: connector
+      in: query
+      required: false
+      description: >
+        When truthy, returns the provider (myDATA connector) PDF image for the
+        invoice instead of the locally generated document, when one exists.
+      schema: { type: boolean }
+    - name: unauthorized
+      in: query
+      required: false
+      description: Internal flag altering how the invoice is resolved for public/unauthenticated access.
+      schema: { type: boolean }
+  responses:
+    "200":
+      description: Invoice PDF (attachment)
+      content:
+        application/pdf:
+          schema:
+            type: string
+            format: binary
+    "401": { $ref: ../../../_shared/components/responses/Unauthorized.yaml }
+    "403": { $ref: ../../../_shared/components/responses/Forbidden.yaml }
+    "404": { $ref: ../../../_shared/components/responses/NotFound.yaml }

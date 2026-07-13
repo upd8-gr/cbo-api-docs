@@ -13,12 +13,17 @@ properties:
     description: Must exist in `measurement_units`.
   accounting_type:
     type: integer
-    enum: [1, 2, 3, 4, 5, 6]
+    enum: [1, 2, 3, 4, 5, 6, 7]
     description: >
-        Accounting type (1: Goods, 2: Product, 3: Service, 4: A Material, 5: B Material, 6: Fixed).
+        Accounting type (1: Goods, 2: Product, 3: Service, 4: A Material, 5: B Material, 6: Fixed, 7).
   tax_id:
     type: integer
     description: Must exist in `taxes` for the company from `X-Asseblo-Company`.
+  tax_ids:
+    type: array
+    nullable: true
+    items: { type: integer }
+    description: Additional tax IDs; each must exist in `taxes` for the company and not be of `type` 1.
   group_id:
     type: integer
     nullable: true
@@ -34,7 +39,10 @@ properties:
     description: Public SKU input; mapped to the internal `catalog_code` field before validation.
   cpv_code: { type: string, nullable: true, maxLength: 255 }
   accounting_code: { type: string, nullable: true, maxLength: 255 }
-  cost_price: { type: number, nullable: true }
+  purchase_price:
+    type: number
+    nullable: true
+    description: Purchase/cost price. `cost_price` is accepted as a legacy alias and used when `purchase_price` is omitted.
   sell_price: { type: number, nullable: true }
   # sell_lock: { type: integer, enum: [0, 1], nullable: true }
   retail_price: { type: number, nullable: true }
@@ -79,9 +87,9 @@ properties:
         catalogue_id: { type: integer }
         ratio: { type: number, nullable: true }
       required: [catalogue_id]
-  # serial_numbers:
-  #   type: array
-  #   items: { type: string, maxLength: 255 }
+  serial_numbers:
+    type: array
+    items: { type: string, maxLength: 255 }
   tiers:
     type: array
     items:

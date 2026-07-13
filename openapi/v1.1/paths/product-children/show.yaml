@@ -151,13 +151,24 @@ delete:
           schema:
             $ref: ../../components/schemas/common/FailureMessageResponse.yaml
     "409":
-      description: Conflict — related records prevent deletion
+      description: Conflict — immutable related records prevent deletion
       content:
         application/json:
           schema:
             $ref: ../../components/schemas/common/FailureMessageResponse.yaml
           examples:
             conflict:
+              value:
+                success: false
+                message: "Product cannot be deleted because it has related records (orders, invoices, price items, etc.)."
+    "422":
+      description: Business validation error — the delete operation failed
+      content:
+        application/json:
+          schema:
+            $ref: ../../components/schemas/common/FailureMessageResponse.yaml
+          examples:
+            blocked:
               value:
                 success: false
                 message: "Product cannot be deleted because it has related records (orders, invoices, price items, etc.)."

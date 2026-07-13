@@ -1,0 +1,36 @@
+get:
+  tags: [Users]
+  summary: Show user
+  description: >
+    Returns a single user by ID.
+    The user must belong to the authenticated company (`X-Asseblo-Company`);
+    otherwise a `404` is returned (unless the requesting account is the super-admin).
+  security:
+    - BearerAuth: []
+  parameters:
+    - name: user
+      in: path
+      required: true
+      description: The ID of the user.
+      schema:
+        type: integer
+        format: int64
+      example: 1
+
+  responses:
+    "200":
+      description: OK
+      content:
+        application/json:
+          schema:
+            $ref: ../../components/schemas/users/UserResponse.yaml
+          example:
+            data:
+              id: 1
+              name: "Γιώργος Παπαδόπουλος"
+              email: "giorgos@example.com"
+              created: "2026-04-27 09:00:00"
+              updated: "2026-04-27 10:00:00"
+    "401": { $ref: ../../../_shared/components/responses/Unauthorized.yaml }
+    "403": { $ref: ../../../_shared/components/responses/Forbidden.yaml }
+    "404": { $ref: ../../../_shared/components/responses/NotFound.yaml }

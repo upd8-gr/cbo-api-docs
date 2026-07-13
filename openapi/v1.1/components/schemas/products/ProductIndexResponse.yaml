@@ -1,0 +1,9 @@
+type: object
+additionalProperties: false
+properties:
+  success: { type: boolean, example: true }
+  data:
+    type: array
+    items: { $ref: ./ProductV11.yaml }
+  meta: { $ref: ./ProductListMeta.yaml }
+required: [success, data, meta]

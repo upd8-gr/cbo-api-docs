@@ -45,10 +45,6 @@ properties:
     type: string
     nullable: true
     maxLength: 50
-  fax:
-    type: string
-    nullable: true
-    maxLength: 50
 
   tax_office:
     type: string
@@ -58,15 +54,19 @@ properties:
     type: integer
     format: int64
     nullable: true
+  tax_type:
+    type: integer
+    nullable: true
+    enum: [1, 2, 3]
+  payment_way:
+    type: string
+    nullable: true
+    enum: [cash, on-credit]
 
   comments:
     type: string
     nullable: true
     maxLength: 1000
-
-  dangerous:
-    type: boolean
-    nullable: true
 
   billing_address:
     oneOf:

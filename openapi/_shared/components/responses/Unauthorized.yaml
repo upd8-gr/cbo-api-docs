@@ -4,4 +4,4 @@ content:
     schema:
       $ref: ../schemas/errors/ErrorResponse.yaml
     example:
-      message: "Unauthorized."
+      message: "Unauthenticated."

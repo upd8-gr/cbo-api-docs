@@ -91,28 +91,24 @@ get:
                 data:
                   - id: 1
                     name: "Red"
-                    image: null
                     category:
                       id: 1
                       name: "Color"
                       characteristics:
                         - id: 1
                           name: "Red"
-                          image: null
             paginated:
               summary: Paginated (page_size provided)
               value:
                 data:
                   - id: 1
                     name: "Red"
-                    image: null
                     category:
                       id: 1
                       name: "Color"
                       characteristics:
                         - id: 1
                           name: "Red"
-                          image: null
                 links:
                   first: "/api/v1/characteristics?page=1"
                   last: "/api/v1/characteristics?page=5"

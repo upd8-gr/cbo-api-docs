@@ -1,0 +1,32 @@
+type: object
+additionalProperties: false
+description: >
+  Update a parent product (`UpdateProductRequest`). Send only the fields to change. The product remains
+  a master group (`master = 1`). `category_id` is accepted as an alias for `group_id`; when either is
+  present it is normalized so that `null`, `''`, or `0` become `null` (ungrouped). When provided,
+  `group_id` must exist in `groups` for the company, must be a valid category, and must differ from the
+  product's own id.
+properties:
+  name:
+    type: string
+    nullable: true
+    maxLength: 255
+  description:
+    type: string
+    nullable: true
+    maxLength: 255
+  group_id:
+    type: integer
+    nullable: true
+    description: >
+      Parent category id; must exist in `groups` for the company, be a valid category, and differ from
+      the product's own id. Null / 0 means ungrouped.
+  category_id:
+    type: integer
+    nullable: true
+    description: Write-only alias for `group_id` (used only when `group_id` is not supplied).
+  sort:
+    type: integer
+    minimum: 0
+    maximum: 255
+    nullable: true

@@ -40,7 +40,6 @@ get:
                     characteristics:
                       - id: 1
                         name: "Red"
-                        image: null
             paginated:
               summary: Paginated (page_size provided)
               value:
@@ -50,7 +49,6 @@ get:
                     characteristics:
                       - id: 1
                         name: "Red"
-                        image: null
                 links:
                   first: "/api/v1/characteristics-categories?page=1"
                   last: "/api/v1/characteristics-categories?page=3"

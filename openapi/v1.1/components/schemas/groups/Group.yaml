@@ -8,7 +8,6 @@ properties:
   deep: { type: integer, example: 1 }
   sort: { type: integer, nullable: true, example: 10 }
   parent_id: { type: integer, format: int64, nullable: true, example: 2 }
-  is_master: { type: boolean, example: false }
   company: { type: integer, format: int64, example: 1 }
   created: { type: string, example: "2026-02-11 10:00:00" }
   modified: { type: string, example: "2026-02-12 09:30:00" }
@@ -29,4 +28,4 @@ properties:
       id: { type: integer, format: int64, example: 2 }
       name: { type: string, example: "Phones" }
     required: [id, name]
-required: [id, name, deep, is_master, company, created, modified]
+required: [id, name, deep, company, created, modified]

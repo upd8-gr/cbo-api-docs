@@ -1,2 +1,6 @@
-allOf:
-  - $ref: ./Group.yaml
+type: object
+additionalProperties: false
+properties:
+  data:
+    $ref: ./Group.yaml
+required: [data]

@@ -1,0 +1,154 @@
+type: object
+additionalProperties: false
+description: >
+  Supplier invoice (SuppliersInvoiceResource output). Null fields are stripped
+  from the response, so any nullable property may be absent.
+properties:
+  id: { type: integer, format: int64, example: 1 }
+
+  representation:
+    type: string
+    nullable: true
+    description: Human-readable nickname of the invoice.
+    example: "ΤΠΥ-0001"
+
+  status:
+    type: string
+    example: "published"
+
+  document_title:
+    type: string
+    nullable: true
+    description: Title of the related invoice type.
+    example: "Τιμολόγιο Παροχής Υπηρεσιών"
+
+  invoice_type_id:
+    type: integer
+    nullable: true
+    example: 12
+
+  serial_number:
+    type: integer
+    nullable: true
+    example: 1
+
+  invoice_series_id:
+    type: integer
+    nullable: true
+    example: 3
+
+  mydata_type:
+    type: string
+    nullable: true
+    example: "13.1"
+
+  date:
+    type: string
+    format: date
+    description: Raw payment_date value.
+    example: "2026-02-11"
+
+  due_date:
+    type: string
+    format: date
+    nullable: true
+    example: "2026-03-11"
+
+  supplier_id:
+    type: integer
+    format: int64
+    example: 7
+
+  supplier:
+    nullable: true
+    $ref: ../suppliers/Supplier.yaml
+
+  billing_address:
+    nullable: true
+    $ref: ../resources/Address.yaml
+
+  shipping_address:
+    nullable: true
+    $ref: ../resources/Address.yaml
+
+  loading_address:
+    nullable: true
+    $ref: ../resources/Address.yaml
+
+  payment_method:
+    type: string
+    nullable: true
+    example: null
+
+  items:
+    type: array
+    items:
+      $ref: ./SupplierInvoiceLine.yaml
+
+  sub_total:
+    type: number
+    example: 200
+
+  tax_total:
+    type: number
+    description: Total tax amount.
+    example: 48
+
+  grand_total:
+    type: number
+    example: 248
+
+  currency_code:
+    type: string
+    nullable: true
+    example: "EUR"
+
+  exchange_rate:
+    type: number
+    nullable: true
+    description: Currency exchange rate.
+    example: 1
+
+  terms:
+    type: string
+    nullable: true
+    example: null
+
+  notes:
+    type: string
+    nullable: true
+    example: null
+
+  created:
+    type: string
+    description: created_at timestamp.
+    example: "2026-02-11 10:00:00"
+
+  modified:
+    type: string
+    description: updated_at timestamp.
+    example: "2026-02-12 10:00:00"
+
+  public_link:
+    type: string
+    nullable: true
+    description: Permanent public link to the invoice.
+    example: "https://app.example.com/p/abc123"
+
+  mydata_qr_code:
+    type: string
+    nullable: true
+    example: null
+
+  mydata_latest_mark:
+    type: string
+    nullable: true
+    example: null
+
+  mydata_uid:
+    type: string
+    nullable: true
+    example: null
+
+required:
+  - id

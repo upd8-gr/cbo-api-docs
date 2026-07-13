@@ -31,43 +31,6 @@ get:
     "403": { $ref: ../../../_shared/components/responses/Forbidden.yaml }
     "404": { $ref: ../../../_shared/components/responses/NotFound.yaml }
 
-post:
-  tags: [Invoice Types]
-  summary: Invoice type (create)
-  description: >
-    Creates an invoice type. If `default=true`, other invoice types with same (type, document_type)
-    are set to default=false. If `default=false` and no other default exists, backend forces default=true.
-  security:
-    - BearerAuth: []
-  requestBody:
-    required: true
-    content:
-      application/json:
-        schema:
-          $ref: ../../components/schemas/invoice-types/InvoiceTypeStore.yaml
-        examples:
-          default:
-            value:
-              title: "Invoice (no delivery)"
-              type: 1
-              aade_type: "1.1"
-              document_type: null
-              fhm_code: null
-              active: true
-              is_deliverable: false
-              default: true
-              template_id: null
-  responses:
-    "201":
-      description: Created
-      content:
-        application/json:
-          schema:
-            $ref: ../../components/schemas/invoice-types/InvoiceTypeSingleResponse.yaml
-    "401": { $ref: ../../../_shared/components/responses/Unauthorized.yaml }
-    "403": { $ref: ../../../_shared/components/responses/Forbidden.yaml }
-    "422": { $ref: ../../../_shared/components/responses/UnprocessableEntity.yaml }
-
 delete:
   tags: [Invoice Types]
   summary: Invoice type (delete)
@@ -102,20 +65,12 @@ delete:
             notFound:
               value:
                 success: false
-                message: "Invoice type not found"
-    "409":
-      description: Conflict — cannot delete (related invoices, supplier invoices, or branch links)
-      content:
-        application/json:
-          schema:
-            $ref: ../../components/schemas/common/FailureMessageResponse.yaml
-          examples:
-            conflict:
-              value:
-                success: false
-                message: "Invoice type cannot be deleted because it has related invoices, supplier invoices, or branch links."
+                message: "Invoice type not found."
     "422":
-      description: Cannot delete default document type for this category
+      description: >
+        Business validation error — either the type is the default document type for its
+        category, or it cannot be deleted because it has related invoices, supplier
+        invoices, or branch links.
       content:
         application/json:
           schema:
@@ -125,3 +80,7 @@ delete:
               value:
                 success: false
                 message: "Cannot delete the default document type for this category."
+            hasRelations:
+              value:
+                success: false
+                message: "Invoice type cannot be deleted because it has related invoices, supplier invoices, or branch links."

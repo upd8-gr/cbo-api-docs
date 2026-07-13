@@ -23,7 +23,7 @@ properties:
     type: integer
     nullable: true
 
-  series:
+  invoice_series:
     type: string
     nullable: true
 
@@ -83,7 +83,7 @@ properties:
     type: string
     nullable: true
 
-  exchange_rate:
+  currency_rate:
     type: number
     nullable: true
 
@@ -93,6 +93,28 @@ properties:
 
   notes:
     type: string
+    nullable: true
+
+  related_documents:
+    type: array
+    nullable: true
+    description: IDs of related documents (e.g. credit invoices).
+    items: { type: integer }
+
+  delivery_notes:
+    type: array
+    nullable: true
+    description: IDs of associated delivery notes.
+    items: { type: integer }
+
+  created:
+    type: string
+    format: date-time
+    nullable: true
+
+  modified:
+    type: string
+    format: date-time
     nullable: true
 
   public_link:

@@ -23,8 +23,7 @@ get:
                   value: 24
                   type: "VAT"
                   operand: "+"
-                  amount: null
-                  percentage: 24
+                  is_percentage: true
                   aade_group: "1"
                   aade_code: "1"
                   calculateVat: true

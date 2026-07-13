@@ -34,7 +34,7 @@ get:
       description: Filter by document_type exact match.
       schema:
         type: string
-        maxLength: 50
+        maxLength: 100
       example: "delivery-note"
 
     - name: active
@@ -57,7 +57,7 @@ get:
       description: Sort column (backend orderBy).
       schema:
         type: string
-        enum: [id, title, type, aade_type, document_type, active, is_deliverable, default, template_id, company_id]
+        enum: [id, title, type, document_type, active, created_at, updated_at]
       example: id
 
     - name: sort_order
@@ -110,3 +110,39 @@ get:
                   total: 60
     "401": { $ref: ../../../_shared/components/responses/Unauthorized.yaml }
     "403": { $ref: ../../../_shared/components/responses/Forbidden.yaml }
+
+post:
+  tags: [Invoice Types]
+  summary: Invoice type (create)
+  description: >
+    Creates an invoice type. If `default=true`, other invoice types with same (type, document_type)
+    are set to default=false. If `default=false` and no other default exists, backend forces default=true.
+  security:
+    - BearerAuth: []
+  requestBody:
+    required: true
+    content:
+      application/json:
+        schema:
+          $ref: ../../components/schemas/invoice-types/InvoiceTypeStore.yaml
+        examples:
+          default:
+            value:
+              title: "Invoice (no delivery)"
+              type: 1
+              aade_type: "1.1"
+              document_type: null
+              active: true
+              is_deliverable: false
+              default: true
+              template_id: null
+  responses:
+    "201":
+      description: Created
+      content:
+        application/json:
+          schema:
+            $ref: ../../components/schemas/invoice-types/InvoiceTypeSingleResponse.yaml
+    "401": { $ref: ../../../_shared/components/responses/Unauthorized.yaml }
+    "403": { $ref: ../../../_shared/components/responses/Forbidden.yaml }
+    "422": { $ref: ../../../_shared/components/responses/UnprocessableEntity.yaml }

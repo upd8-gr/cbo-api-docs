@@ -18,6 +18,17 @@ properties:
 
   tax_office: { type: string, nullable: true, example: "Α Αθηνών" }
 
+  tax_type:
+    type: integer
+    nullable: true
+    enum: [1, 2, 3]
+    example: 1
+  payment_way:
+    type: string
+    nullable: true
+    enum: [cash, on-credit]
+    example: "cash"
+
   expense_category_id:
     type: integer
     format: int64

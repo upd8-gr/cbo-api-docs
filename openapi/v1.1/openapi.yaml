@@ -68,12 +68,14 @@ security:
 
 tags:
   - name: Invoices
+  - name: Supplier Invoices
   - name: Clients
   - name: Suppliers
   - name: Taxes
   - name: Invoice Types
   - name: Invoice Series
   - name: Product Children
+  - name: Products
   - name: Groups
   - name: Measurement Units
   - name: Expense Categories
@@ -95,10 +97,22 @@ paths:
     $ref: ./paths/invoices/publish.yaml
   /invoices/{id}/email:
     $ref: ./paths/invoices/email.yaml
+  /invoices/{id}/pdf/stream:
+    $ref: ./paths/invoices/pdf-stream.yaml
+  /invoices/{id}/pdf/download:
+    $ref: ./paths/invoices/pdf-download.yaml
+  /supplier-invoices:
+    $ref: ./paths/supplier-invoices/index.yaml
+  /supplier-invoices/{id}:
+    $ref: ./paths/supplier-invoices/show.yaml
   /product-children:
     $ref: ./paths/product-children/index.yaml
   /product-children/{id}:
     $ref: ./paths/product-children/show.yaml
+  /products:
+    $ref: ./paths/products/index.yaml
+  /products/{id}:
+    $ref: ./paths/products/show.yaml
   /groups:
     $ref: ./paths/groups/index.yaml
   /groups/{id}:

@@ -28,10 +28,8 @@ get:
               characteristics:
                 - id: 1
                   name: "Red"
-                  image: null
                 - id: 2
                   name: "Blue"
-                  image: null
     "401": { $ref: ../../../_shared/components/responses/Unauthorized.yaml }
     "403": { $ref: ../../../_shared/components/responses/Forbidden.yaml }
     "404": { $ref: ../../../_shared/components/responses/NotFound.yaml }

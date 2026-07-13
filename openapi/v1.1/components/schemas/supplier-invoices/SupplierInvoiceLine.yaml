@@ -1,0 +1,58 @@
+type: object
+additionalProperties: false
+description: Single supplier invoice line (SupplierInvoiceLineResource output).
+properties:
+  id: { type: integer, format: int64, example: 1 }
+  product_id:
+    type: integer
+    nullable: true
+    description: products_children.id
+    example: 55
+  description:
+    type: string
+    nullable: true
+    example: "Consulting services"
+  quantity:
+    type: number
+    example: 2
+  measure_unit:
+    type: string
+    nullable: true
+    description: Name of the line's measurement unit.
+    example: "Τεμάχιο"
+  unit_price:
+    type: number
+    example: 100
+  discount_price:
+    type: number
+    nullable: true
+    description: Discount value applied to the line.
+    example: 0
+  net_amount:
+    type: number
+    description: Net value of the line.
+    example: 200
+  taxes:
+    type: array
+    items:
+      $ref: ../taxes/TaxForInvoiceLine.yaml
+  classificationCategory:
+    type: string
+    nullable: true
+    description: myDATA classification category.
+    example: "category1_1"
+  classificationType:
+    type: string
+    nullable: true
+    description: myDATA classification type.
+    example: "E3_561_001"
+  vatExemptionCategory:
+    type: integer
+    nullable: true
+    example: null
+  taricNo:
+    type: string
+    nullable: true
+    example: null
+required:
+  - id

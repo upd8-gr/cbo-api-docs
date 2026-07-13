@@ -33,6 +33,17 @@ properties:
     enum: [1, 2]
     example: 1
 
+  tax_type:
+    type: integer
+    nullable: true
+    enum: [1, 2, 3]
+    example: 1
+  payment_way:
+    type: string
+    nullable: true
+    enum: [cash, on-credit]
+    example: "cash"
+
   comments: { type: string, nullable: true, example: null }
 
   addresses:

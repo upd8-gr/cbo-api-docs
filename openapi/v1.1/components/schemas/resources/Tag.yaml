@@ -1,6 +1,6 @@
 type: object
 additionalProperties: true
-description: Minimal placeholder for TagResource.
+description: Tag output (TagResource).
 properties:
   id: { type: integer, format: int64, example: 1 }
-  title: { type: string, example: "vip" }
+  name: { type: string, example: "vip" }

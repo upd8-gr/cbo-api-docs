@@ -22,7 +22,10 @@ get:
     - name: sort_by
       in: query
       required: false
-      schema: { type: string, default: id }
+      schema:
+        type: string
+        enum: [id, status, amount, created_at, updated_at]
+        default: id
       example: id
 
     - name: sort_order

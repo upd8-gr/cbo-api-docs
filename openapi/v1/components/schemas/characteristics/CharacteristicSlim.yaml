@@ -9,8 +9,4 @@ properties:
   name:
     type: string
     example: "Red"
-  image:
-    type: string
-    nullable: true
-    example: "https://app.cbo.gr/storage/characteristics/red.jpg"
 required: [id, name]

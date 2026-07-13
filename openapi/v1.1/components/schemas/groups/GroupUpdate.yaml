@@ -16,7 +16,9 @@ properties:
   group_id:
     type: integer
     nullable: true
-    description: Parent group id within the same company. Use `null` or `0` to move the group to the root level.
+    description: >
+      Parent group id within the same company (must be a category and different from the group being
+      updated). Accepts `parent_id` as an alias. Use `null` or `0` to move the group to the root level.
     example: 2
   sort:
     type: integer
@@ -24,7 +26,3 @@ properties:
     minimum: 0
     maximum: 255
     example: 20
-  master:
-    type: boolean
-    nullable: true
-    example: true

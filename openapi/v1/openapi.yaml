@@ -69,11 +69,12 @@ tags:
   - name: Characteristics
   - name: Stocks
   - name: Orders
+  - name: Users
 
 paths:
-  /products-children:
+  /product-children:
     $ref: ./paths/products-children/index.yaml
-  /products-children/{id}:
+  /product-children/{child}:
     $ref: ./paths/products-children/show.yaml
   /groups:
     $ref: ./paths/groups/index.yaml
@@ -97,6 +98,12 @@ paths:
     $ref: ./paths/orders/show.yaml
   /create/order:
     $ref: ./paths/orders/create.yaml
+  /users:
+    $ref: ./paths/users/index.yaml
+  /users/{user}:
+    $ref: ./paths/users/show.yaml
+  /users/by-referral/{referral}:
+    $ref: ./paths/users/by-referral.yaml
 
 components:
   securitySchemes:
@@ -187,6 +194,16 @@ components:
       $ref: ./components/schemas/orders/OrderStore.yaml
     OrderCreateResponse:
       $ref: ./components/schemas/orders/OrderCreateResponse.yaml
+
+    # users
+    User:
+      $ref: ./components/schemas/users/User.yaml
+    UserResponse:
+      $ref: ./components/schemas/users/UserResponse.yaml
+    UserCollection:
+      $ref: ./components/schemas/users/UserCollection.yaml
+    UserPaginatedCollection:
+      $ref: ./components/schemas/users/UserPaginatedCollection.yaml
 
   responses:
     Unauthorized:

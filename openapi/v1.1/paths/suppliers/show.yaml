@@ -90,5 +90,6 @@ delete:
           examples:
             fail:
               value:
-                success: false
+                status: "business_validation_error"
                 message: "Supplier cannot be deleted because it has related records (invoices, orders, checks, etc.)."
+                errors: []

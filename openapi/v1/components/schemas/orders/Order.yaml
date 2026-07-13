@@ -25,10 +25,39 @@ properties:
     example: true
   items:
     type: array
+    description: >
+      Order line items. Only present when items are loaded — always for
+      `GET /orders/{order}`, and for `GET /orders` only when `withItems=true`.
     items:
       type: object
       additionalProperties: true
-    description: Order line items.
+      properties:
+        group:
+          type: integer
+          example: 12
+        title:
+          type: string
+          nullable: true
+          example: "Laptop 15\""
+        description:
+          type: string
+          nullable: true
+          example: null
+        quantity:
+          type: number
+          example: 1
+        measurment_unit:
+          nullable: true
+          example: "Τεμάχιο"
+        unit_price:
+          type: number
+          example: 500.00
+        discount_rate:
+          type: number
+          example: 0
+        net_value:
+          type: number
+          example: 500.00
   comments:
     type: string
     nullable: true
@@ -39,4 +68,4 @@ properties:
   created:
     type: string
     example: "2026-04-27 09:00:00"
-required: [id, serial_number, title, isOffer, isExternal, items, updated, created]
+required: [id, serial_number, title, billing_account, isOffer, isExternal, comments, updated, created]

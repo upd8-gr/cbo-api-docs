@@ -7,10 +7,15 @@ description: >
 properties:
   product_name: { type: string, maxLength: 500 }
   measurement_unit_id: { type: integer }
-  accounting_type: { type: integer, enum: [1, 2, 3, 4, 5, 6] }
+  accounting_type: { type: integer, enum: [1, 2, 3, 4, 5, 6, 7] }
   tax_id:
     type: integer
     description: Must exist in `taxes` for the company from `X-Asseblo-Company`.
+  tax_ids:
+    type: array
+    nullable: true
+    items: { type: integer }
+    description: Additional tax IDs; each must exist in `taxes` for the company and not be of `type` 1.
   group_id:
     type: integer
     nullable: true
@@ -29,13 +34,13 @@ properties:
   accounting_code: { type: string, nullable: true, maxLength: 255 }
   cost_price: { type: number, nullable: true }
   sell_price: { type: number, nullable: true }
-  # sell_lock: { type: integer, enum: [0, 1], nullable: true }
+  sell_lock: { type: integer, enum: [0, 1], nullable: true }
   retail_price: { type: number, nullable: true }
   website_price: { type: number, nullable: true }
   discounted_price: { type: number, nullable: true }
   description: { type: string, nullable: true }
   barcode: { type: string, nullable: true, maxLength: 255 }
-  # special_rules: { type: integer, enum: [0, 1, 2], nullable: true }
+  special_rules: { type: integer, enum: [0, 1, 2], nullable: true }
   count_storage: { type: boolean, nullable: true }
   initial_stock: { type: number, nullable: true }
   branch_id:
@@ -72,9 +77,9 @@ properties:
         catalogue_id: { type: integer }
         ratio: { type: number, nullable: true }
       required: [catalogue_id]
-  # serial_numbers:
-  #   type: array
-  #   items: { type: string, maxLength: 255 }
+  serial_numbers:
+    type: array
+    items: { type: string, maxLength: 255 }
   tiers:
     type: array
     items:

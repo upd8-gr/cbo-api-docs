@@ -44,7 +44,7 @@ post:
           isExternal: true
 
   responses:
-    "201":
+    "200":
       description: Order created
       content:
         application/json:
@@ -54,12 +54,13 @@ post:
             data:
               id: 101
               serial_number: "#1001"
-              title: "Order for Παπαδόπουλος"
-              billing_account: null
+              title: "E-shop #54321 - Γιώργος Παπαδόπουλος"
+              billing_account:
+                id: 55
+                invoice_name: "Γιώργος Παπαδόπουλος"
               isOffer: false
               isExternal: true
-              items: []
-              comments: null
+              comments: ""
               updated: "2026-04-27 10:00:00"
               created: "2026-04-27 10:00:00"
     "400":

@@ -1,0 +1,36 @@
+get:
+  tags: [Users]
+  summary: Show user by referral code
+  description: >
+    Returns the user whose referral code matches the given value.
+    The referral code is a 6-character, zero-padded numeric string derived from
+    the user's ID (`substr(str_pad(abs(crc32(id)), 6, '0', STR_PAD_LEFT), 0, 6)`).
+    Returns `404` when no user matches the code.
+  security:
+    - BearerAuth: []
+  parameters:
+    - name: referral
+      in: path
+      required: true
+      description: The 6-character referral code of the user.
+      schema:
+        type: string
+      example: "042315"
+
+  responses:
+    "200":
+      description: OK
+      content:
+        application/json:
+          schema:
+            $ref: ../../components/schemas/users/UserResponse.yaml
+          example:
+            data:
+              id: 1
+              name: "Γιώργος Παπαδόπουλος"
+              email: "giorgos@example.com"
+              created: "2026-04-27 09:00:00"
+              updated: "2026-04-27 10:00:00"
+    "401": { $ref: ../../../_shared/components/responses/Unauthorized.yaml }
+    "403": { $ref: ../../../_shared/components/responses/Forbidden.yaml }
+    "404": { $ref: ../../../_shared/components/responses/NotFound.yaml }

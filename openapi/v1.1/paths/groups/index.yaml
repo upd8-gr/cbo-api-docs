@@ -5,7 +5,7 @@ get:
     Lists groups for the current company.
 
     Supports free-text search on `name` and `description`, filtering by parent/root group,
-    depth, `master` flag, sorting, and pagination.
+    depth, sorting, and pagination. Only non-master groups for the company are returned.
   security:
     - BearerAuth: []
 
@@ -44,13 +44,6 @@ get:
       description: Exact depth level.
       schema: { type: integer, minimum: 1 }
       example: 2
-
-    - name: master
-      in: query
-      required: false
-      description: Filter by master flag.
-      schema: { type: boolean }
-      example: false
 
     - name: sort_by
       in: query
@@ -100,7 +93,6 @@ get:
                     deep: 1
                     sort: 10
                     parent_id: 2
-                    is_master: false
                     company: 1
                     created: "2026-02-11 10:00:00"
                     modified: "2026-02-12 09:30:00"
@@ -141,7 +133,6 @@ post:
               description: Smartphones and accessories
               group_id: 2
               sort: 10
-              master: false
 
   responses:
     "201":
@@ -162,7 +153,6 @@ post:
                   deep: 1
                   sort: 10
                   parent_id: 2
-                  is_master: false
                   company: 1
                   created: "2026-02-11 10:00:00"
                   modified: "2026-02-11 10:00:00"

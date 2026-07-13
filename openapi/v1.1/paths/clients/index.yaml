@@ -17,9 +17,12 @@ get:
     - name: search_fields
       in: query
       required: false
-      description: Comma-separated fields used in OR LIKE search. The available fields are `first_name`, `last_name`, `vat`, `email`, `invoice_name`, `company_name`, `tax_office`, `profession`, `client_type`.
+      description: >
+        Comma-separated fields used in OR LIKE search. Allowed fields are
+        `invoice_name`, `company_name`, `afm`, `fname`, `lname`, `vat`, `client_type`, `tax_type`, `payment_way`.
+        If the field is `vat`, it searches the `afm` column.
       schema: { type: string }
-      example: "fname,lname,vat,email"
+      example: "fname,lname,vat,invoice_name"
 
     - name: client_type
       in: query
@@ -44,7 +47,7 @@ get:
       required: false
       schema:
         type: string
-        enum: [id, primary_id, fname, lname, vat, email, client_type, created_at, updated_at]
+        enum: [id, invoice_name, company_name, afm, created_at, updated_at]
       example: id
 
     - name: sort_order
@@ -93,6 +96,8 @@ get:
                     tax_office: "Α Αθηνών"
                     profession: null
                     client_type: 1
+                    tax_type: 1
+                    payment_way: "cash"
                     comments: null
                     addresses: []
                     company: 1

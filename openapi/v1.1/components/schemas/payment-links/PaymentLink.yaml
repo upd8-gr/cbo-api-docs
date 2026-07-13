@@ -55,3 +55,20 @@ properties:
     type: string
     nullable: true
     example: "Invoice #55 payment"
+
+  company:
+    type: integer
+    format: int64
+    nullable: true
+    description: Owning company ID.
+    example: 1
+
+  created:
+    type: string
+    description: Creation datetime (raw DB value).
+    example: "2026-02-11 10:00:00"
+
+  modified:
+    type: string
+    description: Last modification datetime (raw DB value).
+    example: "2026-02-12 10:00:00"

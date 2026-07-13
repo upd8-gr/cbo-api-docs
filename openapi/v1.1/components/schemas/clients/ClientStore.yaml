@@ -71,17 +71,22 @@ properties:
     format: int64
     nullable: true
     example: 10
+  tax_type:
+    type: integer
+    nullable: true
+    enum: [1, 2, 3]
+    example: 1
+  payment_way:
+    type: string
+    nullable: true
+    enum: [cash, on-credit]
+    example: "cash"
 
   comments:
     type: string
     nullable: true
     maxLength: 1000
     example: null
-
-  dangerous:
-    type: boolean
-    nullable: true
-    example: false
 
   billing_address:
     $ref: ./ClientAddressInput.yaml

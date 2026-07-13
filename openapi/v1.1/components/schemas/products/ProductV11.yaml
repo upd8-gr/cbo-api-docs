@@ -1,0 +1,89 @@
+type: object
+additionalProperties: false
+description: >
+  Parent product (master group) as returned by `ProductResource` (API v1.1). Null-valued fields are
+  omitted from the response (`Arr::whereNotNull`). `sell_price` and `price_range` are mutually exclusive:
+  `sell_price` is present when the product's variants resolve to exactly one distinct price, `price_range`
+  when they resolve to more than one. `group_hierarchy` / `parent_name` appear only when the parent group
+  is loaded and present. `children` is included only on the show endpoint.
+properties:
+  id: { type: integer, format: int64, example: 501 }
+  name: { type: string, example: "Sample product" }
+  slug: { type: string, nullable: true, example: "sample-product" }
+  description: { type: string, nullable: true }
+  group_id: { type: integer, nullable: true, example: 5 }
+  sort: { type: integer, nullable: true, example: 0 }
+  children_count:
+    type: integer
+    description: Number of variants (child products) belonging to this product.
+    example: 3
+  default_child:
+    type: object
+    nullable: true
+    additionalProperties: false
+    description: Summary of the default (lowest `sort`) variant. Omitted when the product has no variants.
+    properties:
+      id: { type: integer, format: int64, example: 1001 }
+      product_name: { type: string, nullable: true, example: "Sample product - Red" }
+      sku:
+        type: string
+        nullable: true
+        description: Public SKU value returned from the variant's internal `catalog_code` field.
+        example: "SKU-001"
+      sell_price: { type: number, nullable: true, example: 9.9 }
+    required: [id]
+  stock:
+    type: number
+    description: Sum of full stock across all variants.
+    example: 12
+  image:
+    type: object
+    nullable: true
+    additionalProperties: false
+    description: >
+      Image summary taken from the default variant, falling back to the product's own image.
+      Omitted when neither has an image.
+    properties:
+      thumb: { type: string, nullable: true, example: null }
+      normal: { type: string, nullable: true, example: null }
+  company:
+    type: integer
+    description: Owning company id (`company_id`).
+    example: 1
+  created: { type: string, example: "2026-02-11 10:00:00" }
+  modified: { type: string, example: "2026-02-11 10:00:00" }
+  sell_price:
+    type: number
+    description: Present only when all variant prices resolve to a single distinct value.
+    example: 9.9
+  price_range:
+    type: object
+    additionalProperties: false
+    description: Present only when variants resolve to more than one distinct price.
+    properties:
+      min: { type: number, example: 9.9 }
+      max: { type: number, example: 14.9 }
+    required: [min, max]
+  group_hierarchy:
+    type: string
+    nullable: true
+    description: Present when the parent group is loaded and exists.
+    example: "Group A / Group B"
+  parent_name:
+    type: string
+    nullable: true
+    description: Present when the parent group is loaded and exists.
+    example: "Group B"
+  children:
+    type: array
+    description: Full list of variants (child products). Included only on the show endpoint.
+    items:
+      $ref: ../products-children/ProductChildV11.yaml
+required:
+  - id
+  - name
+  - children_count
+  - stock
+  - company
+  - created
+  - modified

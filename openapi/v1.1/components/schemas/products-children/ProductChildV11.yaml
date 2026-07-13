@@ -7,14 +7,19 @@ properties:
   description: { type: string, nullable: true }
   code: { type: string, nullable: true }
 
-  image:
-    type: object
-    additionalProperties: false
-    properties:
-      thumb: { type: string, nullable: true, example: null }
-      normal: { type: string, nullable: true, example: null }
-    required: [thumb, normal]
-  
+  images:
+    type: array
+    description: Product images. Empty array when there are no images.
+    items:
+      type: object
+      additionalProperties: false
+      properties:
+        id: { type: integer, example: 42 }
+        thumb: { type: string, nullable: true, example: null }
+        normal: { type: string, nullable: true, example: null }
+        isDefault: { type: boolean, example: false }
+      required: [id, thumb, normal, isDefault]
+
   measurement_unit_name: 
     type: string
     description: Present when `measurement_unit` name
@@ -27,6 +32,10 @@ properties:
     description: Tax rate from related tax record (`tax.value`).
     example: 24
   tax_id: { type: integer, nullable: true }
+  additional_tax_ids:
+    type: array
+    description: IDs of additional taxes. Present when the `taxes` relation is loaded (single-item responses).
+    items: { type: integer }
 
   cost_price: { type: number, nullable: true }
   sell_price: { type: number, nullable: true }
@@ -53,7 +62,7 @@ properties:
   group_id: { type: integer, nullable: true, example: 5 }
   group_hierarchy: { type: string, nullable: true, example: "Group A / Group B / Group C" }
   
-  accounting_type: { type: integer, enum: [1, 2, 3, 4, 5, 6], example: 1 }
+  accounting_type: { type: integer, enum: [1, 2, 3, 4, 5, 6, 7], example: 1 }
   visibility: { type: boolean, example: true }
   barcode: { type: string, nullable: true }
   sku:
@@ -61,6 +70,7 @@ properties:
     nullable: true
     description: Public SKU value returned from the internal `catalog_code` field.
     example: "SKU-001"
+  erp_code: { type: string, nullable: true }
   cpv_code: { type: string, nullable: true, maxLength: 255 }
   expense_id: { type: integer, nullable: true }
 
@@ -70,8 +80,8 @@ properties:
 
   tags:
     type: array
-    items:
-      $ref: ../../../../v1/components/schemas/resources/Tag.yaml
+    description: Tag names
+    items: { type: string }
   characteristics:
     type: array
     items:
