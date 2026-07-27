@@ -4,7 +4,7 @@ get:
   description: |
     Lists product children for the company from `X-Asseblo-Company`. Supports search across
     `id`, `product_name`, `primary_id`, `catalog_code`, `erp_code`, `barcode` (choose fields via
-    `search_fields`); optional filters `group_id` and `visibility`; sorting and pagination
+    `search_fields`); optional filters `group_id`, `visibility` and `on_website`; sorting and pagination
     (`page_size` default 50, max 100).
     Response: `{ success, data[], meta }`.
   security:
@@ -31,6 +31,13 @@ get:
       in: query
       required: false
       description: Filter by visibility flag (0/1).
+      schema: { type: boolean }
+    - name: on_website
+      in: query
+      required: false
+      description: >
+        Filter by whether the product is shown on the website. `1`/`true` returns only products on
+        the website; `0`/`false` returns only products hidden from the website. Omit to return all.
       schema: { type: boolean }
     - name: sort_by
       in: query
