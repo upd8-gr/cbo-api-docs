@@ -1,0 +1,120 @@
+get:
+  tags: [Supplier Payments]
+  summary: Supplier payments (list)
+  description: |
+    Lists the company's `cash-receipt` and `return` documents — money collected from a
+    supplier / paid to a supplier, and refunds either way.
+
+    Invoices never appear here; use the invoice endpoints for those. Response is wrapped
+    as `{ success, data, meta }`.
+  security:
+    - BearerAuth: []
+  parameters:
+    - name: account_id
+      in: query
+      required: false
+      description: Limit to one supplier.
+      schema: { type: integer }
+    - name: document_type
+      in: query
+      required: false
+      description: Narrows within payments — a payment (`cash-receipt`) or a refund (`return`).
+      schema: { type: string, enum: [cash-receipt, return] }
+    - name: payment_method
+      in: query
+      required: false
+      description: The method slug, as accepted on write.
+      schema:
+        type: string
+        enum: [cash, bank, check, credit-card, iris, clearing, third, gift, sponsorship, rounding, extra-discount, seller]
+    - name: status
+      in: query
+      required: false
+      schema: { type: string }
+      example: Executed
+    - name: serial_number
+      in: query
+      required: false
+      schema: { type: string }
+    - name: date_from
+      in: query
+      required: false
+      description: Inclusive, matched on the payment date. Must be sent together with `date_to`.
+      schema: { type: string, format: date }
+    - name: date_to
+      in: query
+      required: false
+      schema: { type: string, format: date }
+    - name: search
+      in: query
+      required: false
+      description: Search value used with SQL `LIKE`.
+      schema: { type: string }
+    - name: search_fields
+      in: query
+      required: false
+      description: Comma-separated subset of `serial_number`, `comments`. Anything else is ignored.
+      schema: { type: string }
+      example: "serial_number,comments"
+    - name: sort_by
+      in: query
+      required: false
+      schema: { type: string, enum: [id, payment_date, serial_number, grand_total, created_at], default: payment_date }
+    - name: sort_order
+      in: query
+      required: false
+      schema: { type: string, enum: [asc, desc], default: desc }
+    - name: page_size
+      in: query
+      required: false
+      schema: { type: integer, minimum: 1, maximum: 100, default: 50 }
+    - $ref: ../../../_shared/components/parameters/Page.yaml
+  responses:
+    "200":
+      description: OK
+      content:
+        application/json:
+          schema:
+            $ref: ../../components/schemas/supplier-invoices/SupplierInvoiceIndexResponse.yaml
+    "401": { $ref: ../../../_shared/components/responses/Unauthorized.yaml }
+    "403": { $ref: ../../../_shared/components/responses/Forbidden.yaml }
+    "422":
+      description: Unknown query parameter
+      content:
+        application/json:
+          schema:
+            $ref: ../../../_shared/components/responses/UnprocessableEntity.yaml
+
+post:
+  tags: [Supplier Payments]
+  summary: Supplier payment (create)
+  description: |
+    Records a standalone payment receipt (`cash-receipt`) or money refund (`return`),
+    optionally settling existing documents through `allocations`.
+
+    The document has no lines: `amount` is the whole of it, and it takes its serial number
+    from the receipt sequence rather than from an invoice type. Leaving `allocations` out
+    records the payment on account, which is a valid state and the way to record an
+    advance larger than any single balance.
+
+    Nothing on this endpoint is transmitted to the tax authority: myDATA 8.4 / 8.5 are income documents, so there is no POS flow and `terminal_id` is rejected outright.
+
+    Response is wrapped as `{ success, data }`.
+  security:
+    - BearerAuth: []
+  requestBody:
+    required: true
+    content:
+      application/json:
+        schema:
+          $ref: ../../components/schemas/payments/SupplierPaymentStore.yaml
+  responses:
+    "201":
+      description: Created
+      content:
+        application/json:
+          schema:
+            $ref: ../../components/schemas/supplier-invoices/SupplierInvoiceSingleResponse.yaml
+    "401": { $ref: ../../../_shared/components/responses/Unauthorized.yaml }
+    "403": { $ref: ../../../_shared/components/responses/Forbidden.yaml }
+    "422": { $ref: ../../../_shared/components/responses/UnprocessableEntity.yaml }

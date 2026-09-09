@@ -1,0 +1,22 @@
+type: object
+properties:
+  id: { type: integer }
+  bank_id:
+    type: integer
+    description: banks.id
+  bank:
+    type: string
+    nullable: true
+    description: The bank's name — what this endpoint accepts on write, so it is what it reports back.
+    example: Eurobank
+  account_number: { type: string, nullable: true }
+  iban: { type: string, nullable: true, example: GR1601101250000000012300695 }
+  swift: { type: string, nullable: true, example: ETHNGRAA }
+  accounting_code: { type: string, nullable: true }
+  available:
+    type: boolean
+    description: >
+      Whether the account is still in use. Retiring an account is the alternative to
+      deleting one that payments already reference.
+  created: { type: string, nullable: true }
+  modified: { type: string, nullable: true }

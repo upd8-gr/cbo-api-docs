@@ -68,7 +68,9 @@ security:
 
 tags:
   - name: Invoices
+  - name: Client Receipts
   - name: Supplier Invoices
+  - name: Supplier Payments
   - name: Clients
   - name: Suppliers
   - name: Taxes
@@ -82,6 +84,7 @@ tags:
   - name: Tax Offices
   - name: Orders
   - name: Payment Links
+  - name: Bank Details
   - name: Countries
 
 paths:
@@ -105,6 +108,18 @@ paths:
     $ref: ./paths/supplier-invoices/index.yaml
   /supplier-invoices/{id}:
     $ref: ./paths/supplier-invoices/show.yaml
+  /client-receipts:
+    $ref: ./paths/client-receipts/index.yaml
+  /client-receipts/{id}:
+    $ref: ./paths/client-receipts/show.yaml
+  /supplier-payments:
+    $ref: ./paths/supplier-payments/index.yaml
+  /supplier-payments/{id}:
+    $ref: ./paths/supplier-payments/show.yaml
+  /bank-details:
+    $ref: ./paths/bank-details/index.yaml
+  /bank-details/{id}:
+    $ref: ./paths/bank-details/show.yaml
   /product-children:
     $ref: ./paths/product-children/index.yaml
   /product-children/{id}:

@@ -132,9 +132,21 @@ properties:
           type: string
           nullable: true
           maxLength: 255
+          description: >
+            The unit written as free text. Matched against the company's measurement
+            units by name, short name, plural, common abbreviation, english wording and
+            peppol code, ignoring case, accents and trailing dots — so "Τεμάχια",
+            "τεμ.", "pcs" and "C62" all reach the same unit. A bare number is read as
+            the myDATA unit code. When nothing matches close enough the line falls back
+            to the product's unit and then to the company's default unit ("Τεμάχιο"):
+            an unrecognised spelling is never an error.
+          example: τεμ.
         measurement_unit_id:
           type: integer
           nullable: true
+          description: >
+            measurement_units.id — takes precedence over `measure_unit`. Ignored (and
+            resolved as if absent) when the id belongs to another company.
         unit_price:
           type: number
           nullable: true

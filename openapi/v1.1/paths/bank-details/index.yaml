@@ -1,0 +1,85 @@
+get:
+  tags: [Bank Details]
+  summary: Bank accounts (list)
+  description: |
+    Lists the authenticated company's own bank accounts.
+
+    `bank_details` also holds the accounts of clients, suppliers and employees; this
+    endpoint is scoped to the company's, so those never appear here and are **404** on
+    update or delete. Response is wrapped as `{ success, data, meta }`.
+  security:
+    - BearerAuth: []
+  parameters:
+    - name: available
+      in: query
+      required: false
+      description: Filter by whether the account is still in use.
+      schema: { type: boolean }
+    - name: search
+      in: query
+      required: false
+      description: Search value used with SQL `LIKE`.
+      schema: { type: string }
+    - name: search_fields
+      in: query
+      required: false
+      description: Comma-separated subset of `iban`, `account_number`, `swift`, `accounting_code`. Anything else is ignored.
+      schema: { type: string }
+      example: "iban,swift"
+    - name: sort_by
+      in: query
+      required: false
+      schema: { type: string, enum: [id, iban, account_number, created_at, updated_at], default: id }
+    - name: sort_order
+      in: query
+      required: false
+      schema: { type: string, enum: [asc, desc], default: asc }
+    - name: page_size
+      in: query
+      required: false
+      schema: { type: integer, minimum: 1, maximum: 100, default: 50 }
+    - $ref: ../../../_shared/components/parameters/Page.yaml
+  responses:
+    "200":
+      description: OK
+      content:
+        application/json:
+          schema:
+            $ref: ../../components/schemas/bank-details/BankDetailIndexResponse.yaml
+    "401": { $ref: ../../../_shared/components/responses/Unauthorized.yaml }
+    "403": { $ref: ../../../_shared/components/responses/Forbidden.yaml }
+    "422":
+      description: Unknown query parameter
+      content:
+        application/json:
+          schema:
+            $ref: ../../../_shared/components/responses/UnprocessableEntity.yaml
+
+post:
+  tags: [Bank Details]
+  summary: Bank account (create)
+  description: |
+    Registers a bank account for the authenticated company.
+
+    The bank is given by name and registered if it is new, so a caller never needs to know
+    our per-company bank ids; pass `bank_id` instead if you already have one.
+
+    Response is wrapped as `{ success, data }`.
+  security:
+    - BearerAuth: []
+  requestBody:
+    required: true
+    content:
+      application/json:
+        schema:
+          $ref: ../../components/schemas/bank-details/BankDetailStore.yaml
+  responses:
+    "201":
+      description: Created
+      content:
+        application/json:
+          schema:
+            $ref: ../../components/schemas/bank-details/BankDetailSingleResponse.yaml
+    "401": { $ref: ../../../_shared/components/responses/Unauthorized.yaml }
+    "403": { $ref: ../../../_shared/components/responses/Forbidden.yaml }
+    "422": { $ref: ../../../_shared/components/responses/UnprocessableEntity.yaml }

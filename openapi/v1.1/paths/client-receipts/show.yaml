@@ -1,0 +1,119 @@
+get:
+  tags: [Client Receipts]
+  summary: Client receipt (show)
+  description: |
+    Returns one payment document. An id that belongs to an invoice, to another company or
+    to the other account side is reported as **404** rather than 403 — it is not a payment
+    of yours.
+  security:
+    - BearerAuth: []
+  parameters:
+    - $ref: ../../../_shared/components/parameters/IdPath.yaml
+  responses:
+    "200":
+      description: OK
+      content:
+        application/json:
+          schema:
+            $ref: ../../components/schemas/invoices/InvoiceSingleResponse.yaml
+    "401": { $ref: ../../../_shared/components/responses/Unauthorized.yaml }
+    "403": { $ref: ../../../_shared/components/responses/Forbidden.yaml }
+    "404": { $ref: ../../../_shared/components/responses/NotFound.yaml }
+
+put:
+  tags: [Client Receipts]
+  summary: Client receipt (replace)
+  description: |
+    Replaces the payment. This is **not** a patch: the body is the one that created the
+    document, minus the account. A payment is a single indivisible fact — amount, method
+    and date together — so a field cannot be moved in isolation.
+
+    `allocations` are replaced wholesale. Sending the body without them releases
+    everything this payment had settled, and the invoices it had paid owe again.
+
+    The serial number is preserved. The account cannot be moved: record a new payment
+    instead.
+
+    Refused with **422** when the document has already been submitted to myDATA, or when
+    it was paid by cheque, courier or card — those carry rows of their own (a cheque,
+    vouchers, a terminal-bound payment method) that a replace would orphan. Delete and
+    re-record instead.
+  security:
+    - BearerAuth: []
+  parameters:
+    - $ref: ../../../_shared/components/parameters/IdPath.yaml
+  requestBody:
+    required: true
+    content:
+      application/json:
+        schema:
+          $ref: ../../components/schemas/payments/ClientPaymentUpdate.yaml
+  responses:
+    "200":
+      description: OK
+      content:
+        application/json:
+          schema:
+            $ref: ../../components/schemas/invoices/InvoiceSingleResponse.yaml
+    "401": { $ref: ../../../_shared/components/responses/Unauthorized.yaml }
+    "403": { $ref: ../../../_shared/components/responses/Forbidden.yaml }
+    "404": { $ref: ../../../_shared/components/responses/NotFound.yaml }
+    "422": { $ref: ../../../_shared/components/responses/UnprocessableEntity.yaml }
+
+patch:
+  tags: [Client Receipts]
+  summary: Client receipt (replace)
+  description: |
+    Identical to `PUT` — the body is a full replacement either way. See the `PUT`
+    description.
+  security:
+    - BearerAuth: []
+  parameters:
+    - $ref: ../../../_shared/components/parameters/IdPath.yaml
+  requestBody:
+    required: true
+    content:
+      application/json:
+        schema:
+          $ref: ../../components/schemas/payments/ClientPaymentUpdate.yaml
+  responses:
+    "200":
+      description: OK
+      content:
+        application/json:
+          schema:
+            $ref: ../../components/schemas/invoices/InvoiceSingleResponse.yaml
+    "401": { $ref: ../../../_shared/components/responses/Unauthorized.yaml }
+    "403": { $ref: ../../../_shared/components/responses/Forbidden.yaml }
+    "404": { $ref: ../../../_shared/components/responses/NotFound.yaml }
+    "422": { $ref: ../../../_shared/components/responses/UnprocessableEntity.yaml }
+
+delete:
+  tags: [Client Receipts]
+  summary: Client receipt (delete)
+  description: |
+    Deletes the payment.
+
+    Deleting money un-settles what it paid: the allocations are removed, so every document
+    it had settled owes again. The bank transaction reference and any POS payment method
+    recorded against it go too.
+
+    Refused with **422** when the document has been submitted to myDATA — the tax
+    authority holds it — or when the underlying document refuses deletion, for instance a
+    cheque that has been handed on, a paid payment link, or a document already through the
+    ΦΗΜ. The message says which.
+  security:
+    - BearerAuth: []
+  parameters:
+    - $ref: ../../../_shared/components/parameters/IdPath.yaml
+  responses:
+    "200":
+      description: Deleted
+      content:
+        application/json:
+          schema:
+            $ref: ../../components/schemas/common/SuccessMessageResponse.yaml
+    "401": { $ref: ../../../_shared/components/responses/Unauthorized.yaml }
+    "403": { $ref: ../../../_shared/components/responses/Forbidden.yaml }
+    "404": { $ref: ../../../_shared/components/responses/NotFound.yaml }
+    "422": { $ref: ../../../_shared/components/responses/UnprocessableEntity.yaml }

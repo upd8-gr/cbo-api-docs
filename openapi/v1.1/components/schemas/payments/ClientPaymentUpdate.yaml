@@ -1,0 +1,177 @@
+# ClientPaymentUpdate — replaces the payment identified by the path.
+#
+# The same body that created it, minus the account: a payment cannot be moved
+# between clients, so client_id is rejected rather than ignored.
+type: object
+additionalProperties: false
+
+properties:
+
+  terminal_id:
+    type: integer
+    nullable: true
+    description: >
+      POS terminal that took the card. Only meaningful with
+      `payment_method: credit-card`, and it is what makes the receipt a myDATA document:
+      it is filed as 8.4 (receipt) or 8.5 (refund) and left `Pending` until the tax
+      authority accepts it. Without a terminal a card payment is a plain internal
+      receipt.
+
+  instalments:
+    type: integer
+    nullable: true
+    minimum: 0
+
+  tip:
+    type: number
+    nullable: true
+    minimum: 0
+
+  document_type:
+    type: string
+    enum: [cash-receipt, return]
+    description: >
+      `cash-receipt` is money collected (client) or paid (supplier); `return` is a money
+      refund. The sign of the stored amount is derived from this — never send a negative
+      `amount`.
+
+  amount:
+    type: number
+    minimum: 0.01
+    description: >
+      Always positive. For a `return` it is stored as a negative credit.
+
+  date:
+    type: string
+    format: date
+    description: The payment date. The current time of day is attached to it.
+
+  payment_method:
+    type: string
+    enum:
+      - cash
+      - bank
+      - check
+      - credit-card
+      - iris
+      - clearing
+      - third
+      - gift
+      - sponsorship
+      - rounding
+      - extra-discount
+      - seller
+    description: >
+      Locale-independent slug. The stored payment method is a localised label, which is
+      why the API neither accepts nor requires one; the label is returned as
+      `payment_way`. `bank` requires `transaction`, `check` requires `check`, and
+      `credit-card` accepts `terminal_id` (clients only).
+
+  allocations:
+    type: array
+    nullable: true
+    description: >
+      The documents this payment settles. Each target must belong to the same account, no
+      single allocation may exceed what its own document still owes, and the amounts may
+      not add up to more than `amount`. Omit it to leave the payment on account, which is
+      how an advance larger than any balance is recorded.
+    items:
+      type: object
+      additionalProperties: false
+      properties:
+        invoice_id:
+          type: integer
+          description: Id of the document being settled.
+        amount:
+          type: number
+          minimum: 0.01
+          description: >
+            How much of this payment is applied to that document. May not exceed its
+            outstanding balance.
+      required: [invoice_id, amount]
+
+  transaction:
+    type: object
+    nullable: true
+    additionalProperties: false
+    description: Required when `payment_method` is `bank`.
+    properties:
+      bank_details_id:
+        type: integer
+        description: bank_details.id — must belong to your company.
+    required: [bank_details_id]
+
+  check:
+    type: object
+    nullable: true
+    additionalProperties: false
+    description: Required when `payment_method` is `check`.
+    properties:
+      check_number:
+        type: string
+        description: >
+          Must be unique per bank among cheques that are not cancelled.
+      bank:
+        type: string
+        maxLength: 255
+        description: >
+          The bank's NAME, not an id. Matched case-insensitively against the banks already
+          registered for your company; a name that is new is registered as you file the
+          cheque, so a caller never needs to know our lookup ids.
+        example: Εθνική Τράπεζα
+      payoff_date:
+        type: string
+        description: Cheque maturity date, `DD-MM-YYYY`.
+      inOrder:
+        type: string
+        nullable: true
+      location:
+        type: string
+        nullable: true
+      comments:
+        type: string
+        nullable: true
+      check_id:
+        type: integer
+        nullable: true
+        description: >
+          Id of an existing cheque to hand over instead of creating a new one.
+      exist:
+        type: integer
+        enum: [0, 1]
+        nullable: true
+        description: >
+          1 when settling with the existing cheque named by `check_id`. Defaults to 0.
+    required: [check_number, bank, payoff_date]
+
+  invoice_series:
+    oneOf:
+      - type: string
+      - type: integer
+    nullable: true
+    description: >
+      Numbering series for the receipt. Receipts use their own sequence, independent of
+      the invoice types.
+
+  branch_id:
+    type: integer
+    nullable: true
+    description: >
+      branches.id. Defaults to your company's default branch — API requests carry no
+      session, so there is no "current" branch to inherit.
+
+  comments:
+    type: string
+    nullable: true
+    maxLength: 1000
+
+  notes:
+    type: string
+    nullable: true
+    maxLength: 1000
+
+required:
+  - document_type
+  - amount
+  - date
+  - payment_method

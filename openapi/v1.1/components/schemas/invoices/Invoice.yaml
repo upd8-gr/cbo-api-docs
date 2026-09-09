@@ -61,6 +61,30 @@ properties:
     type: string
     nullable: true
 
+  payment_way:
+    type: string
+    nullable: true
+    description: >
+      The stored payment method label. Unlike `payment_method` above — which only reports
+      Επί Πιστώσει / Τοις Μετρητοίς, derived from the due date — this is the actual method
+      and is what a payment receipt carries.
+    example: Μετρητά
+
+  allocations:
+    type: array
+    nullable: true
+    description: >
+      Present on documents fetched with their allocations: what this document settles,
+      or what settles it, with the amount per document.
+    items:
+      type: object
+      properties:
+        invoice_id:
+          type: integer
+        amount:
+          type: string
+          description: Decimal string, e.g. "60.00".
+
   pos_tid:
     type: string
     nullable: true

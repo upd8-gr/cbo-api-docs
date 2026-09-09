@@ -1,0 +1,86 @@
+put:
+  tags: [Bank Details]
+  summary: Bank account (update)
+  description: |
+    Changes one of the company's own bank accounts. Only the fields present in the body are
+    touched.
+
+    An account belonging to another company — or to a client, supplier or employee, which
+    share this table — is **404**.
+  security:
+    - BearerAuth: []
+  parameters:
+    - $ref: ../../../_shared/components/parameters/IdPath.yaml
+  requestBody:
+    required: true
+    content:
+      application/json:
+        schema:
+          $ref: ../../components/schemas/bank-details/BankDetailUpdate.yaml
+  responses:
+    "200":
+      description: OK
+      content:
+        application/json:
+          schema:
+            $ref: ../../components/schemas/bank-details/BankDetailSingleResponse.yaml
+    "401": { $ref: ../../../_shared/components/responses/Unauthorized.yaml }
+    "403": { $ref: ../../../_shared/components/responses/Forbidden.yaml }
+    "404": { $ref: ../../../_shared/components/responses/NotFound.yaml }
+    "422": { $ref: ../../../_shared/components/responses/UnprocessableEntity.yaml }
+
+patch:
+  tags: [Bank Details]
+  summary: Bank account (update)
+  description: |
+    Changes one of the company's own bank accounts. Only the fields present in the body are
+    touched.
+
+    An account belonging to another company — or to a client, supplier or employee, which
+    share this table — is **404**.
+  security:
+    - BearerAuth: []
+  parameters:
+    - $ref: ../../../_shared/components/parameters/IdPath.yaml
+  requestBody:
+    required: true
+    content:
+      application/json:
+        schema:
+          $ref: ../../components/schemas/bank-details/BankDetailUpdate.yaml
+  responses:
+    "200":
+      description: OK
+      content:
+        application/json:
+          schema:
+            $ref: ../../components/schemas/bank-details/BankDetailSingleResponse.yaml
+    "401": { $ref: ../../../_shared/components/responses/Unauthorized.yaml }
+    "403": { $ref: ../../../_shared/components/responses/Forbidden.yaml }
+    "404": { $ref: ../../../_shared/components/responses/NotFound.yaml }
+    "422": { $ref: ../../../_shared/components/responses/UnprocessableEntity.yaml }
+
+delete:
+  tags: [Bank Details]
+  summary: Bank account (delete)
+  description: |
+    Deletes one of the company's own bank accounts.
+
+    Refused with **422** when a payment references it: the bank transaction rows carry no
+    foreign key, so deleting the account would leave published documents pointing at one
+    that no longer exists. Retire it with `available: false` instead.
+  security:
+    - BearerAuth: []
+  parameters:
+    - $ref: ../../../_shared/components/parameters/IdPath.yaml
+  responses:
+    "200":
+      description: Deleted
+      content:
+        application/json:
+          schema:
+            $ref: ../../components/schemas/common/SuccessMessageResponse.yaml
+    "401": { $ref: ../../../_shared/components/responses/Unauthorized.yaml }
+    "403": { $ref: ../../../_shared/components/responses/Forbidden.yaml }
+    "404": { $ref: ../../../_shared/components/responses/NotFound.yaml }
+    "422": { $ref: ../../../_shared/components/responses/UnprocessableEntity.yaml }
