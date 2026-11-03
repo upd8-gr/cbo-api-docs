@@ -2,62 +2,87 @@ get:
   tags: [Invoice Types]
   summary: Invoice types (list)
   description: >
-    List invoice types (document types) with filters: type, document_type, active, search and sorting.
-    Response is paginated and wrapped as {success,data,meta}.
+    List the company's invoice types (inactive ones included) with filters and sorting.
+    Response is paginated and wrapped as {success,data,meta}. Unknown query parameters are
+    rejected with 422 (`errors.query`).
   security:
     - BearerAuth: []
 
   parameters:
+    - name: document_type
+      in: query
+      required: false
+      description: Filter by document_type (exact match, single value).
+      schema:
+        type: string
+        maxLength: 100
+      example: "delivery-note"
+
+    - name: account
+      in: query
+      required: false
+      description: Filter by account (exact match).
+      schema:
+        type: string
+        enum: [client, supplier, both]
+      example: supplier
+
+    - name: dispatch_details_enabled
+      in: query
+      required: false
+      description: Filter by the dispatch-details flag (`1`/`0`).
+      schema: { type: boolean }
+      example: true
+
     - name: type
       in: query
       required: false
-      description: Filter by invoice type(s). Can be single integer or array.
+      deprecated: true
+      description: >
+        **Deprecated** — use `document_type`. One value or an array (`type[]=2&type[]=3`)
+        of the legacy 1–7 category; matches exactly the rows whose response `type` is one
+        of the values.
       style: form
       explode: true
       schema:
         oneOf:
           - type: integer
-            enum: [1,2,3,4,5,6,7]
+            enum: [1, 2, 3, 4, 5, 6, 7]
           - type: array
             items:
               type: integer
-              enum: [1,2,3,4,5,6,7]
+              enum: [1, 2, 3, 4, 5, 6, 7]
       examples:
         single:
           value: 3
         multiple:
           value: [1, 3, 7]
 
-    - name: document_type
-      in: query
-      required: false
-      description: Filter by document_type exact match.
-      schema:
-        type: string
-        maxLength: 100
-      example: "delivery-note"
-
     - name: active
       in: query
       required: false
-      description: Filter by active flag.
+      description: Filter by active flag (`1`/`0`; the strings "true"/"false" are rejected).
       schema: { type: boolean }
       example: true
 
     - name: search
       in: query
       required: false
-      description: Search by title (LIKE %...%).
-      schema: { type: string }
-      example: "invoice"
+      description: Search the title (LIKE %...%).
+      schema: { type: string, maxLength: 255 }
+      example: "Τιμολόγιο"
 
     - name: sort_by
       in: query
       required: false
-      description: Sort column (backend orderBy).
+      description: >
+        Sort column. `type` sorts on the derived (deprecated) category, ties by id.
+        `created_at` / `updated_at` are accepted by validation but invoice types have no
+        timestamps — do not use them.
       schema:
         type: string
-        enum: [id, title, type, document_type, active, created_at, updated_at]
+        enum: [id, title, type, document_type, account, dispatch_details_enabled, active, created_at, updated_at]
+        default: id
       example: id
 
     - name: sort_order
@@ -66,6 +91,7 @@ get:
       schema:
         type: string
         enum: [asc, desc]
+        default: asc
       example: asc
 
     - name: page
@@ -94,29 +120,54 @@ get:
                 success: true
                 data:
                   - id: 1166
-                    title: "Invoice (no delivery)"
+                    title: "Τιμολόγιο Πώλησης"
                     type: 1
                     aade_type: "1.1"
-                    document_type: null
+                    document_type: invoice
+                    account: client
                     active: true
+                    dispatch_details_enabled: false
                     is_deliverable: false
+                    dispatch_policy: mydata_forces
+                    has_billing: true
+                    only_clients: false
                     default: true
-                    template_id: null
+                    template_id: 4
                     company: 1
+                    default_move_purpose: null
+                  - id: 1170
+                    title: "Δελτίο Αποστολής"
+                    type: 3
+                    aade_type: "9.3"
+                    document_type: delivery-note
+                    account: both
+                    active: true
+                    dispatch_details_enabled: true
+                    is_deliverable: true
+                    dispatch_policy: mydata_forces
+                    has_billing: false
+                    only_clients: false
+                    default: true
+                    company: 1
+                    default_move_purpose: 1
                 meta:
                   current_page: 1
-                  last_page: 2
+                  last_page: 1
                   per_page: 50
-                  total: 60
+                  total: 2
     "401": { $ref: ../../../_shared/components/responses/Unauthorized.yaml }
     "403": { $ref: ../../../_shared/components/responses/Forbidden.yaml }
+    "422": { $ref: ../../../_shared/components/responses/UnprocessableEntity.yaml }
 
 post:
   tags: [Invoice Types]
   summary: Invoice type (create)
   description: >
-    Creates an invoice type. If `default=true`, other invoice types with same (type, document_type)
-    are set to default=false. If `default=false` and no other default exists, backend forces default=true.
+    Creates an invoice type. There is one default per `document_type` + `account` in the
+    company (until 2026-11-03 it was per legacy `type` + `document_type`): `default=true`
+    clears the flag on the other types with the same pair; a type created without it
+    becomes the default when the pair has none yet. Send `document_type`; the deprecated
+    `type` and `is_deliverable` are still accepted (see the request schema).
   security:
     - BearerAuth: []
   requestBody:
@@ -128,14 +179,21 @@ post:
         examples:
           default:
             value:
-              title: "Invoice (no delivery)"
+              title: "Δελτίο Αποστολής"
+              document_type: delivery-note
+              aade_type: "9.3"
+              account: both
+              active: true
+              dispatch_details_enabled: true
+              default_move_purpose: 1
+              default: true
+          legacy:
+            summary: Deprecated payload (still accepted)
+            value:
+              title: "Τιμολόγιο Πώλησης"
               type: 1
               aade_type: "1.1"
-              document_type: null
-              active: true
               is_deliverable: false
-              default: true
-              template_id: null
   responses:
     "201":
       description: Created

@@ -1,5 +1,8 @@
 type: object
 additionalProperties: false
+description: >
+  Client invoice (ClientsInvoiceResource output). Null fields are omitted, so any
+  nullable property may be absent. The resource has no `document_type` key.
 properties:
   id: { type: integer }
 
@@ -65,10 +68,11 @@ properties:
     type: string
     nullable: true
     description: >
-      The stored payment method label. Unlike `payment_method` above — which only reports
-      Επί Πιστώσει / Τοις Μετρητοίς, derived from the due date — this is the actual method
-      and is what a payment receipt carries.
-    example: Μετρητά
+      The payment method as a slug (the stored label resolved to its type), e.g. `cash`,
+      `bank`, `credit-card`, `check`, `iris`, `courier`. Omitted when the stored label maps
+      to no known slug. Unlike `payment_method` above — which only reports Επί Πιστώσει /
+      Τοις Μετρητοίς, derived from the due date — this is the actual method.
+    example: cash
 
   allocations:
     type: array
@@ -121,15 +125,23 @@ properties:
 
   related_documents:
     type: array
-    nullable: true
-    description: IDs of related documents (e.g. credit invoices).
+    description: >
+      Always present (may be empty). ids of the documents linked to this one — receipts,
+      returns, credit invoices and other header-level links — EXCEPT delivery notes:
+      a linked `delivery-note` or `delivery-return` is listed under `delivery_notes`
+      instead (since 2026-11-03), even when it was sent under `related_documents`.
+      `delivery-centralized` and `delivery-internal` links stay here. Each id appears once.
     items: { type: integer }
+    example: [1043]
 
   delivery_notes:
     type: array
-    nullable: true
-    description: IDs of associated delivery notes.
+    description: >
+      Always present (may be empty). ids of the delivery notes (`delivery-note`,
+      `delivery-return`) this invoice is linked to, whether through its lines or a
+      header-level link. Each id appears once.
     items: { type: integer }
+    example: [1038]
 
   created:
     type: string
@@ -159,6 +171,8 @@ properties:
 
 required:
   - id
+  - related_documents
+  - delivery_notes
   - date
   - client_id
   - sub_total

@@ -57,7 +57,9 @@ get:
     - name: document_type
       in: query
       required: false
-      description: Filter by one or more document types.
+      description: >
+        Filter by one or more document types. The legacy name `cash-register` is accepted
+        and matches `retail` documents.
       style: form
       explode: true
       schema:
@@ -125,13 +127,13 @@ get:
                 success: true
                 data:
                   - id: 1
-                    representation: "ΤΠΥ-0001"
-                    status: "published"
-                    document_title: "Τιμολόγιο Παροχής Υπηρεσιών"
-                    invoice_type_id: 12
-                    serial_number: 1
-                    invoice_series_id: 3
-                    date: "2026-02-11"
+                    representation: "Τιμολόγιο Πώλησης #Α-44"
+                    status: "Executed"
+                    is_self_issued: false
+                    invoice_type_id: 0
+                    serial_number: 44
+                    invoice_series: "Α"
+                    date: "2026-02-11 00:00:00"
                     supplier_id: 7
                     sub_total: 200
                     tax_total: 48
@@ -151,8 +153,27 @@ post:
   tags: [Supplier Invoices]
   summary: Supplier invoice (create)
   description: |
-    Creates a new supplier invoice.
+    Creates a supplier invoice and, unless `isDraft` is true, publishes it.
     Response is wrapped as {success,data}.
+
+    **Two modes** for `invoice`, `credit-invoice`, `delivery-note`, `delivery-return` and
+    `delivery-internal` (see the request schema for the full table):
+
+    - **Register a purchase** — `is_self_issued` omitted or `false` (the default). Records
+      the supplier's document: send its number in `serial_number`, its series in
+      `invoice_series` and optionally a name in `representation`. `invoice_type_id`,
+      `invoice_series_id` and `mydata_submit: true` are refused with 422.
+    - **Issue our own document** — `is_self_issued: true`. Requires `invoice_type_id`
+      (one of our supplier-side types matching `document_type`); numbered from our
+      series on publish; may be transmitted with `mydata_submit: true`.
+      `invoice_series` and `representation` are refused with 422.
+
+    **422 cases**
+    - `validation_error` — request validation, including the mode rules above.
+    - `business_validation_error` — the grand total checksum does not match the lines;
+      more than 350 lines; a hand-typed `serial_number` of an issued document is already
+      held in its numbering scope (`errors.serial_number`); myDATA rejected the document
+      (the whole request is rolled back; `errors` is a list of message lists).
   security:
     - BearerAuth: []
 
@@ -162,6 +183,51 @@ post:
       application/json:
         schema:
           $ref: ../../components/schemas/supplier-invoices/SupplierInvoiceStore.yaml
+        examples:
+          registerPurchase:
+            summary: Register a purchase (default mode)
+            value:
+              date: "2026-11-03"
+              supplier_id: 7
+              document_type: invoice
+              serial_number: 44
+              invoice_series: "Α"
+              representation: "Τιμολόγιο ΔΕΗ 44"
+              billing_address:
+                address: "Χαλκοκονδύλη"
+                number: "30"
+                town: "Αθήνα"
+                zip: "10432"
+                country: GR
+              items:
+                - description: "Ηλεκτρική ενέργεια Οκτωβρίου"
+                  quantity: 1
+                  measure_unit: "τεμ."
+                  unit_price: 200
+                  taxes: [1]
+          issueSelfBilling:
+            summary: Issue our own document (is_self_issued true)
+            value:
+              is_self_issued: true
+              invoice_type_id: 12
+              invoice_series_id: 3
+              date: "2026-11-03"
+              supplier_id: 7
+              document_type: invoice
+              mydata_submit: true
+              billing_address:
+                address: "Ερμού"
+                number: "10"
+                town: "Αθήνα"
+                zip: "10563"
+                country: GR
+              items:
+                - product_id: 101
+                  quantity: 2
+                  unit_price: 100
+                  taxes: [1]
+                  mydata_classification_category: category2_1
+                  mydata_classification_type: E3_102_001
 
   responses:
     "201":
@@ -170,6 +236,86 @@ post:
         application/json:
           schema:
             $ref: ../../components/schemas/supplier-invoices/SupplierInvoiceSingleResponse.yaml
+          examples:
+            registered:
+              value:
+                success: true
+                data:
+                  id: 812
+                  representation: "Τιμολόγιο ΔΕΗ 44"
+                  status: "Executed"
+                  is_self_issued: false
+                  invoice_type_id: 0
+                  serial_number: 44
+                  invoice_series: "Α"
+                  date: "2026-11-03 00:00:00"
+                  supplier_id: 7
+                  billing_address:
+                    address: "Χαλκοκονδύλη"
+                    number: "30"
+                    zip: "10432"
+                    city: "Αθήνα"
+                    country: GR
+                    branch_code: 0
+                    address_type: billing
+                  items: []
+                  sub_total: 200
+                  tax_total: 48
+                  grand_total: 248
+                  currency_code: "EUR"
+                  exchange_rate: 1
+                  created: "03 Νοε 2026 09:12:44"
+                  modified: "2026-11-03T07:12:44.000000Z"
+                  public_link: "https://app.cbo.gr/exps/9b2f7c1e-3a4d-4e8b-9f61-2c5d8a7e1b30"
     "401": { $ref: ../../../_shared/components/responses/Unauthorized.yaml }
     "403": { $ref: ../../../_shared/components/responses/Forbidden.yaml }
-    "422": { $ref: ../../../_shared/components/responses/UnprocessableEntity.yaml }
+    "422":
+      description: Validation error, or a business rule / myDATA rejection.
+      content:
+        application/json:
+          schema:
+            anyOf:
+              - $ref: ../../../_shared/components/schemas/errors/ValidationError.yaml
+              - $ref: ../../components/schemas/common/BusinessErrorResponse.yaml
+          examples:
+            typeWhenRegistering:
+              summary: invoice_type_id sent while registering a purchase
+              value:
+                status: validation_error
+                message: "Validation failed."
+                errors:
+                  invoice_type_id: ["invoice_type_id is only accepted when is_self_issued is true."]
+            representationWhenIssuing:
+              summary: representation sent while issuing
+              value:
+                status: validation_error
+                message: "Validation failed."
+                errors:
+                  representation: ["representation is only accepted when registering a purchase (is_self_issued is false)."]
+            mydataSubmitWhenRegistering:
+              summary: mydata_submit on a registered purchase
+              value:
+                status: validation_error
+                message: "Validation failed."
+                errors:
+                  mydata_submit: ["Registered supplier invoices cannot be submitted to myDATA."]
+            serialTaken:
+              summary: Hand-typed serial already held (issued document)
+              value:
+                status: business_validation_error
+                message: "Ο σειριακός αριθμός δεν είναι έγκυρος, γιατί υπάρχει ήδη."
+                errors:
+                  serial_number: ["Ο σειριακός αριθμός δεν είναι έγκυρος, γιατί υπάρχει ήδη."]
+            mydataRejected:
+              summary: myDATA rejected the document (nothing is stored)
+              value:
+                status: business_validation_error
+                message: "<b>Αυτοτιμολόγιο #13:</b> Σφάλμα επικύρωσης σύνταξης XML"
+                errors: [["<b>Αυτοτιμολόγιο #13:</b> Σφάλμα επικύρωσης σύνταξης XML"]]
+            checksum:
+              summary: grand_total does not match the lines
+              value:
+                status: business_validation_error
+                message: "Business validation failed."
+                errors:
+                  business: ["Calculated grand total (248) does not match the provided final grand total (248.01)."]

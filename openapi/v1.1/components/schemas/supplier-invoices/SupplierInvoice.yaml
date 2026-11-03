@@ -9,12 +9,23 @@ properties:
   representation:
     type: string
     nullable: true
-    description: Human-readable nickname of the invoice.
-    example: "ΤΠΥ-0001"
+    description: >
+      Human-readable name of the document. On a registered purchase it is the
+      `representation` that was sent, or the default counterparty title + series + number.
+      On an issued document it is built from our invoice type, series and number.
+    example: "Τιμολόγιο Πώλησης #Α-44"
 
   status:
     type: string
-    example: "published"
+    description: Document status, e.g. `Draft`, `Executed`.
+    example: "Executed"
+
+  is_self_issued:
+    type: boolean
+    description: >
+      Always present. `false` for a registered purchase (the supplier's document),
+      `true` for a document we issued.
+    example: false
 
   document_title:
     type: string
@@ -25,7 +36,8 @@ properties:
   invoice_type_id:
     type: integer
     nullable: true
-    example: 12
+    description: Our invoice type. `0` on a registered purchase (no type of ours).
+    example: 0
 
   serial_number:
     type: integer
@@ -35,7 +47,20 @@ properties:
   invoice_series_id:
     type: integer
     nullable: true
+    description: >
+      id of our invoice series — only on documents we issued with a series. Omitted when
+      null (e.g. on every registered purchase). Before 2026-11-03 this key carried the
+      stored series text, which could be the counterparty's free-text series; that text
+      is now returned in `invoice_series`.
     example: 3
+
+  invoice_series:
+    type: string
+    nullable: true
+    description: >
+      The series as text: the name of our series on an issued document, or the
+      counterparty's free-text series on a registered purchase. Omitted when null.
+    example: "Α"
 
   mydata_type:
     type: string
@@ -44,9 +69,8 @@ properties:
 
   date:
     type: string
-    format: date
-    description: Raw payment_date value.
-    example: "2026-02-11"
+    description: Raw payment_date value, `YYYY-MM-DD HH:MM:SS`.
+    example: "2026-02-11 00:00:00"
 
   due_date:
     type: string
@@ -60,19 +84,15 @@ properties:
     example: 7
 
   supplier:
-    nullable: true
     $ref: ../suppliers/Supplier.yaml
 
   billing_address:
-    nullable: true
     $ref: ../resources/Address.yaml
 
   shipping_address:
-    nullable: true
     $ref: ../resources/Address.yaml
 
   loading_address:
-    nullable: true
     $ref: ../resources/Address.yaml
 
   payment_method:
@@ -84,10 +104,29 @@ properties:
     type: string
     nullable: true
     description: >
-      The stored payment method label. Unlike `payment_method` above — which only reports
-      Επί Πιστώσει / Τοις Μετρητοίς, derived from the due date — this is the actual method
-      and is what a payment receipt carries.
-    example: Μετρητά
+      The payment method as a slug (the stored label resolved to its type), e.g. `cash`,
+      `bank`, `credit-card`, `check`, `iris`, `courier`. Omitted when the stored label maps
+      to no known slug. Unlike `payment_method` above — which only reports Επί Πιστώσει /
+      Τοις Μετρητοίς, derived from the due date — this is the actual method.
+    example: cash
+
+  dispatch_detail:
+    type: object
+    nullable: true
+    description: >
+      Movement fields of a delivery document. Present only when at least one of them is
+      set; null fields inside are omitted.
+    properties:
+      dispatchDateTime: { type: string, example: "2026-11-03 10:00:00" }
+      movePurpose: { type: integer, example: 1 }
+      movePurposeTitle: { type: string, example: "Πώληση" }
+      otherMovePurposeTitle: { type: string }
+      reverseDeliveryNotePurpose: { type: integer }
+      reverseDeliveryNotePurposeTitle: { type: string }
+      vehicleNumber: { type: string, example: "ΙΚΑ1234" }
+      transferStatus: { type: string }
+      withoutDigitalTransportTracking: { type: boolean, description: Present only when true. }
+      nonObligatedRecipient: { type: boolean, description: Present only when true. }
 
   allocations:
     type: array
@@ -176,3 +215,4 @@ properties:
 
 required:
   - id
+  - is_self_issued

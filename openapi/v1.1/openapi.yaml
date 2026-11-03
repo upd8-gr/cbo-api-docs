@@ -108,6 +108,8 @@ paths:
     $ref: ./paths/supplier-invoices/index.yaml
   /supplier-invoices/{id}:
     $ref: ./paths/supplier-invoices/show.yaml
+  /supplier-invoices/{id}/publish:
+    $ref: ./paths/supplier-invoices/publish.yaml
   /client-receipts:
     $ref: ./paths/client-receipts/index.yaml
   /client-receipts/{id}:

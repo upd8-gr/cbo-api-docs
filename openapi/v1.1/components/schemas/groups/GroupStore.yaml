@@ -20,5 +20,9 @@ properties:
     nullable: true
     minimum: 0
     maximum: 255
+    description: >
+      Position among the sibling groups (same parent). Omitted, null or `0` on create
+      places the new group at the end (sort = number of existing siblings). On update
+      `0` is a real position (the first one).
     example: 10
 required: [name]

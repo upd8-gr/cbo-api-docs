@@ -2,11 +2,35 @@ post:
   tags: [Invoices]
   summary: Publish draft invoice
   description: |
-    Publishes a draft client invoice (`POST /api/v1.1/invoices/{id}/publish`).
-    Loads the invoice with items, taxes, client, type, series, dispatch and payment methods, then runs the publish service.
+    Publishes a draft client invoice (`POST /api/v1.1/invoices/{id}/publish`), or retries
+    the myDATA transmission of one that is already `Executed`.
 
-    - If status is already `Executed` and `mydata_submit` is **false**, returns **422** with "Invoice is already published."
-    - On validation or business errors after commit checks, may return **422** with the first alert message.
+    - `Draft` → published (`Executed`): numbered (unless it already carries a number),
+      receipts booked for its payment methods when `instant_receipt` is true, and
+      transmitted to myDATA when `mydata_submit` is true.
+    - `Executed` + `mydata_submit: false` (or omitted) → 422 "Invoice is already published."
+    - `Executed` + `mydata_submit: true` → **retries the myDATA transmission only** — no new
+      number, no receipts, no stock movement. If the invoice already holds an active MARK
+      it is refused (422) and not sent again.
+    - Any other status (e.g. `Pending`: a card payment on a terminal, a courier receipt, a
+      movement awaiting unloading) → 422 `business_validation_error`
+      "Only draft invoices can be published (current status: Pending)." (until 2026-11-03
+      this answered 200 and left the document unchanged).
+    - `mydata_submit: true` for a company without myDATA settings → the invoice is
+      published and nothing is sent.
+    - Another company's id → 404.
+
+    Publish validation (422 `validation_error`, "Validation failed."; nothing is published):
+    - a line of a serial-tracked product without enough serial numbers is refused (new on
+      2026-11-03, same rule as the web form);
+    - a hand-typed `serial_number` already held by an issued or cancelled document in the
+      same numbering scope (company, branch, series, myDATA type) is refused under
+      `errors.serial_number` — until 2026-11-03 the message was the key-less
+      `errors[0][0]` "Ο αριθμός του Παραστατικού δεν είναι έγκυρος.";
+    - more than 350 lines: "Ο αριθμός των ειδών υπερβαίνει το όριο (350). Παρακαλώ χωρίστε το παραστατικό."
+      (new text);
+    - other rule failures (client price ceiling, lots, myDATA checks) are returned as a list
+      of message lists under `errors`.
   security:
     - BearerAuth: []
   parameters:
@@ -22,9 +46,13 @@ post:
             value:
               instant_receipt: true
               mydata_submit: false
+          retryTransmission:
+            summary: Retry the myDATA transmission of an Executed invoice
+            value:
+              mydata_submit: true
   responses:
     "200":
-      description: Published — returns updated invoice resource
+      description: Published (or transmission retried) — returns the invoice resource
       content:
         application/json:
           schema:
@@ -33,24 +61,54 @@ post:
     "403": { $ref: ../../../_shared/components/responses/Forbidden.yaml }
     "404": { $ref: ../../../_shared/components/responses/NotFound.yaml }
     "422":
-      description: Validation error, already published, or publish blocked by business rules
-      content:
-        application/json:
-          oneOf:
-            - $ref: ../../../_shared/components/schemas/errors/ValidationError.yaml
-            - $ref: ../../components/schemas/common/FailureMessageResponse.yaml
-          examples:
-            alreadyPublished:
-              value:
-                success: false
-                message: "Invoice is already published."
-            alertError:
-              value:
-                success: false
-                message: "First error message from alerts."
-    "500":
-      description: Server error (unexpected failure during transaction)
+      description: Validation error, wrong status, or publish blocked by business rules
       content:
         application/json:
           schema:
-            $ref: ../../components/schemas/common/FailureMessageResponse.yaml
+            anyOf:
+              - $ref: ../../../_shared/components/schemas/errors/ValidationError.yaml
+              - $ref: ../../components/schemas/common/BusinessErrorResponse.yaml
+          examples:
+            alreadyPublished:
+              value:
+                status: business_validation_error
+                message: "Invoice is already published."
+                errors: []
+            notDraft:
+              value:
+                status: business_validation_error
+                message: "Only draft invoices can be published (current status: Pending)."
+                errors: []
+            serialTaken:
+              value:
+                status: validation_error
+                message: "Validation failed."
+                errors:
+                  serial_number: ["Ο σειριακός αριθμός δεν είναι έγκυρος, γιατί υπάρχει ήδη."]
+            missingSerialNumbers:
+              value:
+                status: validation_error
+                message: "Validation failed."
+                errors: [["Το Προϊόν Router X1 (S/N) έχει δηλωθεί με λιγότερους σειριακούς αριθμούς από την ποσότητα. Παρακαλώ διορθώστε."]]
+            tooManyLines:
+              value:
+                status: validation_error
+                message: "Validation failed."
+                errors: [["Ο αριθμός των ειδών υπερβαίνει το όριο (350). Παρακαλώ χωρίστε το παραστατικό."]]
+            alreadyTransmitted:
+              value:
+                status: validation_error
+                message: "Validation failed."
+                errors: [["Το παραστατικό έχει ήδη διαβιβαστεί στο myDATA και δεν στέλνεται ξανά."]]
+            alertError:
+              summary: A business alert raised during publish (e.g. myDATA rejection)
+              value:
+                status: business_validation_error
+                message: "<b>Τιμολόγιο Πώλησης #Α-13:</b> Σφάλμα επικύρωσης σύνταξης XML"
+                errors: []
+    "500":
+      description: Server error (unexpected failure during the transaction)
+      content:
+        application/json:
+          schema:
+            $ref: ../../../_shared/components/schemas/errors/ErrorResponse.yaml

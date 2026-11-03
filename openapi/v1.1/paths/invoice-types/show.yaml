@@ -18,18 +18,110 @@ get:
                 success: true
                 data:
                   id: 1166
-                  title: "Invoice (no delivery)"
+                  title: "Τιμολόγιο Πώλησης"
                   type: 1
                   aade_type: "1.1"
-                  document_type: null
+                  document_type: invoice
+                  account: client
                   active: true
+                  dispatch_details_enabled: false
                   is_deliverable: false
+                  dispatch_policy: mydata_forces
+                  has_billing: true
+                  only_clients: false
                   default: true
-                  template_id: null
                   company: 1
+                  default_move_purpose: null
     "401": { $ref: ../../../_shared/components/responses/Unauthorized.yaml }
     "403": { $ref: ../../../_shared/components/responses/Forbidden.yaml }
-    "404": { $ref: ../../../_shared/components/responses/NotFound.yaml }
+    "404":
+      description: Not found (unknown id or another company's type)
+      content:
+        application/json:
+          schema:
+            $ref: ../../../_shared/components/schemas/errors/ErrorResponse.yaml
+          examples:
+            notFound:
+              value:
+                status: not_found
+                message: "Invoice type not found."
+                errors: []
+
+put:
+  tags: [Invoice Types]
+  summary: Invoice type (update)
+  description: >
+    Updates an invoice type (new on 2026-11-03; `PATCH` is routed to the same action and
+    takes the same full payload). `title`, `aade_type` and `document_type` (or the
+    deprecated `type`) are required on every call. The default rule of the create applies:
+    `default=true` clears the flag on the other types with the same `document_type` +
+    `account`; a type left without it becomes the default when the pair has none.
+  security:
+    - BearerAuth: []
+  parameters:
+    - $ref: ../../../_shared/components/parameters/IdPath.yaml
+  requestBody:
+    required: true
+    content:
+      application/json:
+        schema:
+          $ref: ../../components/schemas/invoice-types/InvoiceTypeUpdate.yaml
+        examples:
+          default:
+            value:
+              title: "Τιμολόγιο Πώλησης Χονδρικής"
+              document_type: invoice
+              aade_type: "1.1"
+              account: client
+              active: true
+              default: true
+  responses:
+    "200":
+      description: Updated
+      content:
+        application/json:
+          schema:
+            $ref: ../../components/schemas/invoice-types/InvoiceTypeSingleResponse.yaml
+    "401": { $ref: ../../../_shared/components/responses/Unauthorized.yaml }
+    "403": { $ref: ../../../_shared/components/responses/Forbidden.yaml }
+    "404":
+      description: Not found (unknown id or another company's type)
+      content:
+        application/json:
+          schema:
+            $ref: ../../../_shared/components/schemas/errors/ErrorResponse.yaml
+    "422": { $ref: ../../../_shared/components/responses/UnprocessableEntity.yaml }
+
+patch:
+  tags: [Invoice Types]
+  summary: Invoice type (update, PATCH)
+  description: Same as `PUT /invoice-types/{id}` — a full payload is required, not a partial one.
+  security:
+    - BearerAuth: []
+  parameters:
+    - $ref: ../../../_shared/components/parameters/IdPath.yaml
+  requestBody:
+    required: true
+    content:
+      application/json:
+        schema:
+          $ref: ../../components/schemas/invoice-types/InvoiceTypeUpdate.yaml
+  responses:
+    "200":
+      description: Updated
+      content:
+        application/json:
+          schema:
+            $ref: ../../components/schemas/invoice-types/InvoiceTypeSingleResponse.yaml
+    "401": { $ref: ../../../_shared/components/responses/Unauthorized.yaml }
+    "403": { $ref: ../../../_shared/components/responses/Forbidden.yaml }
+    "404":
+      description: Not found (unknown id or another company's type)
+      content:
+        application/json:
+          schema:
+            $ref: ../../../_shared/components/schemas/errors/ErrorResponse.yaml
+    "422": { $ref: ../../../_shared/components/responses/UnprocessableEntity.yaml }
 
 delete:
   tags: [Invoice Types]
@@ -60,12 +152,13 @@ delete:
       content:
         application/json:
           schema:
-            $ref: ../../components/schemas/common/FailureMessageResponse.yaml
+            $ref: ../../../_shared/components/schemas/errors/ErrorResponse.yaml
           examples:
             notFound:
               value:
-                success: false
+                status: not_found
                 message: "Invoice type not found."
+                errors: []
     "422":
       description: >
         Business validation error — either the type is the default document type for its
@@ -74,13 +167,15 @@ delete:
       content:
         application/json:
           schema:
-            $ref: ../../components/schemas/common/FailureMessageResponse.yaml
+            $ref: ../../components/schemas/common/BusinessErrorResponse.yaml
           examples:
             defaultType:
               value:
-                success: false
+                status: business_validation_error
                 message: "Cannot delete the default document type for this category."
+                errors: []
             hasRelations:
               value:
-                success: false
+                status: business_validation_error
                 message: "Invoice type cannot be deleted because it has related invoices, supplier invoices, or branch links."
+                errors: []

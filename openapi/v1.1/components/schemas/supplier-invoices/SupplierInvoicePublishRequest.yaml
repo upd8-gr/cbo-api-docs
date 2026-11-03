@@ -1,0 +1,12 @@
+type: object
+additionalProperties: false
+description: Optional flags for publishing a supplier invoice.
+properties:
+  mydata_submit:
+    type: boolean
+    default: false
+    description: >
+      Transmit to myDATA. Only for documents we issued (`is_self_issued: true`); refused
+      with 422 on a registered purchase. On an invoice that is already `Executed` it
+      retries the transmission only (no new number, no stock movement).
+    example: false
