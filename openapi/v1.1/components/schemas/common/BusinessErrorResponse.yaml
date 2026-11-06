@@ -1,0 +1,24 @@
+type: object
+description: >
+  Business-rule failure raised after the request passed validation (e.g. a myDATA
+  rejection, a totals checksum mismatch, a document in the wrong status). `errors` is
+  either a field-keyed object, a list of message lists, or empty — read `message` first.
+properties:
+  status:
+    type: string
+    description: Always `business_validation_error` for this response.
+    example: business_validation_error
+  message:
+    type: string
+    example: "Only draft invoices can be published (current status: Pending)."
+  errors:
+    description: Field-keyed object, a list of message lists, or an empty list.
+    oneOf:
+      - type: object
+        additionalProperties:
+          type: array
+          items: { type: string }
+      - type: array
+        items: {}
+    example: []
+required: [status, message, errors]

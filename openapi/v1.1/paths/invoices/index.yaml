@@ -51,6 +51,10 @@ get:
     - name: document_type
       in: query
       required: false
+      description: >
+        Filter by one or more document types. The legacy names are accepted:
+        `cash-register` matches `retail` documents and `cancel-register` matches
+        `credit-retail` documents.
       style: form
       explode: true
       schema:
@@ -117,8 +121,21 @@ post:
   tags: [Invoices]
   summary: Invoice (create)
   description: |
-    Creates a new invoice.
+    Creates a new invoice and, unless `isDraft` is true, publishes it.
     Response is wrapped as {success,data}.
+
+    Changes on 2026-11-03:
+    - `document_type: cash-register` is accepted again and stored as `retail`;
+      `invoice-income` / `accommodation-income` (myDATA 7.1, 8.1, 8.2) are accepted, and an
+      `invoice` posted with an income type is created under the matching income document type.
+    - A delivery note linked through `related_documents` or `delivery_notes` is returned
+      under `delivery_notes`; other links under `related_documents`.
+    - An id of another company's document in `related_documents` / `delivery_notes` is
+      refused with 422.
+    - When the invoice is published in the same call, the publish rules of
+      `POST /invoices/{id}/publish` apply (serial-tracked lines need their serial numbers,
+      a hand-typed `serial_number` already held in its numbering scope is refused under
+      `errors.serial_number`, at most 350 lines).
   security:
     - BearerAuth: []
 
@@ -138,4 +155,26 @@ post:
             $ref: ../../components/schemas/invoices/InvoiceSingleResponse.yaml
     "401": { $ref: ../../../_shared/components/responses/Unauthorized.yaml }
     "403": { $ref: ../../../_shared/components/responses/Forbidden.yaml }
-    "422": { $ref: ../../../_shared/components/responses/UnprocessableEntity.yaml }
+    "422":
+      description: Validation error, or a business rule raised while publishing.
+      content:
+        application/json:
+          schema:
+            anyOf:
+              - $ref: ../../../_shared/components/schemas/errors/ValidationError.yaml
+              - $ref: ../../components/schemas/common/BusinessErrorResponse.yaml
+          examples:
+            foreignRelatedDocument:
+              summary: related_documents holds another company's id
+              value:
+                status: validation_error
+                message: "Validation failed."
+                errors:
+                  related_documents.0: ["Το επιλεγμένο <b>related_documents.0</b> δεν είναι έγκυρο."]
+            serialTaken:
+              summary: Hand-typed serial_number already held in its numbering scope
+              value:
+                status: validation_error
+                message: "Validation failed."
+                errors:
+                  serial_number: ["Ο σειριακός αριθμός δεν είναι έγκυρος, γιατί υπάρχει ήδη."]

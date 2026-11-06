@@ -1,34 +1,104 @@
 type: object
 additionalProperties: false
-description: >
+description: |
   Create-supplier-invoice payload. Field names shown are the ones clients send;
   some are transformed server-side (see field descriptions).
+
+  **Register a purchase vs issue our own document.** For the document types
+  `invoice`, `credit-invoice`, `delivery-note`, `delivery-return` and
+  `delivery-internal` the request works in one of two modes, chosen by `is_self_issued`:
+
+  | | Register a purchase (`is_self_issued` false or omitted — the default) | Issue our own document (`is_self_issued: true`) |
+  |---|---|---|
+  | `invoice_type_id` / `document_id` | **prohibited** (422) | **required** — one of our invoice types for the supplier side whose `document_type` matches |
+  | `invoice_series_id` | **prohibited** (422) | optional — one of our series |
+  | `invoice_series` (free text) | optional — the counterparty's series | **prohibited** (422) |
+  | `representation` | optional — free-text name of the document | **prohibited** (422) |
+  | `serial_number` | optional — the counterparty's number, stored as sent, never checked for duplicates | optional — when omitted the document is numbered on publish; when sent it must not already be held in its numbering scope |
+  | `mydata_submit: true` | refused (422) — a purchase is the supplier's document | transmits to myDATA on publish |
+
+  `cash-receipt`, `return` and `retail` (alias `cash-register`) are money movements and
+  are neither: none of the rules above apply to them.
+
+  `counterparty_document_type_id` (briefly present on pre-release builds) is not part of
+  the contract; if sent it is ignored.
 properties:
+
+  is_self_issued:
+    type: boolean
+    nullable: true
+    default: false
+    description: >
+      `false` (default) registers a purchase you received from the supplier; `true` issues
+      a document of your own (e.g. a self-billing invoice or a delivery note you send) with
+      your invoice type and numbering. See the table above.
+    example: false
+
+  representation:
+    type: string
+    nullable: true
+    maxLength: 255
+    description: >
+      Register only — prohibited when `is_self_issued` is true. Free-text name of the
+      registered document, returned as `representation`. When omitted it is built from
+      the company's default counterparty title for the `document_type` plus
+      `invoice_series` and `serial_number` (e.g. "Τιμολόγιο Πώλησης #Α-44"), or
+      "Παραστατικό" when no title is configured.
+    example: "Τιμολόγιο ΔΕΗ 44"
 
   invoice_type_id:
     type: integer
     nullable: true
     description: >
-      invoice_types.id. May also be sent as `document_id` (alias); if both are
-      present, `document_id` wins.
+      Issue only (`is_self_issued: true`), where it is required: an invoice_types.id of
+      your company, usable on the supplier side (`account` supplier or both), whose
+      `document_type` equals the posted `document_type`. When registering it is refused
+      with 422 "invoice_type_id is only accepted when is_self_issued is true.".
+      May also be sent as `document_id` (alias); if both are present, `document_id` wins.
+    example: 12
+
+  document_id:
+    type: integer
+    nullable: true
+    description: Alias of `invoice_type_id`; wins when both are sent. Same rules.
     example: 12
 
   mydata_type:
     type: string
     nullable: true
     maxLength: 10
+    description: >
+      myDATA document type. When issuing it defaults to the invoice type's `aade_type`
+      (an explicit value wins). When registering it records the counterparty's type.
     example: "13.1"
 
   serial_number:
     type: integer
     nullable: true
-    example: 1
+    description: >
+      When registering: the counterparty's document number, stored as sent. When issuing:
+      omit it to be numbered automatically on publish; a number you send is refused with
+      422 (`errors.serial_number`: "Ο σειριακός αριθμός δεν είναι έγκυρος, γιατί υπάρχει
+      ήδη.") if a published or cancelled document already holds it in the same numbering
+      scope (company, branch, series and myDATA type).
+    example: 44
 
   invoice_series_id:
     type: integer
     nullable: true
-    description: invoice_series.id
+    description: >
+      Issue only: invoice_series.id of your company. When registering it is refused with
+      422 "invoice_series_id is only accepted when is_self_issued is true.".
     example: 3
+
+  invoice_series:
+    type: string
+    nullable: true
+    maxLength: 255
+    description: >
+      Register only — prohibited when `is_self_issued` is true. The counterparty's series,
+      as free text.
+    example: "Α"
 
   date:
     type: string
@@ -50,6 +120,9 @@ properties:
 
   document_type:
     type: string
+    description: >
+      `cash-register` is a deprecated alias of `retail`: it is accepted and stored as
+      `retail`. `cancel-register` is not accepted on supplier invoices.
     enum:
       - invoice
       - credit-invoice
@@ -57,8 +130,10 @@ properties:
       - return
       - delivery-note
       - delivery-return
-      - cash-register
       - delivery-internal
+      - retail
+      - cash-register
+    example: invoice
 
   grand_total:
     type: number
@@ -77,13 +152,11 @@ properties:
     $ref: ../clients/ClientAddressInputObject.yaml
 
   shipping_address:
-    nullable: true
     description: >
       Single address object. Required when dispatch details are present.
     $ref: ../clients/ClientAddressInputObject.yaml
 
   loading_address:
-    nullable: true
     description: Single address object.
     $ref: ../clients/ClientAddressInputObject.yaml
 
@@ -274,10 +347,18 @@ properties:
   isDraft:
     type: boolean
     nullable: true
+    description: >
+      When true the invoice is stored with status `Draft` and not published (no numbering,
+      no stock movement). Publish it later with `POST /supplier-invoices/{id}/publish`.
 
   mydata_submit:
     type: boolean
     nullable: true
+    description: >
+      Transmit to myDATA on publish. Only for documents you issue (`is_self_issued: true`);
+      on a registered purchase it is refused with 422 (`errors.mydata_submit`:
+      "Registered supplier invoices cannot be submitted to myDATA."). A myDATA rejection
+      rolls the whole request back and returns 422 `business_validation_error`.
 
   auto_create_cash_receipt:
     type: boolean

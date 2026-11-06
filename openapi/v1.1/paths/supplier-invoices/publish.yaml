@@ -1,0 +1,80 @@
+post:
+  tags: [Supplier Invoices]
+  summary: Publish supplier invoice
+  description: |
+    Publishes a `Draft` supplier invoice (`POST /api/v1.1/supplier-invoices/{id}/publish`),
+    or retries the myDATA transmission of an `Executed` one. New on 2026-11-03.
+
+    - `Draft` → published (`Executed`). A registered purchase keeps the supplier's
+      `serial_number`; a document we issue is numbered from our series unless it already
+      carries a number. With `mydata_submit: true` an issued document is transmitted
+      (skipped silently when the company has no myDATA settings).
+    - `Executed` without `mydata_submit` → 422 "Invoice is already published."
+    - `Executed` with `mydata_submit: true` → only the transmission is retried. If the
+      document already holds an active MARK it is refused (422) and not sent again.
+    - Any other status → 422 "Only draft invoices can be published (current status: …)."
+    - `mydata_submit: true` on a registered purchase → 422
+      (`errors.mydata_submit`: "Registered supplier invoices cannot be submitted to myDATA.").
+    - Another company's id → 404.
+  security:
+    - BearerAuth: []
+  parameters:
+    - $ref: ../../../_shared/components/parameters/IdPath.yaml
+  requestBody:
+    required: false
+    content:
+      application/json:
+        schema:
+          $ref: ../../components/schemas/supplier-invoices/SupplierInvoicePublishRequest.yaml
+        examples:
+          publish:
+            value: {}
+          publishAndTransmit:
+            value:
+              mydata_submit: true
+  responses:
+    "200":
+      description: Published (or transmission retried) — returns the supplier invoice.
+      content:
+        application/json:
+          schema:
+            $ref: ../../components/schemas/supplier-invoices/SupplierInvoiceSingleResponse.yaml
+    "401": { $ref: ../../../_shared/components/responses/Unauthorized.yaml }
+    "403": { $ref: ../../../_shared/components/responses/Forbidden.yaml }
+    "404": { $ref: ../../../_shared/components/responses/NotFound.yaml }
+    "422":
+      description: Validation error, wrong status, or a business rule / myDATA rejection.
+      content:
+        application/json:
+          schema:
+            anyOf:
+              - $ref: ../../../_shared/components/schemas/errors/ValidationError.yaml
+              - $ref: ../../components/schemas/common/BusinessErrorResponse.yaml
+          examples:
+            alreadyPublished:
+              value:
+                status: business_validation_error
+                message: "Invoice is already published."
+                errors: []
+            wrongStatus:
+              value:
+                status: business_validation_error
+                message: "Only draft invoices can be published (current status: Pending)."
+                errors: []
+            registeredMyData:
+              value:
+                status: validation_error
+                message: "Validation failed."
+                errors:
+                  mydata_submit: ["Registered supplier invoices cannot be submitted to myDATA."]
+            alreadyTransmitted:
+              value:
+                status: validation_error
+                message: "Validation failed."
+                errors: [["Το παραστατικό έχει ήδη διαβιβαστεί στο myDATA και δεν στέλνεται ξανά."]]
+            serialTaken:
+              value:
+                status: validation_error
+                message: "Validation failed."
+                errors:
+                  serial_number: ["Ο σειριακός αριθμός δεν είναι έγκυρος, γιατί υπάρχει ήδη."]

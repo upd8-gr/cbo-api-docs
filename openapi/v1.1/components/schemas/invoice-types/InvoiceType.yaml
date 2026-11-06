@@ -1,39 +1,80 @@
 type: object
 additionalProperties: false
+description: >
+  Invoice type (InvoiceTypeResource output). Null fields are omitted, except
+  `default_move_purpose`, which is always present.
 properties:
   id: { type: integer, format: int64, example: 1166 }
-  title: { type: string, example: "Invoice (no delivery)" }
+  title: { type: string, example: "Τιμολόγιο Πώλησης" }
   type:
     type: integer
-    enum: [1,2,3,4,5,6,7]
+    enum: [1, 2, 3, 4, 5, 6, 7]
+    deprecated: true
+    description: |
+      **Deprecated** — use `document_type`. The legacy 1–7 category, derived from
+      `document_type` (+ `aade_type`); there is no stored column behind it any more.
+      - 1: `invoice` (any other aade_type, incl. 11.x)
+      - 2: `credit-invoice`, `credit-retail`
+      - 3: `delivery-note`, `delivery-return`, `delivery-internal`, `delivery-centralized`, `delivery-service`
+      - 4: `estimate-offer`
+      - 5: `invoice-income`, `accommodation-income`, or `invoice` with aade_type 7.1 / 8.1 / 8.2
+      - 6: `invoice` with aade_type 3.1 / 3.2
+      - 7: `retail`
+
+      Omitted for document types outside this list (e.g. `cash-receipt`).
     example: 1
   aade_type:
     type: string
     maxLength: 20
+    description: myDATA document type code; "0" = other / internal use. Omitted when null.
     example: "1.1"
   document_type:
     type: string
-    nullable: true
-    maxLength: 50
-    example: null
+    description: The document type (see the request schema for the list).
+    example: invoice
+  account:
+    type: string
+    enum: [client, supplier, both]
+    description: Which side the type is used on.
+    example: client
   active: { type: boolean, example: true }
-  is_deliverable: { type: boolean, example: false }
-  default: { type: boolean, example: true }
+  dispatch_details_enabled:
+    type: boolean
+    description: Whether documents of this type carry dispatch (movement) details.
+    example: false
+  is_deliverable:
+    type: boolean
+    deprecated: true
+    description: "**Deprecated** — same value as `dispatch_details_enabled`."
+    example: false
+  default:
+    type: boolean
+    description: Default type for its `document_type` + `account` within the company.
+    example: true
   template_id:
     type: integer
     format: int64
-    nullable: true
-    example: null
+    description: Omitted when null.
+    example: 4
   company:
     type: integer
     format: int64
+    description: >
+      Company id. On `POST /invoice-types` it echoes the `X-Asseblo-Company` header value
+      and may be a string.
     example: 1
+  default_move_purpose:
+    type: integer
+    nullable: true
+    description: Default myDATA move purpose for delivery documents of this type. Always present.
+    example: null
 required:
   - id
   - title
-  - type
-  - aade_type
+  - document_type
   - active
+  - dispatch_details_enabled
   - is_deliverable
   - default
   - company
+  - default_move_purpose

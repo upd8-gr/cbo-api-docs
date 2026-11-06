@@ -1,12 +1,24 @@
 type: object
 additionalProperties: false
+description: >
+  Create-invoice payload, as the client sends it. Send either `billing_address` or
+  `billing_address_id`.
 properties:
 
   invoice_type_id:
     type: integer
     nullable: true
     description: >
-      Optional. When provided it must match the given `document_type`.
+      Optional. When provided its `document_type` must match the posted `document_type`
+      (an `invoice` posted with an income type is matched as described under
+      `document_type`). When omitted the company's default type for the document type is
+      used. May also be sent as `document_id` (alias); if both are present, `document_id`
+      wins.
+
+  document_id:
+    type: integer
+    nullable: true
+    description: Alias of `invoice_type_id`; wins when both are sent.
   invoice_series_id:
     type: integer
     nullable: true
@@ -34,10 +46,29 @@ properties:
 
   document_type:
     type: string
+    description: |
+      Legacy names and income documents are normalised before validation:
+      - `cash-register` (deprecated) is accepted and stored as `retail`; filter on either
+        name in `GET /invoices`.
+      - `cancel-register` (deprecated) is renamed to `credit-retail`, which this endpoint
+        does not create, so it is refused with 422 (it is not in the list below).
+      - `invoice` with an income type — an `invoice_type_id` whose document type is
+        `invoice-income` / `accommodation-income`, or (without a type) `mydata_type`
+        7.1 / 8.1 / 8.2 — is created as `invoice-income` (7.1, 8.1) or
+        `accommodation-income` (8.2). Those two names can also be sent directly.
     enum:
       - invoice
       - credit-invoice
+      - invoice-income
+      - accommodation-income
+      - retail
+      - cash-receipt
+      - return
       - delivery-note
+      - delivery-return
+      - estimate-offer
+      - cash-register
+    example: invoice
 
   template_id:
     type: integer
@@ -54,8 +85,22 @@ properties:
   billing_address:
     description: >
       Single address object. account linkage is
-      injected automatically from `client_id`.
+      injected automatically from `client_id`. Required unless `billing_address_id` is sent.
     $ref: ../clients/ClientAddressInputObject.yaml
+
+  billing_address_id:
+    type: integer
+    description: >
+      id of an existing address of the client, instead of `billing_address` (the two
+      cannot be combined).
+
+  shipping_address_id:
+    type: integer
+    description: id of an existing address, instead of `shipping_address` (cannot be combined).
+
+  loading_address_id:
+    type: integer
+    description: id of an existing address, instead of `loading_address` (cannot be combined).
 
   shipping_address:
     nullable: true
@@ -121,13 +166,13 @@ properties:
     items:
       type: object
       additionalProperties: false
+      required: [quantity]
       properties:
         product_id: { type: integer, nullable: true }
         description: { type: string, nullable: true }
         quantity:
           type: number
           minimum: 0.001
-          required: true
         measure_unit:
           type: string
           nullable: true
@@ -227,12 +272,23 @@ properties:
   related_documents:
     type: array
     nullable: true
-    items: { type: integer, description: id of invoice with document_type `credit-invoice` }
+    description: >
+      ids of your company's client documents this invoice relates to (e.g. a receipt, a
+      credited invoice, a delivery note). `related_documents` and `delivery_notes` are
+      merged on store: each id becomes a header-level link (no line quantities or stock
+      are moved). In the response a linked `delivery-note` / `delivery-return` is listed
+      under `delivery_notes`, everything else under `related_documents`, whichever key it
+      was sent in. An id of another company's document is refused with 422
+      (`errors.related_documents.N`).
+    items: { type: integer, description: clients_invoices.id of your company }
 
   delivery_notes:
     type: array
     nullable: true
-    items: { type: integer , description: id of invoice with document_type `delivery-note` }
+    description: >
+      Same as `related_documents` (the two lists are merged). Another company's id is
+      refused with 422 (`errors.delivery_notes.N`).
+    items: { type: integer, description: clients_invoices.id of your company }
   
   terms:
     type: string
@@ -275,4 +331,3 @@ required:
   - date
   - client_id
   - document_type
-  - billing_address

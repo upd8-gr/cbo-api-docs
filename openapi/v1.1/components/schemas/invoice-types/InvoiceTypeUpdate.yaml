@@ -1,0 +1,102 @@
+type: object
+additionalProperties: false
+description: |
+  Update-invoice-type payload (PUT and PATCH alike). It is a full replacement: `title`, `aade_type` and `document_type` (or the deprecated `type`) are required on every update. `default_move_purpose` is not accepted here (it is ignored).
+
+  **Deprecated aliases** (normalised before validation):
+  - `type` (1–7) is used only when `document_type` is not sent: 1, 6, 7 → `invoice`;
+    2 → `credit-invoice`; 4 → `estimate-offer`; 5 → `invoice-income` (aade 7.1 / 8.1),
+    `accommodation-income` (aade 8.2), otherwise `invoice`; 3 derives nothing, so a
+    delivery type must send `document_type`. **When both are sent, `document_type` wins**
+    and `type` is ignored.
+  - `is_deliverable` is copied to `dispatch_details_enabled`; when both are sent,
+    `dispatch_details_enabled` wins.
+
+  `aade_type` must be one of the codes allowed for the resulting `document_type` ("0" is
+  always allowed). A mismatch returns a single message under `errors.aade_type`; the
+  legacy second message "Invalid AADE type for selected type." is gone.
+properties:
+  title:
+    type: string
+    maxLength: 255
+    example: "Τιμολόγιο Πώλησης"
+  document_type:
+    type: string
+    description: |
+      Required (unless derived from the deprecated `type`). Allowed `aade_type` per document type:
+      - `invoice`: 1.1, 1.2, 1.3, 2.1, 2.2, 2.3, 3.1, 3.2, 6.1, 6.2, 11.1, 11.2, 11.3
+      - `credit-invoice`: 5, 5.1, 5.2, 11.4
+      - `invoice-income`: 7.1, 8.1 — `accommodation-income`: 8.2
+      - `retail`: 11.1, 11.2, 11.3 — `credit-retail`: 11.4
+      - `delivery-note`: 9.1, 9.3 — `delivery-return`: 9.3, 10, 10.1, 10.2
+      - `delivery-centralized`: 9.2 — `delivery-internal`: 9.3
+      - `cash-receipt`: 8.4 — `return`: 8.5
+      - `delivery-service`, `estimate-offer`, `cancel-register`, `commission`: "0" only
+    enum:
+      - invoice
+      - credit-invoice
+      - invoice-income
+      - accommodation-income
+      - retail
+      - credit-retail
+      - delivery-note
+      - delivery-return
+      - delivery-centralized
+      - delivery-internal
+      - delivery-service
+      - estimate-offer
+      - cancel-register
+      - commission
+      - cash-receipt
+      - return
+    example: invoice
+  type:
+    type: integer
+    enum: [1, 2, 3, 4, 5, 6, 7]
+    deprecated: true
+    description: "**Deprecated** — send `document_type`. Ignored when `document_type` is sent."
+    example: 1
+  aade_type:
+    type: string
+    maxLength: 20
+    description: myDATA code allowed for the `document_type` (a JSON string, e.g. "1.1"; "0" for other / internal use).
+    example: "1.1"
+  account:
+    type: string
+    nullable: true
+    enum: [client, supplier, both]
+    description: >
+      Side the type is used on. Must be allowed for the document type (e.g. `both` only
+      for delivery notes / returns); otherwise 422 under `errors.account`. Types that exist
+      only on the client side (retail, income, movements) are always stored as `client`.
+      When omitted a new type is a `client` type.
+    example: client
+  active:
+    type: boolean
+    nullable: true
+    example: true
+  dispatch_details_enabled:
+    type: boolean
+    nullable: true
+    example: false
+  is_deliverable:
+    type: boolean
+    nullable: true
+    deprecated: true
+    description: "**Deprecated** — alias of `dispatch_details_enabled`, which wins when both are sent."
+    example: false
+  default:
+    type: boolean
+    nullable: true
+    description: >
+      Default type for its `document_type` + `account` in the company. `true` clears the
+      flag on the other types with the same `document_type` + `account`; a type saved
+      without it becomes the default when that pair has none yet.
+    example: true
+  template_id:
+    type: integer
+    format: int64
+    nullable: true
+    description: Must exist in templates.
+    example: null
+required: [title, aade_type]
