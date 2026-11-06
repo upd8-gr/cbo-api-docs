@@ -27,6 +27,10 @@ post:
       same numbering scope (company, branch, series, myDATA type) is refused under
       `errors.serial_number` — until 2026-11-03 the message was the key-less
       `errors[0][0]` "Ο αριθμός του Παραστατικού δεν είναι έγκυρος.";
+    - for a company with myDATA settings, the client checks of the web form: a counterparty
+      without the required ΑΦΜ or address, or a document type not allowed for a client with
+      ΑΦΜ (e.g. a 11.1 retail receipt to a wholesale client) — new on 2026-11-04; before that
+      the API skipped them and still transmitted;
     - more than 350 lines: "Ο αριθμός των ειδών υπερβαίνει το όριο (350). Παρακαλώ χωρίστε το παραστατικό."
       (new text);
     - other rule failures (client price ceiling, lots, myDATA checks) are returned as a list

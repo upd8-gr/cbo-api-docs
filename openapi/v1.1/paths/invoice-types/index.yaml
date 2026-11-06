@@ -128,9 +128,6 @@ get:
                     active: true
                     dispatch_details_enabled: false
                     is_deliverable: false
-                    dispatch_policy: mydata_forces
-                    has_billing: true
-                    only_clients: false
                     default: true
                     template_id: 4
                     company: 1
@@ -144,9 +141,6 @@ get:
                     active: true
                     dispatch_details_enabled: true
                     is_deliverable: true
-                    dispatch_policy: mydata_forces
-                    has_billing: false
-                    only_clients: false
                     default: true
                     company: 1
                     default_move_purpose: 1

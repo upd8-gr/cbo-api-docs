@@ -79,7 +79,7 @@ The changes apply to v1.1 (`https://app.cbo.gr/api/v1.1`) from 3 November 2026. 
 - Νέο `POST /supplier-invoices/{id}/publish` και νέο `PUT` / `PATCH /invoice-types/{id}`.
 - Το `POST /invoices/{id}/publish` με `Executed` + `mydata_submit: true` ξαναστέλνει μόνο στο myDATA (χωρίς νέο αριθμό, αποδείξεις ή κίνηση αποθήκης). Εταιρεία χωρίς ρυθμίσεις myDATA: το παραστατικό εκδίδεται χωρίς αποστολή.
 - Το `document_type: cash-register` γίνεται ξανά δεκτό και αποθηκεύεται ως `retail` (και ως φίλτρο). Γίνονται δεκτά τα `invoice-income` / `accommodation-income` (7.1, 8.1, 8.2).
-- `GET /invoice-types`: νέα πεδία `account`, `dispatch_details_enabled`, `dispatch_policy`, `has_billing`, `only_clients`, `default_move_purpose`· το φίλτρο `type` (1–7, τιμή ή πίνακας) δουλεύει ξανά.
+- `GET /invoice-types`: νέα πεδία `account`, `dispatch_details_enabled`, `default_move_purpose`· το φίλτρο `type` (1–7, τιμή ή πίνακας) δουλεύει ξανά.
 - `POST /supplier-invoices` με `isDraft: true`: το παραστατικό μένει `Draft` (πριν αποθηκευόταν `Executed`).
 - `POST /groups`: `sort` κενό ή `0` κατά τη δημιουργία τοποθετεί την ομάδα στο τέλος.
 
@@ -160,6 +160,6 @@ Error messages are returned in Greek where shown in Greek.
 - New `POST /supplier-invoices/{id}/publish` and new `PUT` / `PATCH /invoice-types/{id}`.
 - `POST /invoices/{id}/publish` with an `Executed` invoice and `mydata_submit: true` only retries the myDATA transmission (no new number, receipts or stock movement). A company without myDATA settings gets the invoice published without sending.
 - `document_type: cash-register` is accepted again and stored as `retail` (also as a filter). `invoice-income` / `accommodation-income` (7.1, 8.1, 8.2) are accepted.
-- `GET /invoice-types`: new fields `account`, `dispatch_details_enabled`, `dispatch_policy`, `has_billing`, `only_clients`, `default_move_purpose`; the `type` filter (1–7, one value or an array) works again.
+- `GET /invoice-types`: new fields `account`, `dispatch_details_enabled`, `default_move_purpose`; the `type` filter (1–7, one value or an array) works again.
 - `POST /supplier-invoices` with `isDraft: true`: the invoice stays `Draft` (it used to be stored `Executed`).
 - `POST /groups`: `sort` empty or `0` on create places the group at the end.

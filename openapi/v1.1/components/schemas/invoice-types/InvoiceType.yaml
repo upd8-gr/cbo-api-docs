@@ -47,21 +47,6 @@ properties:
     deprecated: true
     description: "**Deprecated** — same value as `dispatch_details_enabled`."
     example: false
-  dispatch_policy:
-    type: string
-    enum: [never, optional, mydata_forces, always]
-    description: >
-      Whether dispatch details apply to the document type: never; optional; required when
-      the document is a myDATA document (`mydata_forces`); always.
-    example: mydata_forces
-  has_billing:
-    type: boolean
-    description: Whether the document type carries an amount to be paid (a billing document).
-    example: true
-  only_clients:
-    type: boolean
-    description: Whether the document type exists only on the client side.
-    example: false
   default:
     type: boolean
     description: Default type for its `document_type` + `account` within the company.
@@ -90,9 +75,6 @@ required:
   - active
   - dispatch_details_enabled
   - is_deliverable
-  - dispatch_policy
-  - has_billing
-  - only_clients
   - default
   - company
   - default_move_purpose
