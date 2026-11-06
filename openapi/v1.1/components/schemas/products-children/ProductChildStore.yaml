@@ -92,24 +92,43 @@ properties:
     items: { type: string, maxLength: 255 }
   tiers:
     type: array
+    description: >-
+      Quantity-break prices. Replaces the whole set: every tier currently on the
+      product is removed and these are written in its place. Ranges must not
+      overlap each other. Omit the key to leave the existing tiers untouched;
+      send an empty array to clear them.
     items:
       type: object
       additionalProperties: false
+      required: [min_quantity, max_quantity, type, value]
       properties:
         min_quantity:
-          nullable: true
-          oneOf:
-            - type: number
-            - type: string
+          type: number
+          minimum: 0
+          description: Lower bound of the quantity range, inclusive.
+          example: 1
         max_quantity:
-          nullable: true
+          description: >-
+            Upper bound of the quantity range, inclusive. Use "*" or "infinity"
+            for an open-ended top tier (stored as 99999999).
           oneOf:
             - type: number
             - type: string
-        retail: { type: number, nullable: true }
-        profit: { type: number, nullable: true }
-        price: { type: number, nullable: true }
-        fixed: { type: number, nullable: true }
+              pattern: '^(\*|infinity|\d+(\.\d+)?)$'
+          example: 10
+        type:
+          type: string
+          enum: [fixed, unit_price, markup, discount]
+          description: >-
+            How `value` is interpreted — `fixed`: a fixed total for the line;
+            `unit_price`: an absolute net price per unit; `markup`: a percentage
+            added to the product's cost price; `discount`: a percentage taken
+            off the product's sell price.
+          example: unit_price
+        value:
+          type: number
+          description: The amount or percentage, per `type`.
+          example: 90
   tags:
     type: array
     items: { type: string, maxLength: 255 }
